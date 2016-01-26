@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.ContentFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/create_layout_options"
+            android:layout_marginTop="30dp"
+            android:visibility="gone">
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:id="@+id/create_option_1">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/expense_drawer_icon"
+                    android:id="@+id/icn_option_1"
+                    android:tint="@color/dark_v1"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@color/dark_v1"
+                    android:id="@+id/txt_option_1"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:id="@+id/create_option_2">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/expense_drawer_icon"
+                    android:id="@+id/icn_option_2"
+                    android:tint="@color/dark_v1"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/dark_v1"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:id="@+id/txt_option_2"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:animateLayoutChanges="true">
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txt_first_vehicle"
+                        android:layout_margin="20dp"
+                        android:text="@string/text_first_vehicle"
+                        android:visibility="gone"
+                        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txt_main_field"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/edit_main_field"
+                        android:layout_marginTop="6dp"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:inputType="textCapWords"
+                        android:hint="@string/hint_edit_field"
+                        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/linear_field_1"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txt_field_1"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/edit_field_1"
+                            android:layout_weight="0.8"
+                            android:layout_marginTop="6dp"
+                            android:paddingBottom="18dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:hint="@string/hint_edit_field"
+                            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                        <android.support.v7.widget.AppCompatImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/field_1_list"
+                            android:layout_gravity="center_vertical"
+                            android:background="@android:color/transparent"
+                            android:tint="@color/dark_v1"
+                            android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/linear_field_2"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txt_field_2"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/edit_field_2"
+                            android:layout_weight="0.8"
+                            android:layout_marginTop="6dp"
+                            android:paddingBottom="18dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:hint="@string/hint_edit_field"
+                            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                        <android.support.v7.widget.AppCompatImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/field_2_list"
+                            android:layout_gravity="center_vertical"
+                            android:background="@android:color/transparent"
+                            android:tint="@color/dark_v1"
+                            android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/linear_field_3"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txt_field_3"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/edit_field_3"
+                            android:layout_weight="0.8"
+                            android:layout_marginTop="6dp"
+                            android:paddingBottom="18dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:hint="@string/hint_edit_field"
+                            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                        <android.support.v7.widget.AppCompatImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/field_3_list"
+                            android:layout_gravity="center_vertical"
+                            android:background="@android:color/transparent"
+                            android:tint="@color/dark_v1"
+                            android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/linear_problem_listing"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:text="@string/label_problems"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/layout_problems"
+                        android:animateLayoutChanges="true"/>
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/cruzer_blue_button"
+                        android:id="@+id/ib_add_problem"
+                        android:layout_marginTop="8dp"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:textColor="@android:color/white"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/label_add_problem" />
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/linear_field_4"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txt_field_4"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/edit_field_4"
+                            android:layout_weight="0.8"
+                            android:layout_marginTop="6dp"
+                            android:paddingBottom="18dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:hint="@string/hint_edit_field"
+                            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                        <android.support.v7.widget.AppCompatImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/field_4_list"
+                            android:layout_gravity="center_vertical"
+                            android:background="@android:color/transparent"
+                            android:tint="@color/dark_v1"
+                            android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true">
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="20dp"
+                        android:gravity="end">
+
+                        <android.support.v7.widget.AppCompatButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/button_form_control"
+                            android:text="@string/label_expand_form"
+                            app:borderWidth="0dp"
+                            android:paddingLeft="20dp"
+                            android:paddingRight="20dp"
+                            android:textColor="@color/cruzer_blue"
+                            android:background="@android:color/transparent"
+                            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                        <android.support.v7.widget.AppCompatButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/button_create_record"
+                            android:text="@string/label_done"
+                            app:borderWidth="0dp"
+                            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:id="@+id/layout_upload_photo">
+
+                        <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="or"
+                            android:textColor="@color/dark_v1"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:layout_marginBottom="6dp"/>
+
+                        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/red_600"
+                            android:paddingTop="14dp"
+                            android:paddingBottom="14dp"
+                            android:gravity="center">
+
+                            <android.support.v7.widget.AppCompatTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_photo_upload_text"
+                                android:textColor="@android:color/white"
+                                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                        </android.support.v7.widget.LinearLayoutCompat>
+
+                        <android.support.design.widget.FloatingActionButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/fab_upload_photo"
+                            android:src="@drawable/ic_photo_camera_black_24dp"
+                            android:tint="@color/white_darken_0"
+                            android:layout_marginBottom="10dp"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+        </ScrollView>
+    </android.support.v7.widget.LinearLayoutCompat>
+    <android.support.v7.widget.ContentFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:id="@+id/image_create_bottom">
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:src="@color/cruzer_blue_v1"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop"
+            android:layout_gravity="bottom"/>
+        <!--<android.support.v7.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginBottom="24dp"
+            android:alpha="0.9"
+            android:layout_gravity="bottom|center_horizontal"
+            android:src="@drawable/cruzer_text_logo"/>-->
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:src="@mipmap/ic_launcher"
+            android:layout_marginBottom="44dp"
+            android:layout_gravity="bottom|center"/>
+    </android.support.v7.widget.ContentFrameLayout>
+    <!--<android.support.v7.widget.AppCompatImageView
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:id="@+id/image_create_bottom"
+        android:src="@drawable/create_vehicle"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:layout_gravity="bottom"/>-->
+
+</android.support.v7.widget.ContentFrameLayout>

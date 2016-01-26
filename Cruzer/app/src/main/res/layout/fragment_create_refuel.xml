@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        android:animateLayoutChanges="true">
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/label_amount"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/label_cost"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/edit_amount"
+                android:layout_marginTop="6dp"
+                android:paddingBottom="18dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:inputType="textCapCharacters"
+                android:hint="@string/hint_edit_field"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_odometer"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/label_odometer"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/label_odometer_reading"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/edit_odometer"
+                android:layout_marginTop="6dp"
+                android:inputType="textCapWords"
+                android:paddingBottom="18dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:hint="@string/hint_edit_field"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_date"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/label_date"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/label_date"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/edit_date"
+                android:layout_marginTop="6dp"
+                android:inputType="textCapWords"
+                android:paddingBottom="18dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:hint="@string/hint_edit_field"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_volume"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/label_volume"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/label_refuel_volume"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/edit_volume"
+                android:layout_marginTop="6dp"
+                android:inputType="textCapWords"
+                android:paddingBottom="18dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:hint="@string/hint_edit_field"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_refuel_rate"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/label_refuel_rate"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="@string/label_refuel_rate"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/edit_refuel_rate"
+                android:layout_marginTop="6dp"
+                android:inputType="textCapWords"
+                android:paddingBottom="18dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:hint="@string/hint_edit_field"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true">
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:gravity="end">
+
+                <android.support.v7.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_form_control"
+                    android:text="@string/label_expand_form"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/cruzer_blue_v1"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_create_record"
+                    android:text="@string/label_done"
+                    android:background="@drawable/cruzer_blue_button"
+                    android:textColor="@color/white_darken_0"
+                    app:borderWidth="0dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+</ScrollView>

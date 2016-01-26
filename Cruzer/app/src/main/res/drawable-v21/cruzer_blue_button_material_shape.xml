@@ -1,0 +1,14 @@
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetLeft="6dp"
+    android:insetTop="6dp"
+    android:insetRight="6dp"
+    android:insetBottom="6dp">
+    <shape android:shape="rectangle">
+        <corners android:radius="4dp" />
+        <solid android:color="@color/cruzer_blue" />
+        <padding android:left="8dp"
+            android:top="8dp"
+            android:right="8dp"
+            android:bottom="8dp" />
+    </shape>
+</inset>
