@@ -39,6 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="@color/dark_v1"
                     android:id="@+id/txt_option_1"/>
@@ -64,6 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textColor="@color/dark_v1"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:id="@+id/txt_option_2"/>
@@ -91,6 +93,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/txt_first_vehicle"
+                        android:fontFamily="sans-serif-light"
+                        android:textColor="@color/dark_v1"
                         android:layout_margin="20dp"
                         android:text="@string/text_first_vehicle"
                         android:visibility="gone"
@@ -103,6 +107,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:text="@string/app_name"
+                        android:fontFamily="sans-serif-light"
                         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                     <android.support.v7.widget.AppCompatEditText
@@ -134,6 +139,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:text="@string/app_name"
+                        android:fontFamily="sans-serif-light"
                         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                     <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -180,6 +186,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:text="@string/app_name"
+                        android:fontFamily="sans-serif-light"
                         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                     <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -226,6 +233,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:text="@string/app_name"
+                        android:fontFamily="sans-serif-light"
                         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                     <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -272,6 +280,7 @@
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:text="@string/label_problems"
+                        android:fontFamily="sans-serif-light"
                         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                     <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
@@ -309,6 +318,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:text="@string/app_name"
+                        android:fontFamily="sans-serif-light"
                         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                     <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -359,7 +369,7 @@
                             app:borderWidth="0dp"
                             android:paddingLeft="20dp"
                             android:paddingRight="20dp"
-                            android:textColor="@color/cruzer_blue"
+                            android:textColor="@color/cruzer_blue_v1"
                             android:background="@android:color/transparent"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -368,6 +378,8 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/button_create_record"
                             android:text="@string/label_done"
+                            android:textColor="@android:color/white"
+                            android:background="@drawable/cruzer_blue_button"
                             app:borderWidth="0dp"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 

@@ -14,14 +14,12 @@ import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
 import com.socketmint.cruzer.manage.Constants;
-import com.socketmint.cruzer.ui.UserInterface;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public class Workshop extends Fragment {
     private AppCompatTextView textWorkshopName, textManager, textMobile, textAddress, textCity, textArea, textOfferings;
 
-    private UserInterface userInterface = UserInterface.getInstance();
     private DatabaseHelper databaseHelper;
     private Tracker analyticsTracker;
 
@@ -38,8 +36,6 @@ public class Workshop extends Fragment {
         View view = inflater.inflate(R.layout.fragment_view_workshop, container, false);
 
         analyticsTracker = ((CruzerApp) getActivity().getApplication()).getAnalyticsTracker();
-
-        userInterface.changeActivity(getActivity());
         databaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
 
         String id = getArguments().getString(Constants.Bundle.ID);
@@ -50,13 +46,6 @@ public class Workshop extends Fragment {
     }
 
     private void initializeViews(View v) {
-        ((AppCompatTextView) v.findViewById(R.id.label_workshop_manager)).setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        ((AppCompatTextView) v.findViewById(R.id.label_workshop_contact)).setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        ((AppCompatTextView) v.findViewById(R.id.label_workshop_address)).setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        ((AppCompatTextView) v.findViewById(R.id.label_workshop_city)).setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        ((AppCompatTextView) v.findViewById(R.id.label_workshop_area)).setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        ((AppCompatTextView) v.findViewById(R.id.label_workshop_offerings)).setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-
         textWorkshopName = (AppCompatTextView) v.findViewById(R.id.text_workshop_name);
         textManager = (AppCompatTextView) v.findViewById(R.id.text_workshop_manager);
         textMobile = (AppCompatTextView) v.findViewById(R.id.text_workshop_mobile);
@@ -64,18 +53,10 @@ public class Workshop extends Fragment {
         textCity = (AppCompatTextView) v.findViewById(R.id.text_workshop_city);
         textArea = (AppCompatTextView) v.findViewById(R.id.text_workshop_area);
         textOfferings = (AppCompatTextView) v.findViewById(R.id.text_workshop_offerings);
-
-        textWorkshopName.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        textManager.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        textMobile.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        textAddress.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        textCity.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        textArea.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        textOfferings.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
     }
 
     private void setDetails(View v, String id) {
-        com.socketmint.cruzer.dataholder.Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        com.socketmint.cruzer.dataholder.Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
         analyticsTracker.setScreenName(Constants.GoogleAnalytics.EVENT_WORKSHOP_DISPLAY + " : " + workshop.name);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
         textWorkshopName.setText(workshop.name);

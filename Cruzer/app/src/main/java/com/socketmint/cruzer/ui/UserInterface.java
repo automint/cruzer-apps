@@ -27,22 +27,6 @@ import java.util.Date;
 public class UserInterface {
     private static UserInterface instance;
 
-    public static abstract class font {
-        public static final int copse = 0;
-        public static final int roboto_black = 1;
-        public static final int roboto_black_italic = 2;
-        public static final int roboto_bold = 3;
-        public static final int roboto_bold_italic = 4;
-        public static final int roboto_italic = 5;
-        public static final int roboto_light = 6;
-        public static final int roboto_light_italic = 7;
-        public static final int roboto_medium = 8;
-        public static final int roboto_medium_italic = 9;
-        public static final int roboto_regular = 10;
-        public static final int roboto_thin = 11;
-        public static final int roboto_thin_italic = 12;
-    }
-
     public static abstract class animation {
         public static final int bounce = 0;
         public static final int fade_in = 1;
@@ -59,9 +43,6 @@ public class UserInterface {
     }
 
     private Activity activity;
-
-    private Typeface copse, roboto_black, roboto_black_italic, roboto_bold,  roboto_bold_italic, roboto_italic, roboto_light, roboto_light_italic, roboto_medium,
-            roboto_medium_italic, roboto_regular, roboto_thin, roboto_thin_italic;
 
     private Animation bounce, fade_in, fade_out, slide_from_down, slide_from_left, slide_from_up, slide_from_right, slide_to_down, slide_to_left, slide_to_right,
             slide_to_up, rotate;
@@ -84,7 +65,6 @@ public class UserInterface {
         displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", activity.getResources().getConfiguration().locale);
         serverDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
         defineAnimations();
-        defineFonts();
     }
 
     public void changeActivity(Activity activity) {
@@ -92,22 +72,6 @@ public class UserInterface {
         locData.formInstance(activity);
         displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", activity.getResources().getConfiguration().locale);
         serverDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
-    }
-
-    private void defineFonts() {
-        copse = Typeface.createFromAsset(activity.getAssets(), "fonts/Copse-Regular.ttf");
-        roboto_black = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Black.ttf");
-        roboto_black_italic = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-BlackItalic.ttf");
-        roboto_bold = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Bold.ttf");
-        roboto_italic = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Italic.ttf");
-        roboto_bold_italic = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-BoldItalic.ttf");
-        roboto_light = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Light.ttf");
-        roboto_light_italic = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-LightItalic.ttf");
-        roboto_medium = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Medium.ttf");
-        roboto_medium_italic = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-MediumItalic.ttf");
-        roboto_regular = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Regular.ttf");
-        roboto_thin = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Thin.ttf");
-        roboto_thin_italic = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-ThinItalic.ttf");
     }
 
     private void defineAnimations() {
@@ -124,39 +88,6 @@ public class UserInterface {
         fade_out = AnimationUtils.loadAnimation(activity.getApplicationContext(), R.anim.fadeout);
         rotate = AnimationUtils.loadAnimation(activity.getApplicationContext(), R.anim.rotate_clockwise);
 
-    }
-
-    public Typeface font(int fontType) {
-        switch (fontType) {
-            case font.copse:
-                return copse;
-            case font.roboto_black:
-                return roboto_black;
-            case font.roboto_black_italic:
-                return roboto_black_italic;
-            case font.roboto_bold:
-                return roboto_bold;
-            case font.roboto_bold_italic:
-                return roboto_bold_italic;
-            case font.roboto_light:
-                return roboto_light;
-            case font.roboto_light_italic:
-                return roboto_light_italic;
-            case font.roboto_medium:
-                return roboto_medium;
-            case font.roboto_medium_italic:
-                return roboto_medium_italic;
-            case font.roboto_regular:
-                return roboto_regular;
-            case font.roboto_thin:
-                return roboto_thin;
-            case font.roboto_thin_italic:
-                return roboto_thin_italic;
-            case font.roboto_italic:
-                return roboto_italic;
-            default:
-                return null;
-        }
     }
 
     public Animation animation(int animationType) {

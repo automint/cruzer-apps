@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -253,7 +254,7 @@ public class ManualSync {
                         String volume = object.optString(DatabaseSchema.Refuels.COLUMN_VOLUME);
                         Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                         if (vehicle != null) {
-                            Refuel refuel = databaseHelper.refuel(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                            Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                             if (refuel == null)
                                 databaseHelper.addRefuel(sId, vehicle.getId(), date, rate, volume, cost, odo);
                             else
@@ -320,8 +321,8 @@ public class ManualSync {
                         String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
                         Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                         if (vehicle != null) {
-                            Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                            Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
+                            Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                            Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
                             String wId = (workshop != null) ? workshop.getId() : "";
                             if (service == null)
                                 databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status);
@@ -356,7 +357,7 @@ public class ManualSync {
     }
 
     private void getProblems(final String serviceId) {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.getProblems(serviceId), new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_PROBLEMS(serviceId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -385,8 +386,8 @@ public class ManualSync {
                         String pCost = problem.optString(DatabaseSchema.Problems.COLUMN_PCOST);
                         String details = problem.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
                         String qty = problem.optString(DatabaseSchema.Problems.COLUMN_QTY);
-                        Problem item = databaseHelper.problem(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                        Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
+                        Problem item = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                        Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
                         if (service != null) {
                             if (item == null)
                                 databaseHelper.addProblem(sId, service.getId(), details, lCost, pCost, qty);
@@ -450,7 +451,7 @@ public class ManualSync {
                         String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                         String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
 
-                        Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                        Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                         if (workshop != null) {
                             databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
                         } else
@@ -504,7 +505,7 @@ public class ManualSync {
                         String sId = object.getString(DatabaseSchema.COLUMN_ID);
                         String manuId = object.getString(DatabaseSchema.Models.COLUMN_MANU_ID);
                         String name = object.getString(DatabaseSchema.Models.COLUMN_NAME);
-                        Manu manu = databaseHelper.manu(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{manuId});
+                        Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{manuId});
                         if (manu != null) {
                             Model model = databaseHelper.model(Arrays.asList(DatabaseSchema.Models.COLUMN_MANU_ID, DatabaseSchema.Models.COLUMN_NAME), new String[]{manu.getId(), name});
                             if (model != null) {
@@ -559,7 +560,7 @@ public class ManualSync {
                         JSONObject object = array.getJSONObject(i);
                         String sId = object.getString(DatabaseSchema.COLUMN_ID);
                         String name = object.getString(DatabaseSchema.Manus.COLUMN_NAME);
-                        Manu manu = databaseHelper.manu(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                        Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                         if (manu != null) {
                             if (!manu.name.equals(name))
                                 databaseHelper.updateManu(sId, name);

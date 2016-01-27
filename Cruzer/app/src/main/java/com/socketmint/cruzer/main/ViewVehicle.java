@@ -34,7 +34,6 @@ import com.socketmint.cruzer.drawer.DrawerFragment;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
-import com.socketmint.cruzer.ui.UserInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +46,6 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
 
     private DrawerFragment drawerFragment;
     private Adapter adapter;
-    private UserInterface userInterface = UserInterface.getInstance();
 
     private Login login = Login.getInstance();
     private DatabaseHelper databaseHelper;
@@ -63,7 +61,6 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
 
             analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 
-            userInterface.changeActivity(this);
             login.initInstance(this);
             databaseHelper = new DatabaseHelper(getApplicationContext());
 
@@ -152,7 +149,6 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
         drawerFragment = (DrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         drawerFragment.setUp(R.id.navigation_drawer, (Toolbar) findViewById(R.id.toolbar), (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        AppCompatTextView toolbarTitle = (AppCompatTextView) findViewById(R.id.toolbar_title);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view_vehicle);
 
         recyclerView.setHasFixedSize(true);
@@ -163,14 +159,12 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        toolbarTitle.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
         findViewById(R.id.fab_add).setOnClickListener(this);
         SpannableString title;
         String yv = "Your Vehicle";
-        String s = "(s)";
-        title = new SpannableString(yv.concat(s));
+        title = new SpannableString(yv.concat("(s)"));
         title.setSpan(new RelativeSizeSpan(1.5f), 0, yv.length(), 0);
-        toolbarTitle.setText(title);
+        ((AppCompatTextView) findViewById(R.id.toolbar_title)).setText(title);
     }
 
     @Override
@@ -320,8 +314,6 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
             super(itemView);
             txtVehicleName = (AppCompatTextView) itemView.findViewById(R.id.text_vehicle_name);
             btnHistory = (AppCompatImageButton) itemView.findViewById(R.id.button_view_history);
-
-            txtVehicleName.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
         }
     }
 

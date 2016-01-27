@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.AppCompatEditText;
@@ -44,7 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,26 +114,14 @@ public class LoginDialog {
         btnDone = (AppCompatButton) dialog.findViewById(R.id.button_login_phone);
         AppCompatCheckBox checkBoxShowPassword = (AppCompatCheckBox) dialog.findViewById(R.id.checkbox_show_password);
 
-        editMobile.setTypeface(userInterface.font(UserInterface.font.roboto_thin));
-        editPassword.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editFirstName.setTypeface(userInterface.font(UserInterface.font.roboto_thin));
-        editLastName.setTypeface(userInterface.font(UserInterface.font.roboto_thin));
-        editEmail.setTypeface(userInterface.font(UserInterface.font.roboto_thin));
-        checkBoxShowPassword.setTypeface(userInterface.font(UserInterface.font.roboto_thin_italic));
-        textMessage.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        btnDone.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        ((AppCompatTextView) dialog.findViewById(R.id.text_email)).setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        ((AppCompatTextView) dialog.findViewById(R.id.text_name)).setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        ((AppCompatTextView) dialog.findViewById(R.id.text_mobile)).setTypeface(userInterface.font(UserInterface.font.roboto_light));
-
         checkBoxShowPassword.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
                     editPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                 else
-                    editPassword.setInputType(129);
-                editPassword.setTypeface(userInterface.font(UserInterface.font.roboto_light));
+                    editPassword.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                editPassword.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
                 editPassword.setSelection(editPassword.length());
             }
         });
@@ -188,7 +178,7 @@ public class LoginDialog {
                     progressDialog.setMessage(activity.getString(R.string.message_authenticating));
                     progressDialog.show();
                     dialog.setCancelable(false);
-                    textMessage.setTextColor(activity.getResources().getColor(R.color.dark_v1));
+                    textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
                     textMessage.setText(R.string.message_authenticating);
                     blockButtons();
                 }
@@ -270,7 +260,7 @@ public class LoginDialog {
                             if (progressDialog != null)
                                 progressDialog.dismiss();
                             setFields(mobile, password);
-                            textMessage.setTextColor(activity.getResources().getColor(R.color.dark_v1));
+                            textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
                             textMessage.setText(R.string.message_login_fail);
                         } else {
                             register(editMobile.getText().toString(), editPassword.getText().toString());
@@ -288,7 +278,7 @@ public class LoginDialog {
                 dialog.setCancelable(true);
                 openButtons();
                 setFields(mobile, password);
-                textMessage.setTextColor(activity.getResources().getColor(R.color.volley_error_message));
+                textMessage.setTextColor(ContextCompat.getColor(activity, R.color.volley_error_message));
                 textMessage.setText(R.string.message_volley_error_response);
                 error.printStackTrace();
             }
@@ -309,7 +299,7 @@ public class LoginDialog {
                     progressDialog.setMessage(activity.getString(R.string.message_registering));
                 dialog.setCancelable(false);
                 blockButtons();
-                textMessage.setTextColor(activity.getResources().getColor(R.color.dark_v1));
+                textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
                 textMessage.setText(R.string.message_registering);
             }
         });
@@ -338,7 +328,7 @@ public class LoginDialog {
                         loginThread.interrupt();
 
                         setFields(mobile, password);
-                        textMessage.setTextColor(activity.getResources().getColor(R.color.dark_v1));
+                        textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
                         textMessage.setText(R.string.message_signup_fail);
                         if (progressDialog != null)
                             progressDialog.dismiss();
@@ -355,7 +345,7 @@ public class LoginDialog {
                 dialog.setCancelable(true);
                 openButtons();
                 setFields(mobile, password);
-                textMessage.setTextColor(activity.getResources().getColor(R.color.volley_error_message));
+                textMessage.setTextColor(ContextCompat.getColor(activity, R.color.volley_error_message));
                 textMessage.setText(R.string.message_volley_error_response);
                 error.printStackTrace();
             }
@@ -477,7 +467,7 @@ public class LoginDialog {
                         String reg = object.optString(DatabaseSchema.Vehicles.COLUMN_REG);
                         String name = object.optString(DatabaseSchema.Vehicles.COLUMN_NAME);
                         String modelId = object.optString(DatabaseSchema.Vehicles.COLUMN_MODEL_ID);
-                        Model model = databaseHelper.model(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{modelId});
+                        Model model = databaseHelper.model(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{modelId});
                         if (model != null)
                             databaseHelper.addVehicle(sId, reg, name, databaseHelper.user().getId(), model.getId());
                         else
@@ -533,7 +523,7 @@ public class LoginDialog {
                         String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
                         String rate = object.optString(DatabaseSchema.Refuels.COLUMN_RATE);
                         String volume = object.getString(DatabaseSchema.Refuels.COLUMN_VOLUME);
-                        Refuel refuel = databaseHelper.refuel(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                        Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                         Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                         if (vehicle != null) {
                             if (refuel == null)
@@ -577,9 +567,9 @@ public class LoginDialog {
                         String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
                         Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                         if (vehicle != null) {
-                            Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                            Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                             if (service == null) {
-                                Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
+                                Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
                                 String wId = "";
                                 if (workshop != null)
                                     wId = workshop.getId();
@@ -607,7 +597,7 @@ public class LoginDialog {
     }
 
     private void getProblems(final String serviceId) {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.getProblems(serviceId), new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_PROBLEMS(serviceId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "problem response " + response);
@@ -620,9 +610,9 @@ public class LoginDialog {
                         String pCost = problem.optString(DatabaseSchema.Problems.COLUMN_PCOST);
                         String details = problem.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
                         String qty = problem.optString(DatabaseSchema.Problems.COLUMN_QTY);
-                        Problem item = databaseHelper.problem(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                        Problem item = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                         if (item == null) {
-                            Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
+                            Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
                             if (service != null)
                                 databaseHelper.addProblem(sId, service.getId(), details, lCost, pCost, qty);
                         }
@@ -665,7 +655,7 @@ public class LoginDialog {
                         String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                         String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
 
-                        Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                        Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                         Log.e(TAG, "workshop != null - " + (workshop != null));
                         if (workshop != null)
                             databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);

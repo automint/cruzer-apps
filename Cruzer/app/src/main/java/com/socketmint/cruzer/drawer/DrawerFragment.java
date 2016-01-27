@@ -36,7 +36,6 @@ import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
 import com.socketmint.cruzer.maps.WorkshopLocator;
 import com.socketmint.cruzer.startup.LoginDialog;
-import com.socketmint.cruzer.ui.UserInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +55,6 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
     private View fragmentContainerView;
     private AppCompatTextView userName;
     private LoginDialog loginDialog = LoginDialog.getInstance();
-    protected UserInterface userInterface = UserInterface.getInstance();
 
     private int currentSelectPosition = 0;
     protected Login login = Login.getInstance();
@@ -78,7 +76,6 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
         if (savedInstanceState != null)
             currentSelectPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
 
-        userInterface.changeActivity(getActivity());
         login.initInstance(getActivity());
         loginDialog.initInstance(getActivity());
         databaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
@@ -117,7 +114,6 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
             settingsList.setAdapter(new DrawerAdapter(drawerSettingsList, getActivity()));
 
             cover.setAlpha(0.6f);
-            userName.setTypeface(userInterface.font(UserInterface.font.copse));
             changeUserName();
             view.findViewById(R.id.drawer_profile_box).setOnClickListener(this);
             listeners();

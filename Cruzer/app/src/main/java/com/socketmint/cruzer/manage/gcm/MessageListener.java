@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  *  This class receives GCM from Google Play Server and perform tasks in that particular manner in app.
@@ -110,8 +111,8 @@ public class MessageListener extends GcmListenerService {
                     String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
                     String workshopId = object.optString(DatabaseSchema.Services.COLUMN_WORKSHOP_ID);
 
-                    Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{id});
-                    Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
+                    Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{id});
+                    Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
                     String serviceId;
 
                     if (service == null) {
@@ -135,7 +136,7 @@ public class MessageListener extends GcmListenerService {
                             String problemDetails = item.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
                             String qty = item.optString(DatabaseSchema.Problems.COLUMN_QTY);
 
-                            Problem problem = databaseHelper.problem(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{problemId});
+                            Problem problem = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{problemId});
                             Log.d(TAG, "problem existing (problem == null) - " + (problem == null));
 
                             if (problem == null)

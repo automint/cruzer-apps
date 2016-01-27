@@ -3,7 +3,6 @@ package com.socketmint.cruzer.manage;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;

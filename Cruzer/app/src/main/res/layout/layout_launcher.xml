@@ -59,6 +59,7 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="@string/text_launcher_line"
                         android:id="@+id/text_bottom_line"
+                        android:fontFamily="sans-serif-light"
                         android:layout_marginTop="20dp"
                         android:layout_gravity="center_horizontal"
                         android:textColor="@color/dark_v1"
@@ -70,6 +71,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        app:buttonSize="wide"
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"/>
 

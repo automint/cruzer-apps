@@ -45,7 +45,6 @@ import com.socketmint.cruzer.manage.Login;
 import com.socketmint.cruzer.manage.gcm.RegistrationService;
 import com.socketmint.cruzer.startup.LoginDialog;
 import com.socketmint.cruzer.manage.sync.ManualSync;
-import com.socketmint.cruzer.ui.UserInterface;
 
 public class ViewHistory extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "ViewHistory";
@@ -64,7 +63,6 @@ public class ViewHistory extends AppCompatActivity implements View.OnClickListen
     private ViewPager pager;
     private Adapter adapter;
     private DrawerFragment drawerFragment;
-    private UserInterface userInterface = UserInterface.getInstance();
     private ChoiceDialog choiceDialog;
     private LoginDialog loginDialog = LoginDialog.getInstance();
 
@@ -101,7 +99,6 @@ public class ViewHistory extends AppCompatActivity implements View.OnClickListen
                 startService(gcmIntent);
             }
 
-            userInterface.changeActivity(this);
             databaseHelper = new DatabaseHelper(getApplicationContext());
             choiceDialog = new ChoiceDialog(this);
             login.initInstance(this);
@@ -203,10 +200,6 @@ public class ViewHistory extends AppCompatActivity implements View.OnClickListen
         layoutOptionService = (LinearLayoutCompat) findViewById(R.id.layout_option_service);
         pager = (ViewPager) findViewById(R.id.pager_view_history);
 
-        toolbarTitle.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        textOptionRefuel.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        textOptionService.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-
         adapter = new Adapter(getSupportFragmentManager());
         pager.addOnPageChangeListener(pagerChangeListener);
 
@@ -252,8 +245,8 @@ public class ViewHistory extends AppCompatActivity implements View.OnClickListen
                     default: choice = 0; CLICKED_CHOICE = "Error Occurred"; break;
                 }
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(CLICKED_CHOICE).build());
-//                startActivity(new Intent(ViewHistory.this, Create.class).putExtra(Constants.Bundle.FORM_TYPE, choice).putExtra(Constants.Bundle.VEHICLE_ID, vId));
-                startActivity(new Intent(ViewHistory.this, com.socketmint.cruzer.crud.create.Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.PAGE_EXPENSE));
+                startActivity(new Intent(ViewHistory.this, Create.class).putExtra(Constants.Bundle.FORM_TYPE, choice).putExtra(Constants.Bundle.VEHICLE_ID, vId));
+//                startActivity(new Intent(ViewHistory.this, com.socketmint.cruzer.crud.create.Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.PAGE_EXPENSE));
                 break;
             case R.id.button_sync:
                 if (!login.isNetworkAvailable()) {

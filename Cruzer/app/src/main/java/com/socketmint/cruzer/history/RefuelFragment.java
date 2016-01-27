@@ -256,10 +256,6 @@ public class RefuelFragment extends Fragment {
             txtCRAmount = (AppCompatTextView) itemView.findViewById(R.id.text_amount);
             txtCRDate = (AppCompatTextView) itemView.findViewById(R.id.text_date);
             txtCRVName = (AppCompatTextView) itemView.findViewById(R.id.text_vehicle_name);
-
-            txtCRAmount.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-            txtCRDate.setTypeface(userInterface.font(UserInterface.font.roboto_thin));
-            txtCRVName.setTypeface(userInterface.font(UserInterface.font.roboto_light));
         }
     }
 }

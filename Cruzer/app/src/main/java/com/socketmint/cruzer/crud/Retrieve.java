@@ -2,6 +2,7 @@ package com.socketmint.cruzer.crud;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -70,7 +71,6 @@ public class Retrieve extends AppCompatActivity {
         userInterface.changeActivity(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         mapViews();
-        setFonts();
 
         id = getIntent().getStringExtra(Constants.Bundle.ID);
         choice = getIntent().getIntExtra(Constants.Bundle.PAGE_CHOICE, 0);
@@ -254,8 +254,7 @@ public class Retrieve extends AppCompatActivity {
         lblRField5.setText(R.string.label_details);
         txtRField5.setText(service.details);
         txtRField5.setTextAppearance(this, android.R.style.TextAppearance_Small);
-        setFonts();
-        txtRField5.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
+        txtRField5.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
         lblRField6.setVisibility(View.GONE);
         String status;
         if (service.status != null) {
@@ -372,24 +371,6 @@ public class Retrieve extends AppCompatActivity {
         btnBack = (AppCompatImageButton) findViewById(R.id.button_back);
         btnEdit = (FloatingActionButton) findViewById(R.id.button_edit);
         btnDelete = (AppCompatImageButton) findViewById(R.id.button_delete);
-    }
-
-    private void setFonts() {
-        txtRVehicle.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRSubTitle.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        lblRField1.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField2.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField3.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField4.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField5.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField6.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        txtRField1.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField2.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField3.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField4.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField5.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField6.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRetrieveType.setTypeface(userInterface.font(UserInterface.font.roboto_medium));
     }
 
     private void clickListeners() {

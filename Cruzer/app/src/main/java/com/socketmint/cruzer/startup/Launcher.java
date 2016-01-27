@@ -2,13 +2,11 @@ package com.socketmint.cruzer.startup;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.*;
 import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.View;
 
@@ -19,7 +17,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
@@ -37,9 +34,7 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
     private static final String ACTION_LOGIN_GOOGLE = "Login Google";
 
     private ProgressDialog progressDialog;
-//    private AppCompatButton btnLogin;
 
-    private UserInterface userInterface = UserInterface.getInstance();
     private LoginDialog loginDialog = LoginDialog.getInstance();
     private Login login = Login.getInstance();
     private DatabaseHelper databaseHelper;
@@ -54,7 +49,7 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
 
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 
-        userInterface.initInstance(this);
+        UserInterface.getInstance().initInstance(this);
         loginDialog.initInstance(this);
         login.initInstance(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
@@ -90,12 +85,7 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
     }
 
     private void initializeViews() {
-        SignInButton btnGoogleLogin = (SignInButton) findViewById(R.id.button_login_google);
-
-        ((AppCompatTextView) findViewById(R.id.text_bottom_line)).setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        btnGoogleLogin.setSize(SignInButton.SIZE_WIDE);
-
-        btnGoogleLogin.setOnClickListener(this);
+        findViewById(R.id.button_login_google).setOnClickListener(this);
         findViewById(R.id.fab_login_phone).setOnClickListener(this);
     }
 

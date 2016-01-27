@@ -267,10 +267,6 @@ public class ServiceFragment extends Fragment {
             txtCSAmount = (AppCompatTextView) itemView.findViewById(R.id.text_amount);
             txtCSDate = (AppCompatTextView) itemView.findViewById(R.id.text_date);
             txtCSVName = (AppCompatTextView) itemView.findViewById(R.id.text_vehicle_name);
-
-            txtCSAmount.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-            txtCSDate.setTypeface(userInterface.font(UserInterface.font.roboto_thin));
-            txtCSVName.setTypeface(userInterface.font(UserInterface.font.roboto_light));
         }
     }
 }

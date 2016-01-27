@@ -1,5 +1,6 @@
 package com.socketmint.cruzer.crud;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -79,7 +80,6 @@ public class Update extends AppCompatActivity {
         login.initInstance(this);
 
         mapViews();
-        setFonts();
 
         id = getIntent().getStringExtra(Constants.Bundle.ID);
         choice = getIntent().getIntExtra(Constants.Bundle.PAGE_CHOICE, 0);
@@ -332,7 +332,7 @@ public class Update extends AppCompatActivity {
                     editField1.setInputType(129);
                 else if (isPressed)
                     editField1.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                editField1.setTypeface(userInterface.font(UserInterface.font.roboto_light));
+                editField1.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
                 editField1.setSelection(editField1.length());
                 return false;
             }
@@ -473,20 +473,6 @@ public class Update extends AppCompatActivity {
         editField2.setFocusable(true);
         editField3.setFocusable(true);
         editField4.setFocusable(true);
-    }
-
-    private void setFonts() {
-        txtMainField.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editMainField.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtField1.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editField1.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtField2.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editField2.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtField3.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editField3.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtField4.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editField4.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRetrieveType.setTypeface(userInterface.font(UserInterface.font.roboto_medium));
     }
 
     private void controlLayouts(int choice) {

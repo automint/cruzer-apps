@@ -22,6 +22,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_vehicle_reg"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <android.support.v7.widget.AppCompatEditText
@@ -53,6 +54,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_vehicle_manu"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -101,6 +103,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_vehicle_model"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -149,6 +152,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_vehicle_name"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <android.support.v7.widget.AppCompatEditText

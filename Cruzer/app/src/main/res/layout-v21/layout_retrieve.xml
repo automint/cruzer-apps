@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/toolbar"
             app:borderWidth="0dp"
-            android:elevation="8dp"
+            android:elevation="4dp"
             android:background="@android:color/white"
             android:paddingTop="16dp">
 
@@ -48,6 +48,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/txt_retrieve_type"
                         android:text="@string/app_name"
+                        android:fontFamily="sans-serif-medium"
                         android:layout_gravity="center"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:paddingLeft="10dp"
@@ -99,6 +100,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/txt_retrieve_sub_title"
+                            android:fontFamily="sans-serif-light"
                             android:layout_marginTop="6dp"
                             android:text="@string/app_name"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
@@ -125,6 +127,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/lbl_retrieve_field_1"
+                            android:fontFamily="sans-serif-light"
+                            android:textStyle="italic"
                             android:text="@string/app_name"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -158,6 +162,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/lbl_retrieve_field_2"
+                            android:fontFamily="sans-serif-light"
+                            android:textStyle="italic"
                             android:text="@string/app_name"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -191,6 +197,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/lbl_retrieve_field_3"
+                            android:fontFamily="sans-serif-light"
+                            android:textStyle="italic"
                             android:text="@string/app_name"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -224,6 +232,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/lbl_retrieve_field_4"
+                            android:fontFamily="sans-serif-light"
+                            android:textStyle="italic"
                             android:text="@string/app_name"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -257,6 +267,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/lbl_retrieve_field_5"
+                            android:fontFamily="sans-serif-light"
+                            android:textStyle="italic"
                             android:text="@string/app_name"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -290,6 +302,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/lbl_retrieve_field_6"
+                            android:fontFamily="sans-serif-light"
+                            android:textStyle="italic"
                             android:text="@string/app_name"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 

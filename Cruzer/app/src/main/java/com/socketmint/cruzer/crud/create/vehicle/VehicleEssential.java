@@ -4,9 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatTextView;
 import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,30 +57,18 @@ public class VehicleEssential extends Fragment implements View.OnClickListener {
     }
 
     private void initializeViews(View v) {
-        ((AppCompatTextView) v.findViewById(R.id.label_registration)).setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        ((AppCompatTextView) v.findViewById(R.id.label_vehicle_company)).setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        ((AppCompatTextView) v.findViewById(R.id.label_vehicle_model)).setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        ((AppCompatTextView) v.findViewById(R.id.label_vehicle_name)).setTypeface(userInterface.font(UserInterface.font.roboto_light));
-
         editRegistration = (AppCompatEditText) v.findViewById(R.id.edit_registration);
         editVehicleCompany = (AppCompatEditText) v.findViewById(R.id.edit_vehicle_company);
         editVehicleModel = (AppCompatEditText) v.findViewById(R.id.edit_vehicle_model);
         editVehicleName = (AppCompatEditText) v.findViewById(R.id.edit_vehicle_name);
-        AppCompatButton buttonDone = (AppCompatButton) v.findViewById(R.id.button_create_record);
-
-        editRegistration.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        editVehicleCompany.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        editVehicleModel.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        editVehicleName.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        buttonDone.setTypeface(userInterface.font(UserInterface.font.copse));
 
         InputFilter[] lengthFilter = { new InputFilter.LengthFilter(12) };
         editRegistration.setFilters(lengthFilter);
         editVehicleName.setFilters(lengthFilter);
 
-        buttonDone.setOnClickListener(this);
         editVehicleCompany.setOnClickListener(this);
         editVehicleModel.setOnClickListener(this);
+        v.findViewById(R.id.button_create_record).setOnClickListener(this);
         v.findViewById(R.id.button_vehicle_company_list).setOnClickListener(this);
         v.findViewById(R.id.button_vehicle_model_list).setOnClickListener(this);
     }

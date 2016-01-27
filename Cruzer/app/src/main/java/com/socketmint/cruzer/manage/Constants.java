@@ -3,7 +3,7 @@ package com.socketmint.cruzer.manage;
 import com.socketmint.cruzer.database.DatabaseSchema;
 
 public class Constants {
-    private static final String URL_SERVER = "http://10.70.0.109:8080";   // (server_ip:port) or (api.cruzer.io:8080)
+    private static final String URL_SERVER = "http://10.1.1.104:8080";   // (server_ip:port) or (api.cruzer.io:8080)
     private static final String URL_API = "api";
 
     public static abstract class Url {
@@ -25,7 +25,7 @@ public class Constants {
         public static final String GET_SERVICE = URL_SERVER + "/" + URL_API + "/" + "services";
         public static final String PUT_SERVICE = URL_SERVER + "/" + URL_API + "/" + "service/";
         public static final String POST_SERVICE = URL_SERVER + "/" + URL_API + "/" + "service";
-        public static String getProblems(String serviceId) { return PUT_SERVICE + serviceId + "/problems"; }
+        public static String GET_PROBLEMS(String serviceId) { return PUT_SERVICE + serviceId + "/problems"; }
         public static final String GCM = URL_SERVER + "/" + URL_API + "/" + "gcm";
     }
 
