@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_id": "cruzer-1000",
+    "project_number": "1062360832432",
+    "name": "Cruzer"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1062360832432:android:1e550617e0b95530",
+        "client_id": "android:com.socketmint.cruzer",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.socketmint.cruzer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1062360832432-l701l0rb61v7av1dcamed29tbcm9ci36.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.socketmint.cruzer",
+            "certificate_hash": "FF90E204A2775BBF6A7FF8CAA4EED08FEC407A73"
+          }
+        },
+        {
+          "client_id": "1062360832432-s50lbdn9s9ravrerrdbbfau08e3jfml6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.socketmint.cruzer",
+            "certificate_hash": "A188A6540EA2FD88D639230B6738AC7A775B294D"
+          }
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-67878427-1"
+          }
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

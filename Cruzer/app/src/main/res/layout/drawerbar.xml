@@ -1,0 +1,54 @@
+<RelativeLayout
+    android:id="@+id/drawer_pane"
+    android:layout_width="@dimen/drawer_width"
+    android:layout_height="match_parent"
+    android:gravity="start"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Profile Box -->
+    <android.support.v7.widget.ContentFrameLayout android:id="@+id/drawer_profile_box"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:background="#ff141414">
+        <android.support.v7.widget.AppCompatImageView android:id="@+id/image_drawer_cover"
+            android:layout_width="match_parent" android:contentDescription="@string/app_name"
+            android:layout_height="match_parent"
+            android:src="@drawable/drawerback"
+            android:scaleType="fitXY" />
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent" android:layout_height="160dp"
+            android:padding="8dp">
+
+            <android.support.v7.widget.AppCompatTextView android:id="@+id/text_drawer_username"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/app_name" android:textColor="#fff7fafa" android:textSize="20sp"
+                android:textStyle="bold"
+                android:drawableRight="@drawable/ic_edit_white_18dp"
+                android:drawablePadding="8dp"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp" />
+
+        </android.support.v7.widget.LinearLayoutCompat>
+    </android.support.v7.widget.ContentFrameLayout>
+
+    <!-- list of actions -->
+    <android.support.v7.widget.ListViewCompat android:id="@+id/drawer_list"
+        android:layout_width="@dimen/drawer_width" android:layout_height="match_parent"
+        android:layout_below="@id/drawer_profile_box"
+        android:animateLayoutChanges="true"
+        android:choiceMode="singleChoice" android:background="#fff"
+        android:layout_above="@+id/drawer_settings" />
+
+    <android.support.v7.widget.ListViewCompat
+        android:id="@+id/drawer_settings"
+        android:layout_width="@dimen/drawer_width"
+        android:layout_height="wrap_content"
+        android:choiceMode="singleChoice"
+        android:background="@color/white_darken_0"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="visible" />
+</RelativeLayout>

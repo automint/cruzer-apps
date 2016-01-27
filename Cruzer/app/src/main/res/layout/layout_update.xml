@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white_darken_0"
+    tools:context="com.socketmint.cruzer.crud.Retrieve">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        app:borderWidth="0dp"
+        android:elevation="8dp"
+        android:background="@android:color/white">
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical">
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/button_back"
+                android:paddingRight="16dp"
+                android:background="@drawable/transparent_button"
+                android:src="@drawable/ic_keyboard_backspace_black_24dp"
+                android:tint="@color/dark_v1"/>
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="end">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_retrieve_type"
+                    android:text="@string/app_name"
+                    android:layout_gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"/>
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/retrieve_symbol"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:animateLayoutChanges="true">
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:animateLayoutChanges="true">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_main_field"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/edit_main_field"
+                    android:layout_marginTop="6dp"
+                    android:paddingBottom="18dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:inputType="textCapWords"
+                    android:hint="@string/hint_edit_field"
+                    android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linear_field_1"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_field_1"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/edit_field_1"
+                        android:layout_weight="0.8"
+                        android:layout_marginTop="6dp"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:hint="@string/hint_edit_field"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/field_1_list"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
+                        android:tint="@color/dark_v1"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linear_field_2"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_field_2"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/edit_field_2"
+                        android:layout_weight="0.8"
+                        android:layout_marginTop="6dp"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:hint="@string/hint_edit_field"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:id="@+id/field_2_list"
+                        android:layout_gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
+                        android:tint="@color/dark_v1"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linear_field_3"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_field_3"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/edit_field_3"
+                        android:layout_weight="0.8"
+                        android:layout_marginTop="6dp"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:hint="@string/hint_edit_field"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/field_3_list"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
+                        android:tint="@color/dark_v1"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linear_field_4"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_field_4"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/edit_field_4"
+                        android:layout_weight="0.8"
+                        android:layout_marginTop="6dp"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:hint="@string/hint_edit_field"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/field_4_list"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
+                        android:tint="@color/dark_v1"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linear_field_5"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_field_5"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/edit_field_5"
+                        android:layout_weight="0.8"
+                        android:layout_marginTop="6dp"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:hint="@string/hint_edit_field"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/field_5_list"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
+                        android:tint="@color/dark_v1"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linear_field_6"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txt_field_6"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.v7.widget.AppCompatEditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/edit_field_6"
+                        android:layout_weight="0.8"
+                        android:layout_marginTop="6dp"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:hint="@string/hint_edit_field"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/field_6_list"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
+                        android:tint="@color/dark_v1"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:gravity="end">
+
+                <android.support.v7.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_form_control"
+                    android:text="@string/label_expand_form"
+                    app:borderWidth="0dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:textColor="@color/cruzer_blue"
+                    android:background="@android:color/transparent"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_create_record"
+                    android:text="@string/label_done"
+                    app:borderWidth="0dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </ScrollView>
+
+</android.support.v7.widget.LinearLayoutCompat>

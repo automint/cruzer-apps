@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- pressed state -->
+    <item android:state_pressed="true">
+        <inset xmlns:android="http://schemas.android.com/apk/res/android"
+            android:insetLeft="6dp"
+            android:insetTop="6dp"
+            android:insetRight="6dp"
+            android:insetBottom="6dp">
+            <shape android:shape="rectangle">
+                <corners android:radius="@dimen/transparent_button_radius" />
+                <solid android:color="@color/white_darken_1" />
+                <padding android:left="8dp"
+                    android:top="8dp"
+                    android:right="8dp"
+                    android:bottom="8dp" />
+            </shape>
+        </inset>
+    </item>
+
+    <!-- normal state -->
+    <item>
+        <inset xmlns:android="http://schemas.android.com/apk/res/android"
+            android:insetLeft="6dp"
+            android:insetTop="6dp"
+            android:insetRight="6dp"
+            android:insetBottom="6dp">
+            <shape android:shape="rectangle">
+                <corners android:radius="@dimen/transparent_button_radius" />
+                <solid android:color="@android:color/transparent" />
+                <padding android:left="8dp"
+                    android:top="8dp"
+                    android:right="8dp"
+                    android:bottom="8dp" />
+            </shape>
+        </inset>
+    </item>
+</selector>

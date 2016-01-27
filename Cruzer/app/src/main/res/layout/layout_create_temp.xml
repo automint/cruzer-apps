@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.ContentFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white_darken_1"
+    tools:context="com.socketmint.cruzer.crud.Retrieve">
+
+    <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top">
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar"
+            app:borderWidth="0dp"
+            android:elevation="8dp"
+            android:background="@color/cruzer_blue_v1"
+            android:paddingTop="16dp">
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical">
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/button_back"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="16dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_keyboard_backspace_black_24dp"
+                    android:tint="@color/white_darken_0"/>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/layout_create_option_vehicle"
+                    android:gravity="end"
+                    android:visibility="gone">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_create_type"
+                        android:text="@string/text_first_vehicle"
+                        android:layout_gravity="center"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/white_darken_0"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp" />
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:id="@+id/image_cruzer_logo"
+                        android:src="@mipmap/ic_launcher"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:layout_marginLeft="26dp"
+                    android:layout_marginRight="26dp"
+                    android:id="@+id/layout_create_option_expenses"
+                    android:visibility="gone">
+
+                    <android.support.v7.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:id="@+id/layout_option_refuel">
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/refuel_icon1"
+                            android:id="@+id/icon_option_refuel"
+                            android:tint="@color/dark_v1"/>
+
+                        <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_refuel"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="@color/dark_v1"
+                            android:id="@+id/text_option_refuel"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                    <android.support.v7.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:id="@+id/layout_option_service">
+
+                        <android.support.v7.widget.AppCompatImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/service_icon1"
+                            android:id="@+id/icon_option_service"
+                            android:tint="@color/dark_v1"/>
+
+                        <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_service"
+                            android:textColor="@color/dark_v1"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:id="@+id/text_option_service"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.v4.view.ViewPager
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/pager_create_record"/>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+</android.support.v7.widget.ContentFrameLayout>
