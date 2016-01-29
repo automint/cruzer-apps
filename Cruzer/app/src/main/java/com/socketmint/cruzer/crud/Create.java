@@ -261,7 +261,7 @@ public class Create extends AppCompatActivity {
                     public void onClick(View v) {
                         if (btnFormControl.getText().toString().equals(getString(R.string.label_collapse_form))) {
                             if (what == CrudChoices.SERVICE)
-                                layoutPhoto.setVisibility(View.VISIBLE);
+                                layoutPhoto.setVisibility(View.GONE);
                             else
                                 layoutPhoto.setVisibility(View.GONE);
                             controlLayouts(CrudChoices.COLLAPSE_ALL);
@@ -521,7 +521,7 @@ public class Create extends AppCompatActivity {
         analyticsTracker.setScreenName(SCREEN_SERVICE);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
         if (btnFormControl.getText().toString().equals(getString(R.string.label_expand_form))) {
-            layoutPhoto.setVisibility(View.VISIBLE);
+            layoutPhoto.setVisibility(View.GONE);
         }
         vehicleId = "";
         defineLayoutOptions();

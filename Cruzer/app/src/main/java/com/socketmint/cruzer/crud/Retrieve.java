@@ -27,6 +27,7 @@ import com.socketmint.cruzer.database.DatabaseSchema;
 import com.socketmint.cruzer.dataholder.Problem;
 import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
+import com.socketmint.cruzer.dataholder.Status;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.main.ViewVehicle;
@@ -108,8 +109,6 @@ public class Retrieve extends AppCompatActivity {
             case CrudChoices.SERVICE:
                 SELECTED_CHOICE = SCREEN_SERVICE;
                 txtRetrieveType.setText(R.string.label_service);
-                btnDelete.setVisibility(View.GONE);
-                btnEdit.setVisibility(View.GONE);
                 service();
                 break;
             case CrudChoices.USER:
@@ -161,6 +160,7 @@ public class Retrieve extends AppCompatActivity {
     private void vehicle() {
         analyticsTracker.setScreenName(SCREEN_VEHICLE);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        btnDelete.setVisibility(View.GONE);
         Vehicle vehicle = databaseHelper.vehicle(id);
         SpannableString vName = new SpannableString(vehicle.name);
         if (!vehicle.name.isEmpty())
@@ -238,6 +238,10 @@ public class Retrieve extends AppCompatActivity {
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
         Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{id});
         Vehicle vehicle = databaseHelper.vehicle(service.getVehicleId());
+        if (!service.getUserId().equals(databaseHelper.user().getsId())) {
+            btnDelete.setVisibility(View.GONE);
+            btnEdit.setVisibility(View.GONE);
+        }
         txtRVehicle.setText(vehicleName(vehicle));
         try {
             txtRSubTitle.setText(databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{service.getWorkshopId()}).name);
@@ -257,8 +261,12 @@ public class Retrieve extends AppCompatActivity {
         txtRField5.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
         lblRField6.setVisibility(View.GONE);
         String status;
+        List<Status> statusList = databaseHelper.statusList();
         if (service.status != null) {
-            switch (service.status) {
+            try {
+                status = statusList.get(Integer.parseInt(service.status)-1).details;
+            } catch (NumberFormatException e) { status = ""; }
+            /*switch (service.status) {
                 case "4":
                     status = "Payment Due";
                     break;
@@ -268,7 +276,7 @@ public class Retrieve extends AppCompatActivity {
                 default:
                     status = "";
                     break;
-            }
+            }*/
         } else
             status = "";
         txtRField6.setText(status);

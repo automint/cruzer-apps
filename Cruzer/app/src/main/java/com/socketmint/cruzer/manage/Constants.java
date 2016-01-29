@@ -3,30 +3,27 @@ package com.socketmint.cruzer.manage;
 import com.socketmint.cruzer.database.DatabaseSchema;
 
 public class Constants {
-    private static final String URL_SERVER = "http://10.1.1.104:8080";   // (server_ip:port) or (api.cruzer.io:8080)
-    private static final String URL_API = "api";
+    private static final String URL_SERVER = "http://userapi.cruzer.io";         // (server_ip:8080) or (userapi.cruzer.io)
+    private static final String URL_API_VERSION = "0.1";
+    private static final String URL_API_DIR = "api";
+    private static final String URL_API = URL_API_DIR + "/" + URL_API_VERSION;
 
     public static abstract class Url {
         public static final String OAUTH = URL_SERVER + "/" + URL_API + "/" + "oauth";
         public static final String AUTH = URL_SERVER + "/" + URL_API + "/" + "authenticate";
-        public static final String USER = URL_SERVER + "/" + URL_API + "/" + "user";
-        public static final String GET_MANU = URL_SERVER + "/" + URL_API + "/" + "manufacturers";
-        public static final String MANU = URL_SERVER + "/" + URL_API + "/" + "manufacturer";
-        public static final String GET_MODEL = URL_SERVER + "/" + URL_API + "/" + "models";
-        public static final String MODEL = URL_SERVER + "/" + URL_API + "/" + "model";
-        public static final String GET_VEHICLE = URL_SERVER + "/" + URL_API + "/" + "vehicles";
-        public static final String PUT_VEHICLE = URL_SERVER + "/" + URL_API + "/" + "vehicle/";
-        public static final String POST_VEHICLE = URL_SERVER + "/" + URL_API + "/" + "vehicle";
-        public static final String GET_WORKSHOP = URL_SERVER + "/" + URL_API + "/" + "workshops";
-        public static final String WORKSHOP = URL_SERVER + "/" + URL_API + "/" + "workshop";
-        public static final String GET_REFUEL = URL_SERVER + "/" + URL_API + "/" + "refuels";
-        public static final String PUT_REFUEL = URL_SERVER + "/" + URL_API + "/" + "refuel/";
-        public static final String POST_REFUEL = URL_SERVER + "/" + URL_API + "/" + "refuel";
-        public static final String GET_SERVICE = URL_SERVER + "/" + URL_API + "/" + "services";
-        public static final String PUT_SERVICE = URL_SERVER + "/" + URL_API + "/" + "service/";
-        public static final String POST_SERVICE = URL_SERVER + "/" + URL_API + "/" + "service";
-        public static String GET_PROBLEMS(String serviceId) { return PUT_SERVICE + serviceId + "/problems"; }
+        public static final String USER = URL_SERVER + "/" + URL_API + "/" + "users";
+        public static final String MANU = URL_SERVER + "/" + URL_API + "/" + "manufacturers";
+        public static final String MODEL = URL_SERVER + "/" + URL_API + "/" + "models";
+        public static final String VEHICLE = URL_SERVER + "/" + URL_API + "/" + "vehicles";
+        public static String VEHICLE(String id) { return VEHICLE + "/" + id; }
+        public static final String WORKSHOP = URL_SERVER + "/" + URL_API + "/" + "workshops";
+        public static final String REFUEL = URL_SERVER + "/" + URL_API + "/" + "refuels";
+        public static String REFUEL(String id) { return REFUEL + "/" + id; }
+        public static final String SERVICE = URL_SERVER + "/" + URL_API + "/" + "services";
+        public static String SERVICE(String id) { return SERVICE + "/" + id; }
+        public static String GET_PROBLEMS(String serviceId) { return SERVICE(serviceId) + "/problems"; }
         public static final String GCM = URL_SERVER + "/" + URL_API + "/" + "gcm";
+        public static final String STATUS = URL_SERVER + "/" + URL_API + "/" + "status";
     }
 
     public static abstract class VolleyRequest {

@@ -28,9 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +37,7 @@ import java.util.Map;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+// THIS FILE HAS CONTENTS TO BE DELETED AFTER TESTING
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private Context syncContext;
@@ -51,7 +50,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Refuel> refuels = new ArrayList<>();
     private List<Service> services = new ArrayList<>();
-    private int count = 0;
 
     private ContentResolver contentResolver;
     private Account account;
@@ -177,20 +175,46 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             }
 
-            getRefuels();
-            if (count < 96)
-                getServices();
-            if (count > 96 || count == 0) {
-                getWorkshops();
-                getManus();
-                count = 0;
+            int size = (databaseHelper.statusList() != null) ? databaseHelper.statusList().size() : 0;
+            if (size == 0) {
+                getStatusTable();
             }
-            count++;
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void getRefuels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_REFUEL, new Response.Listener<String>() {
+    public void getStatusTable() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.STATUS, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("sync", "get status = " + response);
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.Status.COLUMN_ID);
+                        String details = object.optString(DatabaseSchema.Status.COLUMN_DETAILS);
+                        databaseHelper.addStatus(id, details);
+                    }
+                } catch (JSONException e) { Log.d("sync", "get status is not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return params;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    /*private void getRefuels() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.REFUEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("refuel get", response);
@@ -298,7 +322,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void getServices() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_SERVICE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.SERVICE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("service get", response);
@@ -357,7 +381,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void getWorkshops() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_WORKSHOP, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("workshop get", response);
@@ -414,7 +438,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void getModels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_MODEL, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MODEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("model get", response);
@@ -466,7 +490,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void getManus() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_MANU, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MANU, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -511,11 +535,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             }
         };
         requestQueue.add(request);
-    }
+    }*/
 
     private void deleteService(final String sId, final String id) {
-        Log.d("service delete", Constants.Url.PUT_SERVICE + sId);
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.PUT_SERVICE + sId, new Response.Listener<String>() {
+        Log.d("service delete", Constants.Url.SERVICE(sId));
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.SERVICE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("service delete", response);
@@ -553,8 +577,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void deleteRefuel(final String sId, final String id) {
-        Log.d("refuel delete", Constants.Url.PUT_REFUEL + sId);
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.PUT_REFUEL + sId, new Response.Listener<String>() {
+        Log.d("refuel delete", Constants.Url.REFUEL(sId));
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.REFUEL(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("refuel delete", response);
@@ -592,8 +616,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void deleteVehicle(final String sId, final String id) {
-        Log.d("vehicle delete", Constants.Url.PUT_VEHICLE + sId);
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.PUT_VEHICLE + sId, new Response.Listener<String>() {
+        Log.d("vehicle delete", Constants.Url.VEHICLE(sId));
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.VEHICLE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("vehicle delete", response);
@@ -638,8 +662,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         bodyParams.put(DatabaseSchema.Services.COLUMN_COST, cost);
         bodyParams.put(DatabaseSchema.Services.COLUMN_ODO, odo);
         bodyParams.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
-        Log.d("service update", Constants.Url.PUT_SERVICE + sId);
-        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.PUT_SERVICE + sId, new Response.Listener<String>() {
+        Log.d("service update", Constants.Url.SERVICE(sId));
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.SERVICE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -692,7 +716,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         if (!odo.isEmpty())
             bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
         Log.d("refuel put", bodyParams.toString());
-        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.PUT_REFUEL + sId, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.REFUEL(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("refuel put", response);
@@ -740,7 +764,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         if (!modelId.isEmpty())
             bodyParams.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
         Log.d("vehicle update", bodyParams.toString());
-        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.PUT_VEHICLE + sId, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.VEHICLE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("vehicle update", response);
@@ -842,7 +866,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         if (!details.isEmpty())
             bodyParams.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
         Log.d("service post", bodyParams.toString());
-        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.POST_SERVICE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.SERVICE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("service post", response);
@@ -893,7 +917,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         bodyParams.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
         bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
         Log.d("refuel post", bodyParams.toString());
-        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.POST_REFUEL, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.REFUEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("refuel post", response);
@@ -944,7 +968,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         if (!name.isEmpty())
             bodyParams.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
         Log.d("vehicle post", bodyParams.toString());
-        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.POST_VEHICLE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.VEHICLE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("vehicle post", response);

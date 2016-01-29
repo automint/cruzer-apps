@@ -110,6 +110,8 @@ public class MessageListener extends GcmListenerService {
                     String details = object.optString(DatabaseSchema.Services.COLUMN_DETAILS);
                     String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
                     String workshopId = object.optString(DatabaseSchema.Services.COLUMN_WORKSHOP_ID);
+                    String uId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
+                    String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
 
                     Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{id});
                     Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
@@ -117,10 +119,10 @@ public class MessageListener extends GcmListenerService {
 
                     if (service == null) {
                         Log.e(TAG, "no service. adding");
-                        serviceId = databaseHelper.addService(id, vId, date, (workshop != null) ? workshop.getId() : "", cost, odo, details, status);                           // workshop id set nathi thayu [IMP]
+                        serviceId = databaseHelper.addService(id, vId, date, (workshop != null) ? workshop.getId() : "", cost, odo, details, status, uId, roleId);                           // workshop id set nathi thayu [IMP]
                     } else {
                         serviceId = service.getId();
-                        if (databaseHelper.updateService(id, vId, date, (workshop != null) ? workshop.getId() : service.getWorkshopId(), cost, odo, details, status)) {         // workshop id set nathi thayu [IMP]
+                        if (databaseHelper.updateService(id, vId, date, (workshop != null) ? workshop.getId() : service.getWorkshopId(), cost, odo, details, status, uId, roleId)) {         // workshop id set nathi thayu [IMP]
                             Log.d(TAG, "service updated");
                         } else
                             Log.d(TAG, "could not update service");

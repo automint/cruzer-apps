@@ -206,7 +206,8 @@ public class ViewHistory extends AppCompatActivity implements View.OnClickListen
         layoutOptionRefuel.setOnClickListener(this);
         layoutOptionService.setOnClickListener(this);
         toolbarTitle.setOnClickListener(this);
-        findViewById(R.id.button_sync).setOnClickListener(this);
+        findViewById(R.id.button_sync).setVisibility(View.INVISIBLE);
+//        findViewById(R.id.button_sync).setOnClickListener(this);
         findViewById(R.id.button_vehicle_list).setOnClickListener(this);
         findViewById(R.id.button_create_record).setOnClickListener(this);
     }

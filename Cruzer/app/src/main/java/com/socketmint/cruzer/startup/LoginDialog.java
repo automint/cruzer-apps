@@ -120,7 +120,7 @@ public class LoginDialog {
                 if (isChecked)
                     editPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                 else
-                    editPassword.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    editPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 editPassword.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
                 editPassword.setSelection(editPassword.length());
             }
@@ -246,6 +246,7 @@ public class LoginDialog {
                                 loginThread = new Thread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        getStatusTable();
                                         vehicleFromServer();
                                     }
                                 });
@@ -454,7 +455,7 @@ public class LoginDialog {
 
     private void vehicleFromServer() {
 
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_VEHICLE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.VEHICLE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 dialog.setCancelable(true);
@@ -508,7 +509,7 @@ public class LoginDialog {
     }
 
     private void getRefuels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_REFUEL, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.REFUEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "refuel response = " + response);
@@ -549,7 +550,7 @@ public class LoginDialog {
     }
 
     private void getServices() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_SERVICE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.SERVICE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "service response = " + response);
@@ -565,6 +566,8 @@ public class LoginDialog {
                         String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
                         String details = object.optString(DatabaseSchema.Services.COLUMN_DETAILS);
                         String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
+                        String userId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
+                        String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
                         Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                         if (vehicle != null) {
                             Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
@@ -573,7 +576,7 @@ public class LoginDialog {
                                 String wId = "";
                                 if (workshop != null)
                                     wId = workshop.getId();
-                                databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status);
+                                databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId);
                             }
                             getProblems(sId);
                         }
@@ -636,7 +639,7 @@ public class LoginDialog {
     }
 
     private void getWorkshops() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_WORKSHOP, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "workshop response = " + response);
@@ -664,6 +667,37 @@ public class LoginDialog {
                     }
                     getServices();
                 } catch (JSONException | NullPointerException e) { Log.e(TAG, "workshops not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return params;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    public void getStatusTable() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.STATUS, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "get status = " + response);
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.Status.COLUMN_ID);
+                        String details = object.optString(DatabaseSchema.Status.COLUMN_DETAILS);
+                        databaseHelper.addStatus(id, details);
+                    }
+                } catch (JSONException e) { Log.d(TAG, "get status is not in json"); }
             }
         }, new Response.ErrorListener() {
             @Override

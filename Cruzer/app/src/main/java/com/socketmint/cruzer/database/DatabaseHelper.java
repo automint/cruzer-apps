@@ -15,6 +15,7 @@ import com.socketmint.cruzer.dataholder.Model;
 import com.socketmint.cruzer.dataholder.Problem;
 import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
+import com.socketmint.cruzer.dataholder.Status;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
@@ -98,6 +99,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseSchema.Services.COLUMN_ODO + " text, "
                 + DatabaseSchema.Services.COLUMN_DETAILS + " text, "
                 + DatabaseSchema.Services.COLUMN_STATUS + " text, "
+                + DatabaseSchema.Services.COLUMN_USER_ID + " text, "
+                + DatabaseSchema.Services.COLUMN_ROLE_ID + " text, "
                 + DatabaseSchema.SYNC_STATUS + " text,"
                 + FOREIGN_KEY + "(" + DatabaseSchema.COLUMN_VEHICLE_ID + ") references " + DatabaseSchema.Vehicles.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ","
                 + FOREIGN_KEY + "(" + DatabaseSchema.Services.COLUMN_WORKSHOP_ID + ") references " + DatabaseSchema.Workshops.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
@@ -123,6 +126,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         public static final String ERRORS = CREATE_TABLE + DatabaseSchema.Errors.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + " text primary key, "
                 + DatabaseSchema.Errors.COLUMN_CODE + " text, "
                 + DatabaseSchema.Errors.COLUMN_MESSAGE + " text" + ")";
+        public static final String STATUS = CREATE_TABLE + DatabaseSchema.Status.TABLE_NAME + "(" + DatabaseSchema.Status.COLUMN_ID + " text primary key, "
+                + DatabaseSchema.Status.COLUMN_DETAILS + " text" + ")";
     }
 
     private static abstract class Versions {
@@ -134,14 +139,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         /** Update database schema - on delete cascade
          * @since 16 */
         public static final int VC_16 = 3;
-        /** Update database schema - add latitude and longitude in service table
-         * @since 17
-         */
+        /** Update database schema - add latitude and longitude in workshop table
+         * @since 17 */
         public static final int VC_17 = 4;
+        /** Update database schema - add role id and user id in service table
+         * @since 19 */
+        public static final int VC_19 = 5;
     }
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, Versions.VC_17);
+        super(context, DATABASE_NAME, null, Versions.VC_19);
         this.context = context;
     }
 
@@ -162,6 +169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try { db.execSQL(CreateStrings.REFUELS); } catch (SQLException e) { e.printStackTrace(); }
         try { db.execSQL(CreateStrings.ERRORS); } catch (SQLException e) { e.printStackTrace(); }
         try { db.execSQL(CreateStrings.PROBLEMS); } catch (SQLException e) { e.printStackTrace(); }
+        try { db.execSQL(CreateStrings.STATUS); } catch (SQLException e) { e.printStackTrace(); }
     }
 
     @Override
@@ -187,6 +195,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_CITY + " text"); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_AREA + " text"); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_OFFERINGS + " text"); } catch (SQLException e) { e.printStackTrace(); }
+            case Versions.VC_17:
+                try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Services.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Services.COLUMN_USER_ID + " text"); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Services.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Services.COLUMN_ROLE_ID + " text"); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.STATUS); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
@@ -909,21 +921,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.COLUMN_ID, generateId(DatabaseSchema.Refuels.TABLE_NAME));
             values.put(DatabaseSchema.COLUMN_SID, sId);
             values.put(DatabaseSchema.COLUMN_VEHICLE_ID, vehicleId);
-            if (date.equals("null"))
-                date = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_DATE, date);
-            if (rate.equals("null"))
-                rate = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_RATE, rate);
-            if (volume.equals("null"))
-                volume = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_VOLUME, volume);
-            if (cost.equals("null"))
-                cost = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
-            if (odo.equals("null"))
-                odo = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
+            values.put(DatabaseSchema.Refuels.COLUMN_DATE, (date.equalsIgnoreCase("null")) ? "" : date);
+            values.put(DatabaseSchema.Refuels.COLUMN_RATE, (rate.equalsIgnoreCase("null")) ? "" : rate);
+            values.put(DatabaseSchema.Refuels.COLUMN_VOLUME, (volume.equalsIgnoreCase("null")) ? "" : volume);
+            values.put(DatabaseSchema.Refuels.COLUMN_COST, (cost.equalsIgnoreCase("null")) ? "" : cost);
+            values.put(DatabaseSchema.Refuels.COLUMN_ODO, (odo.equalsIgnoreCase("null")) ? "" : odo);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().insert(DatabaseSchema.Refuels.TABLE_NAME, null, values);
@@ -972,21 +974,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
 
-            if (date.equals("null"))
-                date = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_DATE, date);
-            if (rate.equals("null"))
-                rate = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_RATE, rate);
-            if (volume.equals("null"))
-                volume = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_VOLUME, volume);
-            if (cost.equals("null"))
-                cost = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
-            if (odo.equals("null"))
-                odo = "";
-            values.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
+            values.put(DatabaseSchema.Refuels.COLUMN_DATE, (date.equalsIgnoreCase("null")) ? "" : date);
+            values.put(DatabaseSchema.Refuels.COLUMN_RATE, (rate.equalsIgnoreCase("null")) ? "" : rate);
+            values.put(DatabaseSchema.Refuels.COLUMN_VOLUME, (volume.equalsIgnoreCase("null")) ? "" : volume);
+            values.put(DatabaseSchema.Refuels.COLUMN_COST, (cost.equalsIgnoreCase("null")) ? "" : cost);
+            values.put(DatabaseSchema.Refuels.COLUMN_ODO, (odo.equalsIgnoreCase("null")) ? "" : odo);
             values.put(DatabaseSchema.COLUMN_VEHICLE_ID, vehicleId);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
@@ -1112,7 +1104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
     }
 
-    public String addService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status) {
+    public String addService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status, String userId, String roleId) {
         try {
             ContentValues values = new ContentValues();
 
@@ -1120,24 +1112,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.COLUMN_ID, id);
             values.put(DatabaseSchema.COLUMN_SID, sId);
             values.put(DatabaseSchema.COLUMN_VEHICLE_ID, vehicleId);
-            if (date.equals("null"))
-                date = "";
-            values.put(DatabaseSchema.Services.COLUMN_DATE, date);
-            if (workshopId.equals("null"))
-                workshopId = "";
-            values.put(DatabaseSchema.Services.COLUMN_WORKSHOP_ID, workshopId);
-            if (cost.equals("null"))
-                cost = "";
-            values.put(DatabaseSchema.Services.COLUMN_COST, cost);
-            if (odo.equals("null"))
-                odo = "";
-            values.put(DatabaseSchema.Services.COLUMN_ODO, odo);
-            if (details.equals("null"))
-                details = "";
-            if (status.equals("null"))
-                status = "";
+            values.put(DatabaseSchema.Services.COLUMN_DATE, (date.equalsIgnoreCase("null")) ? "" : date);
+            workshopId = (date.equalsIgnoreCase("null")) ? "" : workshopId;
+            if (!workshopId.isEmpty())
+                values.put(DatabaseSchema.Services.COLUMN_WORKSHOP_ID, workshopId);
+            values.put(DatabaseSchema.Services.COLUMN_COST, (cost.equalsIgnoreCase("null")) ? "" : cost);
+            values.put(DatabaseSchema.Services.COLUMN_ODO, (odo.equalsIgnoreCase("null")) ? "" : odo);
             values.put(DatabaseSchema.Services.COLUMN_STATUS, status);
-            values.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.Services.COLUMN_DETAILS, (details.equalsIgnoreCase("null")) ? "" : details);
+            values.put(DatabaseSchema.Services.COLUMN_USER_ID, userId);
+            values.put(DatabaseSchema.Services.COLUMN_ROLE_ID, roleId);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().insert(DatabaseSchema.Services.TABLE_NAME, null, values);
@@ -1157,6 +1141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.Services.COLUMN_COST, cost);
             values.put(DatabaseSchema.Services.COLUMN_ODO, odo);
             values.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.Services.COLUMN_USER_ID, user().getsId());
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
 
             getWritableDatabase().insert(DatabaseSchema.Services.TABLE_NAME, null, values);
@@ -1175,6 +1160,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.Services.COLUMN_COST, cost);
             values.put(DatabaseSchema.Services.COLUMN_ODO, odo);
             values.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.Services.COLUMN_USER_ID, user().getsId());
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
 
             getWritableDatabase().insert(DatabaseSchema.Services.TABLE_NAME, null, values);
@@ -1219,29 +1205,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
-    public boolean updateService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status) {
+    public boolean updateService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status, String userId, String roleId) {
         try {
             ContentValues values = new ContentValues();
 
             values.put(DatabaseSchema.COLUMN_VEHICLE_ID, vehicleId);
-            if (date.equals("null"))
-                date = "";
-            values.put(DatabaseSchema.Services.COLUMN_DATE, date);
-            if (workshopId.equals("null"))
-                workshopId = "";
-            values.put(DatabaseSchema.Services.COLUMN_WORKSHOP_ID, workshopId);
-            if (cost.equals("null"))
-                cost = "";
-            values.put(DatabaseSchema.Services.COLUMN_COST, cost);
-            if (odo.equals("null"))
-                odo = "";
-            values.put(DatabaseSchema.Services.COLUMN_ODO, odo);
-            if (details.equals("null"))
-                details = "";
-            values.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
-            if (status.equals("null"))
-                status = "";
+            values.put(DatabaseSchema.Services.COLUMN_DATE, (date.equalsIgnoreCase("null")) ? "" : date);
+            workshopId = (date.equalsIgnoreCase("null")) ? "" : workshopId;
+            if (!workshopId.isEmpty())
+                values.put(DatabaseSchema.Services.COLUMN_WORKSHOP_ID, workshopId);
+            values.put(DatabaseSchema.Services.COLUMN_COST, (cost.equalsIgnoreCase("null")) ? "" : cost);
+            values.put(DatabaseSchema.Services.COLUMN_ODO, (odo.equalsIgnoreCase("null")) ? "" : odo);
+            values.put(DatabaseSchema.Services.COLUMN_DETAILS, (details.equalsIgnoreCase("null")) ? "" : details);
             values.put(DatabaseSchema.Services.COLUMN_STATUS, status);
+            values.put(DatabaseSchema.Services.COLUMN_USER_ID, userId);
+            values.put(DatabaseSchema.Services.COLUMN_ROLE_ID, roleId);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().update(DatabaseSchema.Services.TABLE_NAME, values, DatabaseSchema.COLUMN_SID + "=?", new String[]{sId});
@@ -1269,7 +1247,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_COST)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ODO)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_DETAILS)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)));
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_USER_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
                 list.add(object);
                 cursor.moveToNext();
             }
@@ -1294,7 +1274,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_COST)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ODO)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_DETAILS)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)));
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_USER_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
                 list.add(object);
                 cursor.moveToNext();
             }
@@ -1330,7 +1312,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_COST)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ODO)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_DETAILS)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)));
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_USER_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
                 list.add(object);
                 cursor.moveToNext();
             }
@@ -1364,7 +1348,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_COST)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ODO)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_DETAILS)),
-                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)));
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_USER_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
             cursor.close();
             return object;
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
@@ -1395,18 +1381,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.COLUMN_ID, id);
             values.put(DatabaseSchema.COLUMN_SID, sId);
             values.put(DatabaseSchema.Problems.COLUMN_SERVICE_ID, serviceId);
-            if (details.equalsIgnoreCase("null"))
-                details = "";
-            values.put(DatabaseSchema.Problems.COLUMN_DETAILS, details);
-            if (lCost.equalsIgnoreCase("null"))
-                lCost = "";
-            values.put(DatabaseSchema.Problems.COLUMN_LCOST, lCost);
-            if (pCost.equalsIgnoreCase("null"))
-                pCost = "";
-            values.put(DatabaseSchema.Problems.COLUMN_PCOST, pCost);
-            if (qty.equalsIgnoreCase("null"))
-                qty = "";
-            values.put(DatabaseSchema.Problems.COLUMN_QTY, qty);
+            values.put(DatabaseSchema.Problems.COLUMN_DETAILS, (details.equalsIgnoreCase("null")) ? "" : details);
+            values.put(DatabaseSchema.Problems.COLUMN_LCOST, (lCost.equalsIgnoreCase("null")) ? "" : lCost);
+            values.put(DatabaseSchema.Problems.COLUMN_PCOST, (pCost.equalsIgnoreCase("null")) ? "" : pCost);
+            values.put(DatabaseSchema.Problems.COLUMN_QTY, (qty.equalsIgnoreCase("null")) ? "" : qty);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().insert(DatabaseSchema.Problems.TABLE_NAME, null, values);
@@ -1419,18 +1397,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
 
             values.put(DatabaseSchema.Problems.COLUMN_SERVICE_ID, serviceId);
-            if (details.equalsIgnoreCase("null"))
-                details = "";
-            values.put(DatabaseSchema.Problems.COLUMN_DETAILS, details);
-            if (lCost.equalsIgnoreCase("null"))
-                lCost = "";
-            values.put(DatabaseSchema.Problems.COLUMN_LCOST, lCost);
-            if (pCost.equalsIgnoreCase("null"))
-                pCost = "";
-            values.put(DatabaseSchema.Problems.COLUMN_PCOST, pCost);
-            if (qty.equalsIgnoreCase("null"))
-                qty = "";
-            values.put(DatabaseSchema.Problems.COLUMN_QTY, qty);
+            values.put(DatabaseSchema.Problems.COLUMN_DETAILS, (details.equalsIgnoreCase("null")) ? "" : details);
+            values.put(DatabaseSchema.Problems.COLUMN_LCOST, (lCost.equalsIgnoreCase("null")) ? "" : lCost);
+            values.put(DatabaseSchema.Problems.COLUMN_PCOST, (pCost.equalsIgnoreCase("null")) ? "" : pCost);
+            values.put(DatabaseSchema.Problems.COLUMN_QTY, (qty.equalsIgnoreCase("null")) ? "" : qty);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().update(DatabaseSchema.Problems.TABLE_NAME, values, DatabaseSchema.COLUMN_SID + "=?", new String[]{sId});
@@ -1506,16 +1476,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.COLUMN_ID, id);
             if (name.equals("null"))
                 return false;
-            values.put(DatabaseSchema.Workshops.COLUMN_NAME, name);
-            if (address.equals("null"))
-                address = "";
-            values.put(DatabaseSchema.Workshops.COLUMN_ADDRESS, address);
-            if (manager.equals("null"))
-                manager = "";
-            values.put(DatabaseSchema.Workshops.COLUMN_MANAGER, manager);
-            if (contact.equals(""))
-                contact = "";
-            values.put(DatabaseSchema.Workshops.COLUMN_CONTACT, contact);
+            values.put(DatabaseSchema.Workshops.COLUMN_NAME, (name.equalsIgnoreCase("null")) ? "" : name);
+            values.put(DatabaseSchema.Workshops.COLUMN_ADDRESS, (address.equalsIgnoreCase("null")) ? "" : address);
+            values.put(DatabaseSchema.Workshops.COLUMN_MANAGER, (manager.equalsIgnoreCase("null")) ? "" : manager);
+            values.put(DatabaseSchema.Workshops.COLUMN_CONTACT, (contact.equalsIgnoreCase("null")) ? "" : contact);
             values.put(DatabaseSchema.Workshops.COLUMN_LATITUDE, (latitude.equals("null")) ? "" : latitude);
             values.put(DatabaseSchema.Workshops.COLUMN_LONGITUDE, (longitude.equals("null")) ? "" : longitude);
             values.put(DatabaseSchema.Workshops.COLUMN_CITY, (city.equalsIgnoreCase("null")) ? "" : city);
@@ -1534,16 +1498,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (name.equals("null"))
                 return false;
-            values.put(DatabaseSchema.Workshops.COLUMN_NAME, name);
-            if (address.equals("null"))
-                address = "";
-            values.put(DatabaseSchema.Workshops.COLUMN_ADDRESS, address);
-            if (manager.equals("null"))
-                manager = "";
-            values.put(DatabaseSchema.Workshops.COLUMN_MANAGER, manager);
-            if (contact.equals(""))
-                contact = "";
-            values.put(DatabaseSchema.Workshops.COLUMN_CONTACT, contact);
+            values.put(DatabaseSchema.Workshops.COLUMN_NAME, (name.equalsIgnoreCase("null")) ? "" : name);
+            values.put(DatabaseSchema.Workshops.COLUMN_ADDRESS, (address.equalsIgnoreCase("null")) ? "" : address);
+            values.put(DatabaseSchema.Workshops.COLUMN_MANAGER, (manager.equalsIgnoreCase("null")) ? "" : manager);
+            values.put(DatabaseSchema.Workshops.COLUMN_CONTACT, (contact.equalsIgnoreCase("null")) ? "" : contact);
             values.put(DatabaseSchema.Workshops.COLUMN_LATITUDE, (latitude.equals("null")) ? "" : latitude);
             values.put(DatabaseSchema.Workshops.COLUMN_LONGITUDE, (longitude.equals("null")) ? "" : longitude);
             values.put(DatabaseSchema.Workshops.COLUMN_CITY, (city.equalsIgnoreCase("null")) ? "" : city);
@@ -1661,6 +1619,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
     }
 
+    public boolean addStatus(String id, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.Status.COLUMN_ID, id);
+            values.put(DatabaseSchema.Status.COLUMN_DETAILS, details);
+
+            getWritableDatabase().insert(DatabaseSchema.Status.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public List<Status> statusList() {
+        try {
+            List<Status> list = new ArrayList<>();
+            Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.Status.TABLE_NAME, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                Status object = new Status(cursor.getString(cursor.getColumnIndex(DatabaseSchema.Status.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Status.COLUMN_DETAILS)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
     public boolean deleteLocal(String tableName, String id) {
         try {
             if (syncStatus(tableName, Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id}).equals(SyncStatus.NEW))
@@ -1711,6 +1699,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Services.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
             try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Refuels.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
             try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Problems.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
+            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Status.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
             return true;
         } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
     }
