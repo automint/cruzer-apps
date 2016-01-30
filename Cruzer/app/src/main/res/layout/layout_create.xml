@@ -292,7 +292,7 @@
                     <android.support.v7.widget.AppCompatButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/cruzer_blue_button"
+                        app:backgroundTint="@color/cruzer_blue"
                         android:id="@+id/ib_add_problem"
                         android:layout_marginTop="8dp"
                         android:paddingLeft="20dp"
@@ -379,7 +379,7 @@
                             android:id="@+id/button_create_record"
                             android:text="@string/label_done"
                             android:textColor="@android:color/white"
-                            android:background="@drawable/cruzer_blue_button"
+                            app:backgroundTint="@color/cruzer_blue"
                             app:borderWidth="0dp"
                             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
