@@ -103,7 +103,6 @@ public class Create extends AppCompatActivity {
         amazon.initInstance(this);
 
         mapViews();
-        setFonts();
 
         try {
             what = getIntent().getIntExtra(Constants.Bundle.FORM_TYPE, 0);
@@ -163,22 +162,6 @@ public class Create extends AppCompatActivity {
         editField2.setFocusable(true);
         editField3.setFocusable(true);
         editField4.setFocusable(true);
-    }
-
-    private void setFonts() {
-        txtFirstVehicle.setTypeface(userInterface.font(UserInterface.font.roboto_thin));
-        txtMainField.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editMainField.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtField1.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editField1.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtField2.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editField2.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtField3.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editField3.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtField4.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editField4.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtOption1.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        txtOption2.setTypeface(userInterface.font(UserInterface.font.roboto_light));
     }
 
     private void controlLayouts(int choice) {
@@ -278,7 +261,7 @@ public class Create extends AppCompatActivity {
                     public void onClick(View v) {
                         if (btnFormControl.getText().toString().equals(getString(R.string.label_collapse_form))) {
                             if (what == CrudChoices.SERVICE)
-                                layoutPhoto.setVisibility(View.VISIBLE);
+                                layoutPhoto.setVisibility(View.GONE);
                             else
                                 layoutPhoto.setVisibility(View.GONE);
                             controlLayouts(CrudChoices.COLLAPSE_ALL);
@@ -538,7 +521,7 @@ public class Create extends AppCompatActivity {
         analyticsTracker.setScreenName(SCREEN_SERVICE);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
         if (btnFormControl.getText().toString().equals(getString(R.string.label_expand_form))) {
-            layoutPhoto.setVisibility(View.VISIBLE);
+            layoutPhoto.setVisibility(View.GONE);
         }
         vehicleId = "";
         defineLayoutOptions();
@@ -860,12 +843,6 @@ public class Create extends AppCompatActivity {
                 super.onBackPressed();
                 break;
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setFonts();
     }
 
     @Override

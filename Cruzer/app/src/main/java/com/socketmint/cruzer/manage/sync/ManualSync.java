@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -220,7 +221,7 @@ public class ManualSync {
     }
 
     private void getRefuels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_REFUEL, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.REFUEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "refuel response = " + response);
@@ -253,7 +254,7 @@ public class ManualSync {
                         String volume = object.optString(DatabaseSchema.Refuels.COLUMN_VOLUME);
                         Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                         if (vehicle != null) {
-                            Refuel refuel = databaseHelper.refuel(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                            Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                             if (refuel == null)
                                 databaseHelper.addRefuel(sId, vehicle.getId(), date, rate, volume, cost, odo);
                             else
@@ -286,7 +287,7 @@ public class ManualSync {
     }
 
     private void getServices() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_SERVICE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.SERVICE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -318,15 +319,17 @@ public class ManualSync {
                         String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
                         String details = object.optString(DatabaseSchema.Services.COLUMN_DETAILS);
                         String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
+                        String userId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
+                        String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
                         Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                         if (vehicle != null) {
-                            Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                            Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
+                            Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                            Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
                             String wId = (workshop != null) ? workshop.getId() : "";
                             if (service == null)
-                                databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status);
+                                databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId);
                             else
-                                databaseHelper.updateService(sId, vehicle.getId(), date, wId, cost, odo, details, status);
+                                databaseHelper.updateService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId);
                             getProblems(sId);
                         }
                     }
@@ -356,7 +359,7 @@ public class ManualSync {
     }
 
     private void getProblems(final String serviceId) {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.getProblems(serviceId), new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_PROBLEMS(serviceId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -385,8 +388,8 @@ public class ManualSync {
                         String pCost = problem.optString(DatabaseSchema.Problems.COLUMN_PCOST);
                         String details = problem.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
                         String qty = problem.optString(DatabaseSchema.Problems.COLUMN_QTY);
-                        Problem item = databaseHelper.problem(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                        Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
+                        Problem item = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                        Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
                         if (service != null) {
                             if (item == null)
                                 databaseHelper.addProblem(sId, service.getId(), details, lCost, pCost, qty);
@@ -414,7 +417,7 @@ public class ManualSync {
     }
 
     private void getWorkshops() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_WORKSHOP, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -450,7 +453,7 @@ public class ManualSync {
                         String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                         String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
 
-                        Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                        Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                         if (workshop != null) {
                             databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
                         } else
@@ -477,7 +480,7 @@ public class ManualSync {
     }
 
     private void getModels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_MODEL, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MODEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -504,7 +507,7 @@ public class ManualSync {
                         String sId = object.getString(DatabaseSchema.COLUMN_ID);
                         String manuId = object.getString(DatabaseSchema.Models.COLUMN_MANU_ID);
                         String name = object.getString(DatabaseSchema.Models.COLUMN_NAME);
-                        Manu manu = databaseHelper.manu(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{manuId});
+                        Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{manuId});
                         if (manu != null) {
                             Model model = databaseHelper.model(Arrays.asList(DatabaseSchema.Models.COLUMN_MANU_ID, DatabaseSchema.Models.COLUMN_NAME), new String[]{manu.getId(), name});
                             if (model != null) {
@@ -534,7 +537,7 @@ public class ManualSync {
     }
 
     private void getManus() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_MANU, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MANU, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -559,7 +562,7 @@ public class ManualSync {
                         JSONObject object = array.getJSONObject(i);
                         String sId = object.getString(DatabaseSchema.COLUMN_ID);
                         String name = object.getString(DatabaseSchema.Manus.COLUMN_NAME);
-                        Manu manu = databaseHelper.manu(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                        Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                         if (manu != null) {
                             if (!manu.name.equals(name))
                                 databaseHelper.updateManu(sId, name);
@@ -587,9 +590,9 @@ public class ManualSync {
     }
 
     private void deleteService(final String sId, final String id) {
-        Log.d(TAG, "delete service = " + Constants.Url.PUT_SERVICE + sId);
+        Log.d(TAG, "delete service = " + Constants.Url.SERVICE(sId));
 
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.PUT_SERVICE + sId, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.SERVICE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -633,8 +636,8 @@ public class ManualSync {
     }
 
     private void deleteRefuel(final String sId, final String id) {
-        Log.d(TAG, "delete refuel = " + Constants.Url.PUT_REFUEL + sId);
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.PUT_REFUEL + sId, new Response.Listener<String>() {
+        Log.d(TAG, "delete refuel = " + Constants.Url.REFUEL(sId));
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.REFUEL(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -677,8 +680,8 @@ public class ManualSync {
     }
 
     private void deleteVehicle(final String sId, final String id) {
-        Log.d(TAG, "delete vehicle = " + Constants.Url.PUT_VEHICLE + sId);
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.PUT_VEHICLE + sId, new Response.Listener<String>() {
+        Log.d(TAG, "delete vehicle = " + Constants.Url.VEHICLE(sId));
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.VEHICLE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -781,8 +784,8 @@ public class ManualSync {
         bodyParams.put(DatabaseSchema.Services.COLUMN_COST, cost);
         bodyParams.put(DatabaseSchema.Services.COLUMN_ODO, odo);
         bodyParams.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
-        Log.d(TAG, "put service = " + Constants.Url.POST_SERVICE + sId);
-        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.POST_SERVICE + sId, new Response.Listener<String>() {
+        Log.d(TAG, "put service = " + Constants.Url.SERVICE(sId));
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.SERVICE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -841,7 +844,7 @@ public class ManualSync {
         if (!odo.isEmpty())
             bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
         Log.d(TAG, "put refuel = " + bodyParams.toString());
-        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.POST_REFUEL + sId, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.REFUEL(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -894,8 +897,7 @@ public class ManualSync {
         bodyParams.put(DatabaseSchema.Vehicles.COLUMN_MODEL_ID, modelId);
         if (!modelId.isEmpty())
             bodyParams.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
-        Log.d(TAG, "put vehicle = " + Constants.Url.POST_VEHICLE + sId);
-        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.POST_VEHICLE + sId, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.VEHICLE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -954,7 +956,7 @@ public class ManualSync {
         if (!details.isEmpty())
             bodyParams.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
         Log.d(TAG, "post service = " + bodyParams.toString());
-        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.POST_SERVICE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.SERVICE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -1010,7 +1012,7 @@ public class ManualSync {
         bodyParams.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
         bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
         Log.d(TAG, "post refuel = " + bodyParams.toString());
-        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.POST_REFUEL, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.REFUEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;
@@ -1066,7 +1068,7 @@ public class ManualSync {
         if (!name.isEmpty())
             bodyParams.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
         Log.d(TAG, "post vehicle = " + bodyParams.toString());
-        final StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.POST_VEHICLE, new Response.Listener<String>() {
+        final StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.VEHICLE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 pendingRequests--;

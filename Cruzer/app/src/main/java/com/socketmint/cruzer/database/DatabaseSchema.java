@@ -9,6 +9,7 @@ public class DatabaseSchema {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_SID = "s_id";
     public static final String COLUMN_VEHICLE_ID = "vehicle_id";
+    public static final String COLUMN_USER_ID = "user_id";
 
     public static abstract class Users implements BaseColumns {
         public static final String TABLE_NAME = "users";
@@ -34,7 +35,7 @@ public class DatabaseSchema {
         public static final String TABLE_NAME = "vehicles";
         public static final String COLUMN_REG = "reg";
         public static final String COLUMN_NAME = "name";
-        public static final String COLUMN_USER_ID = "user_id";
+        public static final String COLUMN_USER_ID = DatabaseSchema.COLUMN_USER_ID;
         public static final String COLUMN_MODEL_ID = "model_id";
     }
 
@@ -59,6 +60,8 @@ public class DatabaseSchema {
         public static final String COLUMN_ODO = "odo";
         public static final String COLUMN_DETAILS = "details";
         public static final String COLUMN_STATUS = "status_id";
+        public static final String COLUMN_USER_ID = DatabaseSchema.COLUMN_USER_ID;
+        public static final String COLUMN_ROLE_ID = "role_id";
     }
 
     public static abstract class Refuels implements BaseColumns {
@@ -83,5 +86,11 @@ public class DatabaseSchema {
         public static final String COLUMN_LCOST = "lcost";
         public static final String COLUMN_PCOST = "pcost";
         public static final String COLUMN_QTY = "qty";
+    }
+
+    public static abstract class Status implements BaseColumns {
+        public static final String TABLE_NAME = "status";
+        public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
+        public static final String COLUMN_DETAILS = "details";
     }
 }

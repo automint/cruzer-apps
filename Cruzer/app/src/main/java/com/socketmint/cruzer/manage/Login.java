@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -45,6 +44,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,11 +55,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class Login {
     public static Login instance;
     private static final String TAG = "Login";
+    private int currentLoginType = 0;
 
     private Activity activity;
 
     private Dialog dialog;
-    private AppCompatTextView textMobile;
     private AppCompatEditText editMobile;
     private AppCompatButton btnDone;
     private ProgressDialog progressDialog;
@@ -137,6 +137,7 @@ public class Login {
         if (progressDialog != null)
             progressDialog.dismiss();
 
+        login(currentLoginType);
         activity.startActivity(new Intent(activity, ViewHistory.class));
         activity.finish();
     }
@@ -176,7 +177,7 @@ public class Login {
                         String password = info.optString(DatabaseSchema.Users.COLUMN_PASSWORD);
                         String contact = info.optString(DatabaseSchema.Users.COLUMN_MOBILE);
 
-                        login(LoginType.GOOGLE);
+                        currentLoginType = LoginType.GOOGLE;
 
                         databaseHelper.addUser(id, (mobile.isEmpty()) ? contact : mobile, password, firstName, lastName, email);
                         if (databaseHelper.vehicleCount() > 0) {
@@ -304,7 +305,7 @@ public class Login {
     }
 
     private void getManus() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_MANU, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MANU, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "manu - " + response);
@@ -320,7 +321,7 @@ public class Login {
                                     JSONObject object = array.getJSONObject(i);
                                     String sId = object.getString(DatabaseSchema.COLUMN_ID);
                                     String name = object.getString(DatabaseSchema.Manus.COLUMN_NAME);
-                                    Manu manu = databaseHelper.manu(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                                    Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                                     if (manu != null) {
                                         if (!manu.name.equals(name))
                                             databaseHelper.updateManu(sId, name);
@@ -332,6 +333,7 @@ public class Login {
                         }
                         @Override
                         public void onPostExecute(Void result) {
+                            getStatusTable();
                             if (isCancelled())
                                 initFail();
                             else
@@ -361,7 +363,7 @@ public class Login {
     }
 
     private void getModels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_MODEL, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MODEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "model response = " + response);
@@ -378,7 +380,7 @@ public class Login {
                                     String sId = object.getString(DatabaseSchema.COLUMN_ID);
                                     String manuId = object.getString(DatabaseSchema.Models.COLUMN_MANU_ID);
                                     String name = object.getString(DatabaseSchema.Models.COLUMN_NAME);
-                                    Manu manu = databaseHelper.manu(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{manuId});
+                                    Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{manuId});
                                     if (manu != null) {
                                         Model model = databaseHelper.model(Arrays.asList(DatabaseSchema.Models.COLUMN_MANU_ID, DatabaseSchema.Models.COLUMN_NAME), new String[]{manu.getId(), name});
                                         if (model != null) {
@@ -423,7 +425,7 @@ public class Login {
 
     private void vehicleFromServer() {
 
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_VEHICLE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.VEHICLE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "vehicle response = " + response);
@@ -439,7 +441,7 @@ public class Login {
                                     String reg = object.optString(DatabaseSchema.Vehicles.COLUMN_REG);
                                     String name = object.optString(DatabaseSchema.Vehicles.COLUMN_NAME);
                                     String modelId = object.optString(DatabaseSchema.Vehicles.COLUMN_MODEL_ID);
-                                    Model model = databaseHelper.model(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{modelId});
+                                    Model model = databaseHelper.model(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{modelId});
                                     if (model != null)
                                         databaseHelper.addVehicle(sId, reg, name, databaseHelper.user().getId(), model.getId());
                                     else
@@ -478,7 +480,7 @@ public class Login {
     }
 
     private void getRefuels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_REFUEL, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.REFUEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "refuel response = " + response);
@@ -497,7 +499,7 @@ public class Login {
                                     String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
                                     String rate = object.optString(DatabaseSchema.Refuels.COLUMN_RATE);
                                     String volume = object.getString(DatabaseSchema.Refuels.COLUMN_VOLUME);
-                                    Refuel refuel = databaseHelper.refuel(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                                    Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                                     Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                                     if (vehicle != null) {
                                         if (refuel == null)
@@ -535,7 +537,7 @@ public class Login {
     }
 
     private void getServices() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_SERVICE, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.SERVICE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "service response = " + response);
@@ -551,15 +553,17 @@ public class Login {
                         String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
                         String details = object.optString(DatabaseSchema.Services.COLUMN_DETAILS);
                         String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
+                        String userId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
+                        String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
                         Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                         if (vehicle != null) {
-                            Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                            Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                             if (service == null) {
-                                Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
+                                Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
                                 String wId = "";
                                 if (workshop != null)
                                     wId = workshop.getId();
-                                databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status);
+                                databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId);
                             }
                             getProblems(sId);
                         }
@@ -585,7 +589,7 @@ public class Login {
     }
 
     private void getProblems(final String serviceId) {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.getProblems(serviceId), new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_PROBLEMS(serviceId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "problem response " + response);
@@ -598,9 +602,9 @@ public class Login {
                         String pCost = problem.optString(DatabaseSchema.Problems.COLUMN_PCOST);
                         String details = problem.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
                         String qty = problem.optString(DatabaseSchema.Problems.COLUMN_QTY);
-                        Problem item = databaseHelper.problem(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                        Problem item = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                         if (item == null) {
-                            Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
+                            Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
                             if (service != null)
                                 databaseHelper.addProblem(sId, service.getId(), details, lCost, pCost, qty);
                         }
@@ -624,7 +628,7 @@ public class Login {
     }
 
     private void getWorkshops() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_WORKSHOP, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "workshop response = " + response);
@@ -646,7 +650,7 @@ public class Login {
                                     String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY);
                                     String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                                     String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
-                                    Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                                    Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                                     Log.e(TAG, "workshop != null - " + (workshop != null));
                                     if (workshop != null)
                                         databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
@@ -683,8 +687,38 @@ public class Login {
         requestQueue.add(request);
     }
 
+    public void getStatusTable() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.STATUS, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "get status = " + response);
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.Status.COLUMN_ID);
+                        String details = object.optString(DatabaseSchema.Status.COLUMN_DETAILS);
+                        databaseHelper.addStatus(id, details);
+                    }
+                } catch (JSONException e) { Log.d(TAG, "get status is not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return params;
+            }
+        };
+        requestQueue.add(request);
+    }
+
     private void setUIElements() {
-        textMobile = (AppCompatTextView) dialog.findViewById(R.id.text_mobile);
         editMobile = (AppCompatEditText) dialog.findViewById(R.id.edit_mobile);
         dialog.findViewById(R.id.text_message).setVisibility(View.GONE);
         dialog.findViewById(R.id.edit_password).setVisibility(View.GONE);
@@ -692,17 +726,10 @@ public class Login {
         dialog.findViewById(R.id.layout_name).setVisibility(View.GONE);
         dialog.findViewById(R.id.layout_email).setVisibility(View.GONE);
         btnDone = (AppCompatButton) dialog.findViewById(R.id.button_login_phone);
-        setFonts();
     }
 
     private boolean emptyFields() {
         return (editMobile.getText().toString().isEmpty());
-    }
-
-    private void setFonts() {
-        textMobile.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editMobile.setTypeface(userInterface.font(UserInterface.font.roboto_thin));
-        btnDone.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
     }
 
     public void login(int type) {

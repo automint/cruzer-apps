@@ -36,6 +36,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/label_phone_number"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <android.support.v7.widget.AppCompatEditText
@@ -49,6 +50,7 @@
                     android:paddingBottom="18dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
+                    android:fontFamily="sans-serif-thin"
                     android:hint="@string/hint_edit_field"
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
             </android.support.v7.widget.LinearLayoutCompat>
@@ -63,6 +65,7 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:inputType="textPassword"
+                android:fontFamily="sans-serif-light"
                 android:hint="@string/hint_edit_password"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
@@ -74,6 +77,8 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:text="@string/label_show_password"
+                android:fontFamily="sans-serif-thin"
+                android:textStyle="italic"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
@@ -90,6 +95,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/label_name"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                 <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -109,6 +115,7 @@
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:hint="@string/hint_edit_first_name"
+                        android:fontFamily="sans-serif-thin"
                         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                     <android.support.v7.widget.AppCompatEditText
@@ -122,6 +129,7 @@
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:hint="@string/hint_edit_last_name"
+                        android:fontFamily="sans-serif-thin"
                         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 </android.support.v7.widget.LinearLayoutCompat>
@@ -144,6 +152,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/label_email"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                 <android.support.v7.widget.AppCompatEditText
@@ -156,6 +165,7 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:hint="@string/hint_edit_field"
+                    android:fontFamily="sans-serif-thin"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
@@ -176,8 +186,9 @@
                     android:layout_weight="0.2"
                     android:id="@+id/button_login_phone"
                     android:text="@string/label_done"
+                    app:borderWidth="0dp"
                     android:background="@drawable/cruzer_blue_button"
-                    android:textColor="@color/white_darken_0"
+                    android:textColor="@android:color/white"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -193,6 +204,8 @@
                 android:id="@+id/text_message"
                 android:gravity="center_horizontal"
                 android:text="@string/message_welcome"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="italic"
                 android:textColor="@color/dark_v1"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 

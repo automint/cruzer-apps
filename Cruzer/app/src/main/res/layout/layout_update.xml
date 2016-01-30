@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/toolbar"
         app:borderWidth="0dp"
-        android:elevation="8dp"
+        android:elevation="4dp"
         android:background="@android:color/white">
 
         <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -41,6 +41,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/txt_retrieve_type"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-medium"
                     android:layout_gravity="center"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:paddingLeft="10dp"
@@ -82,6 +83,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
                 <android.support.v7.widget.AppCompatEditText
@@ -113,6 +115,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                 <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -161,6 +164,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                 <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -209,6 +213,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                 <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -257,6 +262,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                 <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
@@ -290,102 +296,6 @@
 
             </android.support.v7.widget.LinearLayoutCompat>
 
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/linear_field_5"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp">
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txt_field_5"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/app_name"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.AppCompatEditText
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/edit_field_5"
-                        android:layout_weight="0.8"
-                        android:layout_marginTop="6dp"
-                        android:paddingBottom="18dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:hint="@string/hint_edit_field"
-                        android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-                    <android.support.v7.widget.AppCompatImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:id="@+id/field_5_list"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
-                        android:layout_gravity="center_vertical"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
-                        android:tint="@color/dark_v1"/>
-
-                </android.support.v7.widget.LinearLayoutCompat>
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/linear_field_6"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp">
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txt_field_6"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/app_name"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.AppCompatEditText
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/edit_field_6"
-                        android:layout_weight="0.8"
-                        android:layout_marginTop="6dp"
-                        android:paddingBottom="18dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:hint="@string/hint_edit_field"
-                        android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-                    <android.support.v7.widget.AppCompatImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:id="@+id/field_6_list"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
-                        android:layout_gravity="center_vertical"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
-                        android:tint="@color/dark_v1"/>
-
-                </android.support.v7.widget.LinearLayoutCompat>
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
             <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -400,7 +310,7 @@
                     app:borderWidth="0dp"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:textColor="@color/cruzer_blue"
+                    android:textColor="@color/cruzer_blue_v1"
                     android:background="@android:color/transparent"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -409,6 +319,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/button_create_record"
                     android:text="@string/label_done"
+                    android:background="@drawable/cruzer_blue_button"
+                    android:textColor="@android:color/white"
                     app:borderWidth="0dp"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 

@@ -84,7 +84,6 @@ public class ChoiceDialog {
         dialog.setContentView(R.layout.dialog_choice);
         choiceList = (ListViewCompat) dialog.findViewById(R.id.choice_list);
         AppCompatEditText editChoice = (AppCompatEditText) dialog.findViewById(R.id.edit_choice_filter);
-        editChoice.setTypeface(userInterface.font(UserInterface.font.roboto_light));
         switch (which) {
             case CrudChoices.MANU:
                 manu();
@@ -140,9 +139,7 @@ public class ChoiceDialog {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_choice);
         choiceList = (ListViewCompat) dialog.findViewById(R.id.choice_list);
-        AppCompatEditText editChoice = (AppCompatEditText) dialog.findViewById(R.id.edit_choice_filter);
-        editChoice.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        editChoice.addTextChangedListener(textFilter);
+        ((AppCompatEditText) dialog.findViewById(R.id.edit_choice_filter)).addTextChangedListener(textFilter);
     }
 
     private void addListener(final AppCompatEditText result) {

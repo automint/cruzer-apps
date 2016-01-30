@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  *  This class receives GCM from Google Play Server and perform tasks in that particular manner in app.
@@ -109,17 +110,19 @@ public class MessageListener extends GcmListenerService {
                     String details = object.optString(DatabaseSchema.Services.COLUMN_DETAILS);
                     String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
                     String workshopId = object.optString(DatabaseSchema.Services.COLUMN_WORKSHOP_ID);
+                    String uId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
+                    String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
 
-                    Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{id});
-                    Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
+                    Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{id});
+                    Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
                     String serviceId;
 
                     if (service == null) {
                         Log.e(TAG, "no service. adding");
-                        serviceId = databaseHelper.addService(id, vId, date, (workshop != null) ? workshop.getId() : "", cost, odo, details, status);                           // workshop id set nathi thayu [IMP]
+                        serviceId = databaseHelper.addService(id, vId, date, (workshop != null) ? workshop.getId() : "", cost, odo, details, status, uId, roleId);                           // workshop id set nathi thayu [IMP]
                     } else {
                         serviceId = service.getId();
-                        if (databaseHelper.updateService(id, vId, date, (workshop != null) ? workshop.getId() : service.getWorkshopId(), cost, odo, details, status)) {         // workshop id set nathi thayu [IMP]
+                        if (databaseHelper.updateService(id, vId, date, (workshop != null) ? workshop.getId() : service.getWorkshopId(), cost, odo, details, status, uId, roleId)) {         // workshop id set nathi thayu [IMP]
                             Log.d(TAG, "service updated");
                         } else
                             Log.d(TAG, "could not update service");
@@ -135,7 +138,7 @@ public class MessageListener extends GcmListenerService {
                             String problemDetails = item.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
                             String qty = item.optString(DatabaseSchema.Problems.COLUMN_QTY);
 
-                            Problem problem = databaseHelper.problem(Arrays.asList(DatabaseSchema.COLUMN_SID), new String[]{problemId});
+                            Problem problem = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{problemId});
                             Log.d(TAG, "problem existing (problem == null) - " + (problem == null));
 
                             if (problem == null)

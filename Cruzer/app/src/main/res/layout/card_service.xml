@@ -25,6 +25,7 @@
                 android:layout_weight="0.6"
                 android:id="@+id/text_date"
                 android:text="@string/app_name"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             <android.support.v7.widget.LinearLayoutCompat
@@ -46,6 +47,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/text_amount"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
@@ -65,6 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
+                    android:fontFamily="sans-serif-light"
                     android:textColor="@color/dark_v1"
                     android:id="@+id/text_vehicle_name"
                     android:paddingTop="4dp"

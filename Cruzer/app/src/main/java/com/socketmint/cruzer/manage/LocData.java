@@ -3,8 +3,6 @@ package com.socketmint.cruzer.manage;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.socketmint.cruzer.R;
-
 public class LocData {
     private SharedPreferences sharedPreferences;
 

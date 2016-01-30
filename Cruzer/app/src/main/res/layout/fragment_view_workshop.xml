@@ -50,6 +50,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/label_workshop_manager"
                     android:text="@string/label_manager"
+                    android:fontFamily="sans-serif-light"
                     android:textStyle="italic"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -85,6 +86,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/label_workshop_contact"
                     android:text="@string/label_phone_number"
+                    android:fontFamily="sans-serif-light"
                     android:textStyle="italic"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -120,6 +122,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/label_workshop_address"
                     android:text="@string/label_address"
+                    android:fontFamily="sans-serif-light"
                     android:textStyle="italic"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -155,6 +158,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/label_workshop_city"
                     android:text="@string/label_city"
+                    android:fontFamily="sans-serif-light"
                     android:textStyle="italic"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -190,6 +194,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/label_workshop_area"
                     android:text="@string/label_area"
+                    android:fontFamily="sans-serif-light"
                     android:textStyle="italic"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -225,6 +230,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/label_workshop_offerings"
                     android:text="@string/label_offerings"
+                    android:fontFamily="sans-serif-light"
                     android:textStyle="italic"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 

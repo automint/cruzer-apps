@@ -8,13 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
-import com.socketmint.cruzer.ui.UserInterface;
 
 public class Create extends AppCompatActivity implements View.OnClickListener {
 
@@ -26,14 +24,11 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
 
     private int pageChoice;
 
-    private UserInterface userInterface = UserInterface.getInstance();
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_create_temp);
 
-        userInterface.changeActivity(this);
         initializeViews();
 
         pageChoice = getIntent().getIntExtra(Constants.Bundle.PAGE_CHOICE, 0);
@@ -60,9 +55,6 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
         layoutCOExpenses = (LinearLayoutCompat) findViewById(R.id.layout_create_option_expenses);
         layoutCOVehicles = (LinearLayoutCompat) findViewById(R.id.layout_create_option_vehicle);
         pager = (ViewPager) findViewById(R.id.pager_create_record);
-
-        textOptionRefuel.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        textOptionService.setTypeface(userInterface.font(UserInterface.font.roboto_light));
 
         findViewById(R.id.button_back).setOnClickListener(this);
         layoutOptionRefuel.setOnClickListener(this);

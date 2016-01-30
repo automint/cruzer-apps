@@ -2,6 +2,7 @@ package com.socketmint.cruzer.crud;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,6 +27,7 @@ import com.socketmint.cruzer.database.DatabaseSchema;
 import com.socketmint.cruzer.dataholder.Problem;
 import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
+import com.socketmint.cruzer.dataholder.Status;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.main.ViewVehicle;
@@ -70,7 +72,6 @@ public class Retrieve extends AppCompatActivity {
         userInterface.changeActivity(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         mapViews();
-        setFonts();
 
         id = getIntent().getStringExtra(Constants.Bundle.ID);
         choice = getIntent().getIntExtra(Constants.Bundle.PAGE_CHOICE, 0);
@@ -108,8 +109,6 @@ public class Retrieve extends AppCompatActivity {
             case CrudChoices.SERVICE:
                 SELECTED_CHOICE = SCREEN_SERVICE;
                 txtRetrieveType.setText(R.string.label_service);
-                btnDelete.setVisibility(View.GONE);
-                btnEdit.setVisibility(View.GONE);
                 service();
                 break;
             case CrudChoices.USER:
@@ -161,6 +160,7 @@ public class Retrieve extends AppCompatActivity {
     private void vehicle() {
         analyticsTracker.setScreenName(SCREEN_VEHICLE);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        btnDelete.setVisibility(View.GONE);
         Vehicle vehicle = databaseHelper.vehicle(id);
         SpannableString vName = new SpannableString(vehicle.name);
         if (!vehicle.name.isEmpty())
@@ -238,6 +238,10 @@ public class Retrieve extends AppCompatActivity {
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
         Service service = databaseHelper.service(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{id});
         Vehicle vehicle = databaseHelper.vehicle(service.getVehicleId());
+        if (!service.getUserId().equals(databaseHelper.user().getsId())) {
+            btnDelete.setVisibility(View.GONE);
+            btnEdit.setVisibility(View.GONE);
+        }
         txtRVehicle.setText(vehicleName(vehicle));
         try {
             txtRSubTitle.setText(databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{service.getWorkshopId()}).name);
@@ -254,12 +258,15 @@ public class Retrieve extends AppCompatActivity {
         lblRField5.setText(R.string.label_details);
         txtRField5.setText(service.details);
         txtRField5.setTextAppearance(this, android.R.style.TextAppearance_Small);
-        setFonts();
-        txtRField5.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
+        txtRField5.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL);
         lblRField6.setVisibility(View.GONE);
         String status;
+        List<Status> statusList = databaseHelper.statusList();
         if (service.status != null) {
-            switch (service.status) {
+            try {
+                status = statusList.get(Integer.parseInt(service.status)-1).details;
+            } catch (NumberFormatException e) { status = ""; }
+            /*switch (service.status) {
                 case "4":
                     status = "Payment Due";
                     break;
@@ -269,7 +276,7 @@ public class Retrieve extends AppCompatActivity {
                 default:
                     status = "";
                     break;
-            }
+            }*/
         } else
             status = "";
         txtRField6.setText(status);
@@ -372,24 +379,6 @@ public class Retrieve extends AppCompatActivity {
         btnBack = (AppCompatImageButton) findViewById(R.id.button_back);
         btnEdit = (FloatingActionButton) findViewById(R.id.button_edit);
         btnDelete = (AppCompatImageButton) findViewById(R.id.button_delete);
-    }
-
-    private void setFonts() {
-        txtRVehicle.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRSubTitle.setTypeface(userInterface.font(UserInterface.font.roboto_light));
-        lblRField1.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField2.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField3.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField4.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField5.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        lblRField6.setTypeface(userInterface.font(UserInterface.font.roboto_light_italic));
-        txtRField1.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField2.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField3.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField4.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField5.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRField6.setTypeface(userInterface.font(UserInterface.font.roboto_regular));
-        txtRetrieveType.setTypeface(userInterface.font(UserInterface.font.roboto_medium));
     }
 
     private void clickListeners() {

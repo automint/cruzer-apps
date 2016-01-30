@@ -18,6 +18,7 @@
         android:paddingRight="10dp"
         android:id="@+id/edit_choice_filter"
         android:hint="@string/hint_search"
+        android:fontFamily="sans-serif-light"
         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     <android.support.v7.widget.ListViewCompat

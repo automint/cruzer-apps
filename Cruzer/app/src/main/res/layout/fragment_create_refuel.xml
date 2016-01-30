@@ -23,6 +23,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_cost"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <android.support.v7.widget.AppCompatEditText
@@ -54,6 +55,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_odometer_reading"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <android.support.v7.widget.AppCompatEditText
@@ -85,6 +87,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_date"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <android.support.v7.widget.AppCompatEditText
@@ -116,6 +119,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_refuel_volume"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <android.support.v7.widget.AppCompatEditText
@@ -147,6 +151,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:text="@string/label_refuel_rate"
+                android:fontFamily="sans-serif-light"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             <android.support.v7.widget.AppCompatEditText
