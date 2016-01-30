@@ -46,7 +46,7 @@ import com.socketmint.cruzer.manage.Amazon;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 import com.socketmint.cruzer.manage.Login;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +67,7 @@ public class Create extends AppCompatActivity {
     private static final String ACTION_FORM_COLLAPSE = " Collapse Form";
     private static final String ACTION_CHOICE_REFUEL = "Add Refuel";
     private static final String ACTION_CHOICE_SERVICE = "Add Service";
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement = UiElement.getInstance();
     private AppCompatTextView txtMainField, txtField1, txtField2, txtField3, txtField4, txtFirstVehicle, txtOption1, txtOption2;
     private AppCompatEditText editMainField, editField1, editField2, editField3, editField4;
     private AppCompatImageButton imgBtnField1, imgBtnField2, imgBtnField3, imgBtnField4;
@@ -95,7 +95,7 @@ public class Create extends AppCompatActivity {
 
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 
-        userInterface.changeActivity(this);
+        uiElement.changeActivity(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         choiceDialog.initInstance(this);
         locData.formInstance(this);
@@ -477,7 +477,7 @@ public class Create extends AppCompatActivity {
         txtField3.setText(R.string.label_refuel_rate);
         txtField4.setText(R.string.label_odometer_reading);
         editMainField.setText("");
-        editField1.setText(userInterface.currentDate());
+        editField1.setText(uiElement.currentDate());
         editField2.setText("");
         editField3.setText("");
         editField4.setText("");
@@ -508,8 +508,8 @@ public class Create extends AppCompatActivity {
                 editField1.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        userInterface.setDatePickerDialog(getString(R.string.label_date), editField1);
-                        userInterface.showDatePickerDialog();
+                        uiElement.setDatePickerDialog(getString(R.string.label_date), editField1);
+                        uiElement.showDatePickerDialog();
                         analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(SCREEN_REFUEL + ACTION_DATE).build());
                     }
                 });
@@ -546,7 +546,7 @@ public class Create extends AppCompatActivity {
         txtField3.setText(R.string.label_odometer_reading);
         txtField4.setText(R.string.label_details);
         editMainField.setText("");
-        editField1.setText(userInterface.currentDate());
+        editField1.setText(uiElement.currentDate());
         editField2.setText("");
         editField3.setText("");
         editField4.setText("");
@@ -570,8 +570,8 @@ public class Create extends AppCompatActivity {
                 editField1.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        userInterface.setDatePickerDialog(getString(R.string.label_date), editField1);
-                        userInterface.showDatePickerDialog();
+                        uiElement.setDatePickerDialog(getString(R.string.label_date), editField1);
+                        uiElement.showDatePickerDialog();
                         analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(SCREEN_SERVICE + ACTION_ADD).build());
                     }
                 });

@@ -26,11 +26,9 @@ import com.socketmint.cruzer.database.DatabaseSchema;
 import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.manage.Constants;
-import com.socketmint.cruzer.manage.LocData;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -38,7 +36,7 @@ import java.util.List;
 public class RefuelFragment extends Fragment {
     private static final String TAG = "ViewRefuels";
 
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement;
 
     private static DatabaseHelper databaseHelper;
     private static Adapter adapter;
@@ -61,7 +59,7 @@ public class RefuelFragment extends Fragment {
 
         analyticsTracker = ((CruzerApp) getActivity().getApplication()).getAnalyticsTracker();
 
-        userInterface.changeActivity(getActivity());
+        uiElement = new UiElement(getActivity());
         databaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
 
         vId = getArguments().getString(Constants.Bundle.VEHICLE_ID);
@@ -96,7 +94,7 @@ public class RefuelFragment extends Fragment {
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
-                    refuels = (vId.equals("all")) ? databaseHelper.refuels() : databaseHelper.refuels(Arrays.asList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vId});
+                    refuels = (vId.equals("all")) ? databaseHelper.refuels() : databaseHelper.refuels(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vId});
                     Collections.sort(refuels, new Comparator<Refuel>() {
                         @Override
                         public int compare(Refuel lhs, Refuel rhs) {
@@ -210,7 +208,7 @@ public class RefuelFragment extends Fragment {
                 vName = vehicleName(vehicle);
             } catch (Exception e) { e.printStackTrace(); vName = new SpannableString("Vehicle not found!"); }
             holder.txtCRVName.setText((vId.equals("all") || odo.isEmpty()) ? vName : odo);
-            holder.txtCRDate.setText(userInterface.date(object.date));
+            holder.txtCRDate.setText(uiElement.date(object.date));
         }
 
         @Override

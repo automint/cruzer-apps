@@ -39,7 +39,7 @@ import com.socketmint.cruzer.main.ViewHistory;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 import com.socketmint.cruzer.manage.Login;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,7 +58,7 @@ public class LoginDialog {
     private final int TYPE_DIRECT_LOGIN = 1;
     private final int TYPE_LOGIN_AR = 2;
 
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement;
     private DatabaseHelper databaseHelper;
     private LocData locData = new LocData();
     private Login sLogin = Login.getInstance();
@@ -84,7 +84,7 @@ public class LoginDialog {
     public void initInstance(Activity activity) {
         this.activity = activity;
         progressDialog = new ProgressDialog(activity);
-        userInterface.changeActivity(activity);
+        uiElement = new UiElement(activity);
         requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
         databaseHelper = new DatabaseHelper(activity.getApplicationContext());
         locData.cruzerInstance(activity);
@@ -138,7 +138,7 @@ public class LoginDialog {
                     Snackbar.make(dialog.findViewById(android.R.id.content), R.string.message_fill_details, Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                userInterface.hideKeyboard(btnDone);
+                uiElement.hideKeyboard(btnDone);
 
                 loginThread = new Thread(new Runnable() {
                     @Override
@@ -378,7 +378,7 @@ public class LoginDialog {
             @Override
             public void onClick(View v) {
                 if (!editFirstName.getText().toString().isEmpty() || !editLastName.getText().toString().isEmpty() || !editEmail.getText().toString().isEmpty()) {
-                    if (!editEmail.getText().toString().isEmpty() && !userInterface.validateEmail(editEmail.getText().toString())) {
+                    if (!editEmail.getText().toString().isEmpty() && !uiElement.validateEmail(editEmail.getText().toString())) {
                         Snackbar.make(activity.findViewById(android.R.id.content), activity.getString(R.string.message_invalid_email), Snackbar.LENGTH_SHORT).show();
                         return;
                     }

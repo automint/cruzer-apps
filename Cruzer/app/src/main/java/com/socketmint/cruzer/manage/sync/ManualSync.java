@@ -3,6 +3,7 @@ package com.socketmint.cruzer.manage.sync;
 import android.app.Activity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.animation.AnimationUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,7 +26,7 @@ import com.socketmint.cruzer.history.RefuelFragment;
 import com.socketmint.cruzer.history.ServiceFragment;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,7 +60,7 @@ public class ManualSync {
     private int pendingRequests;
     private HashMap<String, String> headerParams = new HashMap<>();
 
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement;
 
     private Thread syncThread;
 
@@ -74,7 +75,7 @@ public class ManualSync {
         requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
         this.activity = activity;
         locData.cruzerInstance(activity);
-        userInterface.changeActivity(activity);
+        uiElement = new UiElement(activity);
     }
 
     public void syncUser(Activity activity, String id, String password, String firstName, String lastName, String email) {
@@ -82,7 +83,7 @@ public class ManualSync {
         requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
         this.activity = activity;
         locData.cruzerInstance(activity);
-        userInterface.changeActivity(activity);
+        uiElement = new UiElement(activity);
         headerParams.clear();
         headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
         updateUser(id, password, firstName, lastName, email);
@@ -114,7 +115,7 @@ public class ManualSync {
                     @Override
                     public void run() {
                         try {
-                            (activity.findViewById(R.id.button_sync)).startAnimation(userInterface.animation(UserInterface.animation.rotate));
+                            (activity.findViewById(R.id.button_sync)).startAnimation(AnimationUtils.loadAnimation(activity.getApplicationContext(), R.anim.rotate_clockwise));
                         } catch (NullPointerException e) { Log.d(TAG, "can't start animation"); }
                     }
                 });

@@ -33,7 +33,7 @@ import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.main.ViewVehicle;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,7 +53,7 @@ public class Retrieve extends AppCompatActivity {
     private CardView layoutRField1, layoutRField2, layoutRField3, layoutRField4, layoutRField5, layoutRField6, layoutRMF;
     private AppCompatImageButton btnBack, btnDelete;
     private FloatingActionButton btnEdit;
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement = UiElement.getInstance();
     private DatabaseHelper databaseHelper;
     private String id;
     private int choice;
@@ -69,7 +69,7 @@ public class Retrieve extends AppCompatActivity {
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 
         login.initInstance(this);
-        userInterface.changeActivity(this);
+        uiElement.changeActivity(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         mapViews();
 
@@ -214,7 +214,7 @@ public class Retrieve extends AppCompatActivity {
         String cost = "Rs. " + refuel.cost;
         txtRField1.setText(cost);
         lblRField2.setText(R.string.label_date);
-        txtRField2.setText(userInterface.date(refuel.date));
+        txtRField2.setText(uiElement.date(refuel.date));
         lblRField3.setText(R.string.label_refuel_volume);
         String volume = refuel.volume + " ltr";
         txtRField3.setText(volume);
@@ -251,7 +251,7 @@ public class Retrieve extends AppCompatActivity {
         String cost = "Rs. " + service.cost;
         txtRField1.setText(cost);
         lblRField2.setText(R.string.label_date);
-        txtRField2.setText(userInterface.date(service.date));
+        txtRField2.setText(uiElement.date(service.date));
         lblRField3.setText(R.string.label_odometer_reading);
         String odo = service.odo + " km.";
         txtRField3.setText(odo);

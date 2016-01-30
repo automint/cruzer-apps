@@ -28,11 +28,9 @@ import com.socketmint.cruzer.dataholder.Service;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
 import com.socketmint.cruzer.manage.Constants;
-import com.socketmint.cruzer.manage.LocData;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -40,7 +38,7 @@ import java.util.List;
 public class ServiceFragment extends Fragment {
     private static final String TAG = "ViewServices";
 
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement;
 
     private static DatabaseHelper databaseHelper;
     private static Adapter adapter;
@@ -64,7 +62,7 @@ public class ServiceFragment extends Fragment {
 
         analyticsTracker = ((CruzerApp) getActivity().getApplication()).getAnalyticsTracker();
 
-        userInterface.changeActivity(getActivity());
+        uiElement = new UiElement(getActivity());
         databaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
 
         vId = getArguments().getString(Constants.Bundle.VEHICLE_ID);
@@ -101,7 +99,7 @@ public class ServiceFragment extends Fragment {
                 @Override
                 protected Void doInBackground(Void... params) {
                     try {
-                        services = (vId.equals("all")) ? databaseHelper.services() : databaseHelper.services(Arrays.asList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vId});
+                        services = (vId.equals("all")) ? databaseHelper.services() : databaseHelper.services(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vId});
                         Collections.sort(services, new Comparator<Service>() {
                             @Override
                             public int compare(Service lhs, Service rhs) {
@@ -213,7 +211,7 @@ public class ServiceFragment extends Fragment {
             final Service object = services.get(position);
 
             holder.txtCSAmount.setText(object.cost);
-            Workshop workshop = databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{object.getWorkshopId()});
+            Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{object.getWorkshopId()});
             String ws = (workshop != null) ? workshop.name : "";
             SpannableString vName;
             try {
@@ -221,7 +219,7 @@ public class ServiceFragment extends Fragment {
                 vName = vehicleName(vehicle);
             } catch (Exception e) { e.printStackTrace(); vName = new SpannableString("Vehicle not found!"); }
             holder.txtCSVName.setText((vId.equals("all") || ws.isEmpty()) ? vName : ws);
-            holder.txtCSDate.setText(userInterface.date(object.date));
+            holder.txtCSDate.setText(uiElement.date(object.date));
         }
 
         @Override

@@ -27,7 +27,7 @@ import com.socketmint.cruzer.dataholder.Workshop;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class ChoiceDialog {
     private Activity activity;
     private Dialog dialog;
     private ListViewCompat choiceList;
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement = UiElement.getInstance();
 
     private DatabaseHelper databaseHelper;
     private List<String> list;
@@ -71,7 +71,7 @@ public class ChoiceDialog {
         this.activity = activity;
         databaseHelper = new DatabaseHelper(activity.getApplicationContext());
         locData.formInstance(activity);
-        userInterface.changeActivity(activity);
+        uiElement.changeActivity(activity);
         list = new ArrayList<>();
         analyticsTracker = ((CruzerApp) activity.getApplication()).getAnalyticsTracker();
     }
@@ -130,7 +130,7 @@ public class ChoiceDialog {
         this.activity = activity;
         databaseHelper = new DatabaseHelper(activity.getApplicationContext());
         locData.formInstance(activity);
-        userInterface.changeActivity(activity);
+        uiElement.changeActivity(activity);
         analyticsTracker = ((CruzerApp) activity.getApplication()).getAnalyticsTracker();
     }
 

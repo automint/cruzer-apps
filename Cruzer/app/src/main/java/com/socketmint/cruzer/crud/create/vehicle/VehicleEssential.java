@@ -19,14 +19,12 @@ import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.main.ViewHistory;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
-import com.socketmint.cruzer.ui.UserInterface;
 
 public class VehicleEssential extends Fragment implements View.OnClickListener {
-    private static final String TAG = "AddVehicle";
+//    private static final String TAG = "AddVehicle";
     private static final String ACTION_ADD_VEHICLE = "Add Vehicle";
     private AppCompatEditText editRegistration, editVehicleCompany, editVehicleModel, editVehicleName;
 
-    private UserInterface userInterface = UserInterface.getInstance();
     private ChoiceDialog choiceDialog;
     private LocData locData = new LocData();
     private DatabaseHelper databaseHelper;
@@ -46,7 +44,6 @@ public class VehicleEssential extends Fragment implements View.OnClickListener {
 
         analyticsTracker = ((CruzerApp) getActivity().getApplication()).getAnalyticsTracker();
 
-        userInterface.changeActivity(getActivity());
         locData.formInstance(getActivity());
         choiceDialog = new ChoiceDialog(getActivity());
         databaseHelper = new DatabaseHelper(getActivity().getApplicationContext());

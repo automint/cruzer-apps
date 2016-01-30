@@ -26,7 +26,6 @@ import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.main.ViewHistory;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
-import com.socketmint.cruzer.ui.UserInterface;
 
 public class Launcher extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final String TAG = "Launcher";
@@ -49,7 +48,6 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
 
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 
-        UserInterface.getInstance().initInstance(this);
         loginDialog.initInstance(this);
         login.initInstance(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());

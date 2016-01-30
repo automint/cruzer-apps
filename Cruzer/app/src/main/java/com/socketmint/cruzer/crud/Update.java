@@ -34,7 +34,7 @@ import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 import com.socketmint.cruzer.manage.Login;
 import com.socketmint.cruzer.manage.sync.ManualSync;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +49,7 @@ public class Update extends AppCompatActivity {
     private static final String ACTION_FORM_EXPAND = " Expand Form";
     private static final String ACTION_FORM_COLLAPSE = " Collapse Form";
 
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement = UiElement.getInstance();
     private AppCompatTextView txtMainField, txtField1, txtField2, txtField3, txtField4, txtRetrieveType;
     private AppCompatEditText editMainField, editField1, editField2, editField3, editField4;
     private AppCompatImageButton imgBtnField1, imgBtnField2, imgBtnField3, imgBtnField4;
@@ -73,7 +73,7 @@ public class Update extends AppCompatActivity {
 
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 
-        userInterface.changeActivity(this);
+        uiElement.changeActivity(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         choiceDialog.initInstance(this);
         locData.formInstance(this);
@@ -269,7 +269,7 @@ public class Update extends AppCompatActivity {
         txtField3.setText(R.string.label_refuel_rate);
         txtField4.setText(R.string.label_odometer_reading);
         editMainField.setText(refuel.cost);
-        editField1.setText(userInterface.date(refuel.date));
+        editField1.setText(uiElement.date(refuel.date));
         editField2.setText(refuel.volume);
         editField3.setText(refuel.rate);
         editField4.setText(refuel.odo);
@@ -283,8 +283,8 @@ public class Update extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(SCREEN_REFUEL + ACTION_DATE).build());
-                userInterface.setDatePickerDialog(getString(R.string.label_date), editField1);
-                userInterface.showDatePickerDialog();
+                uiElement.setDatePickerDialog(getString(R.string.label_date), editField1);
+                uiElement.showDatePickerDialog();
             }
         });
         editField2.addTextChangedListener(field2Watcher);
@@ -349,7 +349,7 @@ public class Update extends AppCompatActivity {
                     Snackbar.make(findViewById(android.R.id.content), getString(R.string.message_fill_password), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                if (!editField4.getText().toString().isEmpty() && !userInterface.validateEmail(editField4.getText().toString())) {
+                if (!editField4.getText().toString().isEmpty() && !uiElement.validateEmail(editField4.getText().toString())) {
                     Snackbar.make(findViewById(android.R.id.content), getString(R.string.message_invalid_email), Snackbar.LENGTH_SHORT).show();
                     return;
                 }
@@ -376,7 +376,7 @@ public class Update extends AppCompatActivity {
         txtField3.setText(R.string.label_odometer_reading);
         txtField4.setText(R.string.label_details);
         editMainField.setText(service.cost);
-        editField1.setText(userInterface.date(service.date));
+        editField1.setText(uiElement.date(service.date));
         try {
             editField2.setText(databaseHelper.workshop(Arrays.asList(DatabaseSchema.COLUMN_ID), new String[]{service.getWorkshopId()}).name);
         } catch (Exception e) { editField2.setText(""); }
@@ -403,8 +403,8 @@ public class Update extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(SCREEN_SERVICE + ACTION_DATE).build());
-                        userInterface.setDatePickerDialog(getString(R.string.label_date), editField1);
-                        userInterface.showDatePickerDialog();
+                        uiElement.setDatePickerDialog(getString(R.string.label_date), editField1);
+                        uiElement.showDatePickerDialog();
                     }
                 });
                 btnDone.setOnClickListener(new View.OnClickListener() {

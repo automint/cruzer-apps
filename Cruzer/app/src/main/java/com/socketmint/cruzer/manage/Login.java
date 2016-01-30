@@ -36,7 +36,7 @@ import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
 import com.socketmint.cruzer.main.ViewHistory;
 import com.socketmint.cruzer.startup.Launcher;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,7 +64,7 @@ public class Login {
     private AppCompatButton btnDone;
     private ProgressDialog progressDialog;
 
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement;
     private DatabaseHelper databaseHelper;
     private LocData locData = new LocData();
 
@@ -82,7 +82,7 @@ public class Login {
         locData.cruzerInstance(activity);
         progressDialog = new ProgressDialog(activity);
         progressDialog.setCancelable(false);
-        userInterface.changeActivity(activity);
+        uiElement = new UiElement(activity);
         requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
     }
 
@@ -103,7 +103,7 @@ public class Login {
                     Snackbar.make(dialog.findViewById(android.R.id.content), R.string.message_fill_details, Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                userInterface.hideKeyboard(btnDone);
+                uiElement.hideKeyboard(btnDone);
 
                 login(email, firstName, lastName, editMobile.getText().toString());
             }
