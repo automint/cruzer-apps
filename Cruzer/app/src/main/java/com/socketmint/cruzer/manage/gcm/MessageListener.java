@@ -19,7 +19,6 @@ import com.socketmint.cruzer.dataholder.Service;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
-import com.socketmint.cruzer.history.ServiceFragment;
 import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 
@@ -139,7 +138,7 @@ public class MessageListener extends GcmListenerService {
                         }
                     } catch (JSONException e) { Log.e(TAG, "problems is not json"); }
 
-                    try { ServiceFragment.addData(); } catch (Exception e) { e.printStackTrace(); }
+//                    Add Listener Here
                     if (!method.equals(Constants.VolleyRequest.METHOD_PUT))
                         sendNotification("Service has been added for " + reg);
                 } catch (JSONException e) { Log.e(TAG, "body is not json"); }

@@ -130,7 +130,7 @@
                 android:id="@+id/button_create_record"
                 android:text="@string/label_done"
                 app:backgroundTint="@color/orange_500"
-                android:textColor="@color/white_darken_0"
+                android:textColor="@android:color/white"
                 app:borderWidth="0dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 

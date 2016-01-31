@@ -161,6 +161,10 @@ public class UiElement {
         } catch (ParseException e) { return longDate; }
     }
 
+    public String date(String date, String time) {
+        return null;
+    }
+
     public void hideKeyboard(View view) {
         InputMethodManager keyboardManager = (InputMethodManager) activity.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         try {

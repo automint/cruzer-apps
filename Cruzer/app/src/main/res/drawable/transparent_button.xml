@@ -10,7 +10,7 @@
             android:insetBottom="6dp">
             <shape android:shape="rectangle">
                 <corners android:radius="@dimen/transparent_button_radius" />
-                <solid android:color="@color/white_darken_1" />
+                <solid android:color="@color/grey_300" />
                 <padding android:left="8dp"
                     android:top="8dp"
                     android:right="8dp"

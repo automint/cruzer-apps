@@ -178,7 +178,7 @@ public class LoginDialog {
                     progressDialog.setMessage(activity.getString(R.string.message_authenticating));
                     progressDialog.show();
                     dialog.setCancelable(false);
-                    textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
+                    textMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey_800));
                     textMessage.setText(R.string.message_authenticating);
                     blockButtons();
                 }
@@ -261,7 +261,7 @@ public class LoginDialog {
                             if (progressDialog != null)
                                 progressDialog.dismiss();
                             setFields(mobile, password);
-                            textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
+                            textMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey_800));
                             textMessage.setText(R.string.message_login_fail);
                         } else {
                             register(editMobile.getText().toString(), editPassword.getText().toString());
@@ -300,7 +300,7 @@ public class LoginDialog {
                     progressDialog.setMessage(activity.getString(R.string.message_registering));
                 dialog.setCancelable(false);
                 blockButtons();
-                textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
+                textMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey_800));
                 textMessage.setText(R.string.message_registering);
             }
         });
@@ -329,7 +329,7 @@ public class LoginDialog {
                         loginThread.interrupt();
 
                         setFields(mobile, password);
-                        textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
+                        textMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey_800));
                         textMessage.setText(R.string.message_signup_fail);
                         if (progressDialog != null)
                             progressDialog.dismiss();

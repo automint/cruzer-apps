@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
                     android:fontFamily="sans-serif-light"
-                    android:textColor="@color/dark_v1"
+                    android:textColor="@color/grey_800"
                     android:id="@+id/text_vehicle_name"
                     android:paddingTop="4dp"
                     android:paddingLeft="10dp"

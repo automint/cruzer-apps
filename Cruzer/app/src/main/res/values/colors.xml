@@ -4,15 +4,15 @@
     <color name="cruzer_blue_primary">#08A4C6</color>
     <color name="cruzer_blue_primary_dark">#0794b3</color>
 
-    <color name="dark_v1">#5B595A</color>
-    <color name="white_darken_1">#E9E7E7</color>
-    <color name="white_darken_0">#EEEEEE</color>
-
     <color name="refuel_primary">@color/orange_400</color>
     <color name="refuel_primary_dark">@color/orange_500</color>
 
     <color name="service_primary">@color/blue_600</color>
     <color name="service_primary_dark">@color/blue_800</color>
+
+    <color name="grey_800">#424242</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_200">#EEEEEE</color>
 
     <color name="green_400">#66BB6A</color>
 

@@ -81,7 +81,7 @@
                     android:id="@+id/button_vehicle_company_list"
                     android:layout_gravity="center_vertical"
                     android:background="@android:color/transparent"
-                    android:tint="@color/dark_v1"
+                    android:tint="@color/grey_800"
                     android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
@@ -130,7 +130,7 @@
                     android:id="@+id/button_vehicle_model_list"
                     android:layout_gravity="center_vertical"
                     android:background="@android:color/transparent"
-                    android:tint="@color/dark_v1"
+                    android:tint="@color/grey_800"
                     android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
@@ -186,7 +186,7 @@
                     android:id="@+id/button_create_record"
                     android:text="@string/label_done"
                     app:backgroundTint="@color/cruzer_blue_accent"
-                    android:textColor="@color/white_darken_0"
+                    android:textColor="@android:color/white"
                     app:borderWidth="0dp"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 

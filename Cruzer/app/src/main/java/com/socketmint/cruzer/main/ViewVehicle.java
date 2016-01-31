@@ -26,8 +26,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.crud.create.Create;
-import com.socketmint.cruzer.crud.CrudChoices;
-import com.socketmint.cruzer.crud.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.drawer.DrawerFragment;
@@ -269,7 +267,7 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
         public void onClick(View v) {
             final Holder holder = (Holder) v.getTag();
             analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_VEHICLE_VIEW).build());
-            startActivity(new Intent(ViewVehicle.this, Retrieve.class).putExtra(Constants.Bundle.ID, vehicles.get(holder.getAdapterPosition()).getId()).putExtra(Constants.Bundle.PAGE_CHOICE, CrudChoices.VEHICLE));
+            // Add Here
         }
 
         /**

@@ -14,7 +14,7 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_retrieve_new);
+        setContentView(R.layout.layout_retrieve);
 
         findViewById(R.id.button_back).setOnClickListener(this);
 

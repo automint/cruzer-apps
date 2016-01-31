@@ -21,7 +21,7 @@
 
             <android.support.v7.widget.AppCompatTextView android:id="@+id/text_drawer_username"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/app_name" android:textColor="@color/white_darken_0"
+                android:text="@string/app_name" android:textColor="@android:color/white"
                 android:textStyle="bold"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:drawableRight="@drawable/ic_edit_white_18dp"
@@ -48,7 +48,7 @@
         android:layout_width="@dimen/drawer_width"
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
-        android:background="@color/white_darken_0"
+        android:background="@color/grey_200"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:visibility="visible" />

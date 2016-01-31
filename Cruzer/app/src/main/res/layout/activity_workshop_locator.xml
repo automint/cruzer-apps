@@ -39,7 +39,7 @@
                             android:id="@+id/toolbar_title"
                             android:text="@string/title_activity_workshop_locator"
                             android:layout_gravity="center"
-                            android:textColor="@color/white_darken_0"
+                            android:textColor="@android:color/white"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:paddingLeft="10dp"
                             android:paddingRight="10dp"/>

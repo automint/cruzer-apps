@@ -25,8 +25,6 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
-import com.socketmint.cruzer.crud.CrudChoices;
-import com.socketmint.cruzer.crud.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.main.History;
@@ -146,7 +144,7 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
                     loginDialog.show(true);
                 } else {
                     analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_USER_DETAILS).build());
-                    startActivity(new Intent(getActivity(), Retrieve.class).putExtra(Constants.Bundle.ID, databaseHelper.user().getId()).putExtra(Constants.Bundle.PAGE_CHOICE, CrudChoices.USER));
+                    // Add Here
                 }
                 break;
 
