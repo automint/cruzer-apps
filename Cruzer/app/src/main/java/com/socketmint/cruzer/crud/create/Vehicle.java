@@ -1,4 +1,4 @@
-package com.socketmint.cruzer.crud.create.vehicle;
+package com.socketmint.cruzer.crud.create;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +20,7 @@ import com.socketmint.cruzer.main.ViewHistory;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 
-public class VehicleEssential extends Fragment implements View.OnClickListener {
+public class Vehicle extends Fragment implements View.OnClickListener {
 //    private static final String TAG = "AddVehicle";
     private static final String ACTION_ADD_VEHICLE = "Add Vehicle";
     private AppCompatEditText editRegistration, editVehicleCompany, editVehicleModel, editVehicleName;
@@ -31,8 +31,8 @@ public class VehicleEssential extends Fragment implements View.OnClickListener {
 
     private Tracker analyticsTracker;
 
-    public static VehicleEssential newInstance() {
-        VehicleEssential fragment = new VehicleEssential();
+    public static Vehicle newInstance() {
+        Vehicle fragment = new Vehicle();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -75,7 +75,7 @@ public class VehicleEssential extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.edit_vehicle_company:
             case R.id.button_vehicle_company_list:
-                choiceDialog.chooseManufecturer(editVehicleCompany);
+                choiceDialog.chooseManufacturer(editVehicleCompany);
                 break;
             case R.id.edit_vehicle_model:
             case R.id.button_vehicle_model_list:

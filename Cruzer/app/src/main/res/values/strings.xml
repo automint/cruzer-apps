@@ -56,6 +56,10 @@
 
     <!-- edit box hints -->
     <string name="hint_edit_field">Enter Here</string>
+    <string name="hint_amount">Total Amount</string>
+    <string name="hint_volume">Liters</string>
+    <string name="hint_rate">Price</string>
+    <string name="hint_notes">Add Notes</string>
     <string name="hint_edit_first_name">First Name</string>
     <string name="hint_edit_last_name">Last Name</string>
     <string name="hint_edit_password">Enter Password</string>
@@ -65,6 +69,7 @@
 
     <!-- messages -->
     <string name="message_fill_details">Please Fill Details</string>
+    <string name="message_fill_amount">Please provide amount</string>
     <string name="message_authenticating">Authenticating&#8230;</string>
     <string name="message_registering">Registering&#8230;</string>
     <string name="message_volley_error_response">Check your internet connection!</string>

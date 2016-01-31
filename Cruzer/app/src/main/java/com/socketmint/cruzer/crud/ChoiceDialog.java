@@ -31,6 +31,7 @@ import com.socketmint.cruzer.ui.UiElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ChoiceDialog {
@@ -44,7 +45,7 @@ public class ChoiceDialog {
     private Activity activity;
     private Dialog dialog;
     private ListViewCompat choiceList;
-    private UiElement uiElement = UiElement.getInstance();
+    private UiElement uiElement;
 
     private DatabaseHelper databaseHelper;
     private List<String> list;
@@ -71,7 +72,7 @@ public class ChoiceDialog {
         this.activity = activity;
         databaseHelper = new DatabaseHelper(activity.getApplicationContext());
         locData.formInstance(activity);
-        uiElement.changeActivity(activity);
+        uiElement = new UiElement(activity);
         list = new ArrayList<>();
         analyticsTracker = ((CruzerApp) activity.getApplication()).getAnalyticsTracker();
     }
@@ -130,7 +131,7 @@ public class ChoiceDialog {
         this.activity = activity;
         databaseHelper = new DatabaseHelper(activity.getApplicationContext());
         locData.formInstance(activity);
-        uiElement.changeActivity(activity);
+        uiElement = new UiElement(activity);
         analyticsTracker = ((CruzerApp) activity.getApplication()).getAnalyticsTracker();
     }
 
@@ -158,7 +159,7 @@ public class ChoiceDialog {
         });
     }
 
-    public void chooseManufecturer(final AppCompatEditText result) {
+    public void chooseManufacturer(final AppCompatEditText result) {
         createDialog();
         addListener(result);
         analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_DIALOG).setAction(SCREEN_MANU).build());
@@ -188,7 +189,7 @@ public class ChoiceDialog {
         createDialog();
         addListener(result);
         analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_DIALOG).setAction(SCREEN_MODEL).build());
-        final List<Model> models = databaseHelper.models(Arrays.asList(DatabaseSchema.Models.COLUMN_MANU_ID), new String[]{locData.manuId()});
+        final List<Model> models = databaseHelper.models(Collections.singletonList(DatabaseSchema.Models.COLUMN_MANU_ID), new String[]{locData.manuId()});
         returnName = null;
         final List<String> list = new ArrayList<>();
         for (Model item : models) {

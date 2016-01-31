@@ -25,7 +25,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
-import com.socketmint.cruzer.crud.Create;
+import com.socketmint.cruzer.crud.create.Create;
 import com.socketmint.cruzer.crud.CrudChoices;
 import com.socketmint.cruzer.crud.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
@@ -65,7 +65,7 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
             databaseHelper = new DatabaseHelper(getApplicationContext());
 
             if (databaseHelper.vehicleCount() == 0) {
-                startActivity(new Intent(ViewVehicle.this, Create.class).putExtra(Constants.Bundle.FORM_TYPE, CrudChoices.VEHICLE));
+                startActivity(new Intent(ViewVehicle.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE));
                 finish();
                 return;
             }
@@ -107,7 +107,7 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
     public void onResume() {
         super.onResume();
         if (databaseHelper.vehicleCount() == 0) {
-            startActivity(new Intent(ViewVehicle.this, Create.class).putExtra(Constants.Bundle.FORM_TYPE, CrudChoices.VEHICLE));
+            startActivity(new Intent(ViewVehicle.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE));
             finish();
             return;
         }
@@ -130,7 +130,7 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
                             .setAction(getString(R.string.label_add), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    startActivity(new Intent(ViewVehicle.this, Create.class).putExtra(Constants.Bundle.FORM_TYPE, CrudChoices.VEHICLE));
+                                    startActivity(new Intent(ViewVehicle.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE));
                                     finish();
                                 }
                             }).show();
@@ -173,7 +173,7 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
             case R.id.fab_add:
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_VEHICLE_ADD).build());
 //                startActivity(new Intent(ViewVehicle.this, Create.class).putExtra(Constants.Bundle.FORM_TYPE, CrudChoices.VEHICLE));
-                startActivity(new Intent(ViewVehicle.this, com.socketmint.cruzer.crud.create.Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.PAGE_VEHICLE));
+                startActivity(new Intent(ViewVehicle.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE));
                 break;
         }
     }

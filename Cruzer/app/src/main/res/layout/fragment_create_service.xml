@@ -11,52 +11,21 @@
         android:paddingBottom="20dp"
         android:animateLayoutChanges="true">
 
-        <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+        <android.support.v7.widget.AppCompatEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/edit_amount"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp">
-
-            <android.support.v7.widget.AppCompatEditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.4"
-                android:id="@+id/edit_amount"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:inputType="numberDecimal"
-                android:hint="@string/hint_amount"
-                android:drawablePadding="10dp"
-                android:drawableLeft="@drawable/ic_amount"
-                android:drawableStart="@drawable/ic_amount"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-            <android.support.v7.widget.AppCompatEditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/edit_volume"
-                android:layout_weight="0.3"
-                android:inputType="numberDecimal"
-                android:paddingBottom="18dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:hint="@string/hint_volume"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-            <android.support.v7.widget.AppCompatEditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/edit_refuel_rate"
-                android:layout_weight="0.3"
-                android:inputType="numberDecimal"
-                android:paddingBottom="18dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:hint="@string/hint_rate"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-        </android.support.v7.widget.LinearLayoutCompat>
+            android:layout_marginRight="20dp"
+            android:inputType="numberDecimal"
+            android:hint="@string/hint_amount"
+            android:drawablePadding="10dp"
+            android:drawableLeft="@drawable/ic_amount"
+            android:drawableStart="@drawable/ic_amount"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
 
         <android.support.v7.widget.AppCompatEditText
             android:layout_width="match_parent"
@@ -79,8 +48,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/layout_date"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp">
+            android:layout_marginRight="20dp">
 
             <android.support.v7.widget.AppCompatEditText
                 android:layout_width="wrap_content"
@@ -117,6 +85,23 @@
 
         </android.support.v7.widget.LinearLayoutCompat>
 
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_notes"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="10dp"
+            android:inputType="textMultiLine"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:hint="@string/hint_notes"
+            android:drawableLeft="@drawable/ic_notes"
+            android:drawableStart="@drawable/ic_notes"
+            android:drawablePadding="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
         <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -129,7 +114,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/button_create_record"
                 android:text="@string/label_done"
-                app:backgroundTint="@color/orange_500"
+                app:backgroundTint="@color/blue_800"
                 android:textColor="@color/white_darken_0"
                 app:borderWidth="0dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>

@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
     <color name="cruzer_blue">#21BCD0</color>
-
-    <color name="dark_v1">#5B595A</color>
     <color name="cruzer_blue_v1">#08A4C6</color>
 
+    <color name="dark_v1">#5B595A</color>
     <color name="white_darken_1">#E9E7E7</color>
     <color name="white_darken_0">#EEEEEE</color>
-    <color name="refuel_color">#179CD8</color>
-    <color name="service_color">#3C82C4</color>
-    <color name="bike_back">#e6e7e9</color>
+
+    <color name="refuel_color">@color/orange_400</color>
+    <color name="service_color">@color/blue_600</color>
 
     <color name="green_400">#66BB6A</color>
+
     <color name="red_400">#EF5350</color>
     <color name="red_600">#E53935</color>
+
+    <color name="orange_400">#FFA726</color>
+    <color name="orange_500">#FF9800</color>
+
+    <color name="blue_600">#1E88E5</color>
+    <color name="blue_800">#1565C0</color>
 
     <color name="volley_error_message">#DD2F3C</color>
 </resources>

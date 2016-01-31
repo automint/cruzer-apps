@@ -20,10 +20,11 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
-import com.socketmint.cruzer.crud.Create;
+import com.socketmint.cruzer.crud.create.Create;
 import com.socketmint.cruzer.crud.CrudChoices;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.main.ViewHistory;
+import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
 
@@ -73,7 +74,7 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
     private void preLogin() {
         if (login.login() > 0) {
             if (databaseHelper.vehicleCount() == 0) {
-                startActivity(new Intent(Launcher.this, Create.class).putExtra(Constants.Bundle.FORM_TYPE, CrudChoices.VEHICLE));
+                startActivity(new Intent(Launcher.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE));
                 finish();
             } else {
                 startActivity(new Intent(Launcher.this, ViewHistory.class));

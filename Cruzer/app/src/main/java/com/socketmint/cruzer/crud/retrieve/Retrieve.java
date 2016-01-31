@@ -7,7 +7,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 
 import com.socketmint.cruzer.R;
-import com.socketmint.cruzer.crud.CrudChoices;
+import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 
 public class Retrieve extends AppCompatActivity implements View.OnClickListener {
@@ -26,7 +26,7 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener 
         }
 
         switch (choice) {
-            case CrudChoices.WORKSHOP:
+            case Choices.WORKSHOP:
                 ((AppCompatTextView) findViewById(R.id.toolbar_title)).setText(R.string.label_workshop);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frame_retrieve, Workshop.newInstance(id)).commit();
                 break;

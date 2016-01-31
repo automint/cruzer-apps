@@ -89,7 +89,7 @@
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@drawable/refuel_icon1"
+                            android:src="@drawable/ic_refuel"
                             android:id="@+id/icon_option_refuel"
                             android:tint="@color/dark_v1"/>
 
@@ -117,7 +117,7 @@
                         <android.support.v7.widget.AppCompatImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@drawable/service_icon1"
+                            android:src="@drawable/ic_service"
                             android:id="@+id/icon_option_service"
                             android:tint="@color/dark_v1"/>
 
