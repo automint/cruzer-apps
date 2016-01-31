@@ -310,7 +310,7 @@
                     app:borderWidth="0dp"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:textColor="@color/cruzer_blue_v1"
+                    android:textColor="@color/cruzer_blue_primary"
                     android:background="@android:color/transparent"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -319,7 +319,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/button_create_record"
                     android:text="@string/label_done"
-                    app:backgroundTint="@color/cruzer_blue"
+                    app:backgroundTint="@color/cruzer_blue_accent"
                     android:textColor="@android:color/white"
                     app:borderWidth="0dp"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>

@@ -37,14 +37,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
-import com.socketmint.cruzer.crud.CrudChoices;
 import com.socketmint.cruzer.crud.retrieve.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Workshop;
 import com.socketmint.cruzer.drawer.DrawerFragment;
-import com.socketmint.cruzer.main.ViewHistory;
+import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
@@ -255,7 +254,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(WorkshopLocator.this, ViewHistory.class));
+        startActivity(new Intent(WorkshopLocator.this, History.class));
         finish();
     }
 

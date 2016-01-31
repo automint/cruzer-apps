@@ -187,7 +187,7 @@
                     android:id="@+id/button_login_phone"
                     android:text="@string/label_done"
                     app:borderWidth="0dp"
-                    app:backgroundTint="@color/cruzer_blue"
+                    app:backgroundTint="@color/cruzer_blue_accent"
                     android:textColor="@android:color/white"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"

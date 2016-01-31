@@ -29,7 +29,7 @@ import com.socketmint.cruzer.crud.CrudChoices;
 import com.socketmint.cruzer.crud.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.dataholder.User;
-import com.socketmint.cruzer.main.ViewHistory;
+import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.main.ViewVehicle;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
@@ -234,7 +234,7 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
         switch (drawer_items) {
             case VIEW_HISTORY:
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_VIEW_HISTORY).build());
-                startActivity(new Intent(getActivity(), ViewHistory.class));
+                startActivity(new Intent(getActivity(), History.class));
                 getActivity().finish();
                 break;
             case VIEW_VEHICLE:

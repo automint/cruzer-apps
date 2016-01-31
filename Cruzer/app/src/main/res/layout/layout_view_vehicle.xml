@@ -7,32 +7,35 @@
     android:layout_height="match_parent"
     tools:context="com.socketmint.cruzer.main.ViewVehicle">
 
-    <android.support.v7.widget.ContentFrameLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white_darken_1">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:id="@+id/toolbar"
-            app:borderWidth="0dp"
-            android:elevation="8dp"
-            android:background="@color/cruzer_blue">
+            android:layout_height="wrap_content">
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/toolbar_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:layout_gravity="bottom"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/white_darken_0"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="18dp"/>
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:id="@+id/toolbar"
+                app:borderWidth="0dp">
 
-        </android.support.v7.widget.Toolbar>
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:layout_gravity="bottom"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@android:color/white"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="18dp"/>
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
@@ -50,7 +53,7 @@
             android:layout_margin="30dp"
             android:layout_gravity="end|bottom" />
 
-    </android.support.v7.widget.ContentFrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
     <fragment android:id="@+id/navigation_drawer"
         android:layout_width="@dimen/drawer_width" android:layout_height="match_parent"
         android:layout_gravity="start"

@@ -509,50 +509,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
     }
 
-    public boolean addTrialVehicle(String reg, String name, String modelId) {
-        try {
-            ContentValues values = new ContentValues();
-
-            values.put(DatabaseSchema.COLUMN_ID, generateId(DatabaseSchema.Vehicles.TABLE_NAME));
-            values.put(DatabaseSchema.Vehicles.COLUMN_REG, reg);
-            values.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
-            values.put(DatabaseSchema.Vehicles.COLUMN_MODEL_ID, modelId);
-            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
-
-            getWritableDatabase().insert(DatabaseSchema.Vehicles.TABLE_NAME, null, values);
-            return true;
-        } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
-    }
-
-    public boolean addTrialVehicle(String reg, String name) {
-        try {
-            ContentValues values = new ContentValues();
-
-            values.put(DatabaseSchema.COLUMN_ID, generateId(DatabaseSchema.Vehicles.TABLE_NAME));
-            values.put(DatabaseSchema.Vehicles.COLUMN_REG, reg);
-            values.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
-            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
-
-            getWritableDatabase().insert(DatabaseSchema.Vehicles.TABLE_NAME, null, values);
-            return true;
-        } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
-    }
-
-    public boolean addVehicle(String reg, String name, String uId) {                                        // [ CHANGE THIS ]
-        try {
-            ContentValues values = new ContentValues();
-
-            values.put(DatabaseSchema.COLUMN_ID, generateId(DatabaseSchema.Vehicles.TABLE_NAME));
-            values.put(DatabaseSchema.Vehicles.COLUMN_REG, reg);
-            values.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
-            values.put(DatabaseSchema.Vehicles.COLUMN_USER_ID, uId);
-            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
-
-            getWritableDatabase().insert(DatabaseSchema.Vehicles.TABLE_NAME, null, values);
-            return true;
-        } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
-    }
-
     public String addVehicleFromGcm(String reg, String sId, String modelId) {                               // [ CHANGE THIS ]
         try {
             ContentValues values = new ContentValues();
@@ -1129,26 +1085,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return null; }
     }
 
-    public String addService(String vehicleId, String date, String workshopId, String cost, String odo, String details) {
-        try {
-            ContentValues values = new ContentValues();
-
-            String id = generateId(DatabaseSchema.Services.TABLE_NAME);
-            values.put(DatabaseSchema.COLUMN_ID, id);
-            values.put(DatabaseSchema.COLUMN_VEHICLE_ID, vehicleId);
-            values.put(DatabaseSchema.Services.COLUMN_DATE, date);
-            values.put(DatabaseSchema.Services.COLUMN_WORKSHOP_ID, workshopId);
-            values.put(DatabaseSchema.Services.COLUMN_COST, cost);
-            values.put(DatabaseSchema.Services.COLUMN_ODO, odo);
-            values.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
-            values.put(DatabaseSchema.Services.COLUMN_USER_ID, user().getsId());
-            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
-
-            getWritableDatabase().insert(DatabaseSchema.Services.TABLE_NAME, null, values);
-            return id;
-        } catch (SQLiteConstraintException e) { return null; }
-    }
-
     public String addService(String vehicleId, String date, String cost, String odo, String details) {
         try {
             ContentValues values = new ContentValues();
@@ -1356,23 +1292,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
     }
 
-    public boolean addProblem(String serviceId, String details, String lCost, String pCost) {
-        try {
-            ContentValues values = new ContentValues();
-
-            String id = generateId(DatabaseSchema.Problems.TABLE_NAME);
-            values.put(DatabaseSchema.COLUMN_ID, id);
-            values.put(DatabaseSchema.Problems.COLUMN_SERVICE_ID, serviceId);
-            values.put(DatabaseSchema.Problems.COLUMN_DETAILS, details);
-            values.put(DatabaseSchema.Problems.COLUMN_LCOST, lCost);
-            values.put(DatabaseSchema.Problems.COLUMN_PCOST, pCost);
-            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
-
-            getWritableDatabase().insert(DatabaseSchema.Problems.TABLE_NAME, null, values);
-            return true;
-        } catch (SQLiteConstraintException e) { return false; }
-    }
-
     public boolean addProblem(String sId, String serviceId, String details, String lCost, String pCost, String qty) {
         try {
             ContentValues values = new ContentValues();
@@ -1510,19 +1429,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().update(DatabaseSchema.Workshops.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
-            return true;
-        } catch (SQLiteConstraintException e) { return false; }
-    }
-
-    public boolean addWorkshop(String name) {
-        try {
-            ContentValues values = new ContentValues();
-
-            values.put(DatabaseSchema.COLUMN_ID, generateId(DatabaseSchema.Workshops.TABLE_NAME));
-            values.put(DatabaseSchema.Workshops.COLUMN_NAME, name);
-            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
-
-            getWritableDatabase().insert(DatabaseSchema.Workshops.TABLE_NAME, null, values);
             return true;
         } catch (SQLiteConstraintException e) { return false; }
     }

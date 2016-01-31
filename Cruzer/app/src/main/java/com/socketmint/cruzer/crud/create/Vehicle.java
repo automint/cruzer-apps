@@ -16,7 +16,7 @@ import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.crud.ChoiceDialog;
 import com.socketmint.cruzer.database.DatabaseHelper;
-import com.socketmint.cruzer.main.ViewHistory;
+import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 
@@ -98,7 +98,7 @@ public class Vehicle extends Fragment implements View.OnClickListener {
             return;
         }
         if (databaseHelper.addVehicle(editRegistration.getText().toString(), editVehicleName.getText().toString(), databaseHelper.user().getId(), locData.modelId())) {
-            startActivity(new Intent(getActivity(), ViewHistory.class));
+            startActivity(new Intent(getActivity(), History.class));
             getActivity().finish();
         }
     }

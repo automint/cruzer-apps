@@ -28,7 +28,6 @@ public class Constants {
 
     public static abstract class VolleyRequest {
         public static final String METHOD_PUT = "PUT";
-        public static final String METHOD_POST = "POST";
         public static final String ACCESS_TOKEN = "x-access-token";
         public static final String AUTH_TOKEN = "x-auth-token";
         public static final String AUTH_MOBILE_PARAM = DatabaseSchema.Users.COLUMN_MOBILE;
@@ -55,7 +54,6 @@ public class Constants {
     }
 
     public static abstract class Bundle {
-        public static final String FORM_TYPE = "what";
         public static final String VEHICLE_ID = DatabaseSchema.COLUMN_VEHICLE_ID;
         public static final String PAGE_CHOICE = "view_type";
         public static final String ID = DatabaseSchema.COLUMN_ID;

@@ -81,7 +81,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.4"
-                android:tint="@color/refuel_color"
+                android:tint="@color/refuel_primary"
                 android:src="@drawable/ic_list_black_24dp"
                 android:layout_gravity="center"/>
 

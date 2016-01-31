@@ -185,7 +185,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/button_create_record"
                     android:text="@string/label_done"
-                    app:backgroundTint="@color/cruzer_blue"
+                    app:backgroundTint="@color/cruzer_blue_accent"
                     android:textColor="@color/white_darken_0"
                     app:borderWidth="0dp"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>

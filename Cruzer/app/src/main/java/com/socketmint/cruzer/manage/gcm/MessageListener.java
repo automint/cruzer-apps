@@ -20,7 +20,7 @@ import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
 import com.socketmint.cruzer.history.ServiceFragment;
-import com.socketmint.cruzer.main.ViewHistory;
+import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 
 import org.json.JSONArray;
@@ -28,14 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collections;
-
-/**
- *  This class receives GCM from Google Play Server and perform tasks in that particular manner in app.
- *  It is a framework provided by Google Play Services
- *  @author ndkcha
- *  @version 14
- *  @since 14
- */
 
 public class MessageListener extends GcmListenerService {
 
@@ -156,7 +148,7 @@ public class MessageListener extends GcmListenerService {
     }
 
     private void sendNotification(String message) {
-        Intent intent = new Intent(this, ViewHistory.class);
+        Intent intent = new Intent(this, History.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);

@@ -89,7 +89,7 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
 
     private void androidSync() {
         try {
-            ContentResolver.requestSync(ViewHistory.account, getString(R.string.sync_account_authority), new Bundle());
+            ContentResolver.requestSync(History.account, getString(R.string.sync_account_authority), new Bundle());
             Log.e(TAG, "sync requested");
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -255,7 +255,7 @@ public class ViewVehicle extends AppCompatActivity implements View.OnClickListen
                 @Override
                 public void onClick(View v) {
                     analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_VEHICLE_HISTORY).build());
-                    startActivity(new Intent(ViewVehicle.this, ViewHistory.class).putExtra(Constants.Bundle.VEHICLE_ID, vehicle.getId()));
+                    startActivity(new Intent(ViewVehicle.this, History.class).putExtra(Constants.Bundle.VEHICLE_ID, vehicle.getId()));
                 }
             });
         }

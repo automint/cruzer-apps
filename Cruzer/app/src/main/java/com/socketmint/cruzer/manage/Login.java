@@ -34,7 +34,7 @@ import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
-import com.socketmint.cruzer.main.ViewHistory;
+import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.startup.Launcher;
 import com.socketmint.cruzer.ui.UiElement;
 
@@ -138,7 +138,7 @@ public class Login {
             progressDialog.dismiss();
 
         login(currentLoginType);
-        activity.startActivity(new Intent(activity, ViewHistory.class));
+        activity.startActivity(new Intent(activity, History.class));
         activity.finish();
     }
 

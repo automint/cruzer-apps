@@ -19,14 +19,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/toolbar"
-                app:borderWidth="0dp"
-                android:background="@color/cruzer_blue_v1"
-                android:paddingTop="16dp">
+                app:borderWidth="0dp">
 
                 <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical">
 
                     <android.support.v7.widget.AppCompatImageButton

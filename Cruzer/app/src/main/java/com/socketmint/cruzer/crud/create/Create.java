@@ -11,7 +11,6 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 
 import com.socketmint.cruzer.R;
-import com.socketmint.cruzer.crud.CrudChoices;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
@@ -26,14 +25,15 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        pageChoice = getIntent().getIntExtra(Constants.Bundle.PAGE_CHOICE, 0);
+        chooseTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_create_temp);
+        setContentView(R.layout.layout_create);
 
         databaseHelper = new DatabaseHelper(getApplicationContext());
         login.initInstance(this);
         initializeViews();
 
-        pageChoice = getIntent().getIntExtra(Constants.Bundle.PAGE_CHOICE, 0);
         vehicleId = getIntent().getStringExtra(Constants.Bundle.VEHICLE_ID);
         vehicleId = (vehicleId != null) ? vehicleId : "";
 
@@ -47,37 +47,32 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
     private void setContent() {
         String title;
         Fragment target;
-        int color, createIcon;
+        int createIcon;
         switch (pageChoice) {
             case Choices.VEHICLE:
                 title = getString(R.string.text_first_vehicle);
                 target = Vehicle.newInstance();
-                color = ContextCompat.getColor(this, R.color.cruzer_blue_v1);
                 createIcon = R.mipmap.ic_launcher;
                 break;
             case Choices.REFUEL:
                 title = getString(R.string.label_refuel);
                 target = Refuel.newInstance(vehicleId);
-                color = ContextCompat.getColor(this, R.color.refuel_color);
                 createIcon = R.drawable.ic_refuel;
                 break;
             case Choices.SERVICE:
                 title = getString(R.string.label_service);
                 target = Service.newInstance(vehicleId);
-                color = ContextCompat.getColor(this, R.color.service_color);
                 createIcon = R.drawable.ic_service;
                 break;
             default:
                 title = getString(R.string.app_name);
                 target = null;
-                color = ContextCompat.getColor(this, R.color.cruzer_blue_v1);
                 createIcon = R.mipmap.ic_launcher;
                 break;
         }
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_create_record, target).commit();
-        findViewById(R.id.toolbar).setBackgroundColor(color);
-        ((AppCompatImageView) findViewById(R.id.image_create_icon)).setImageResource(createIcon);
         ((AppCompatTextView) findViewById(R.id.text_create_type)).setText(title);
+        ((AppCompatImageView) findViewById(R.id.image_create_icon)).setImageResource(createIcon);
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_create_record, target).commit();
     }
 
     @Override
@@ -87,6 +82,25 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
                 onBackPressed();
                 break;
         }
+    }
+
+    private void chooseTheme() {
+        int theme;
+        switch (pageChoice) {
+            case Choices.VEHICLE:
+                theme = R.style.AppTheme_Create;
+                break;
+            case Choices.REFUEL:
+                theme = R.style.AppTheme_Refuel;
+                break;
+            case Choices.SERVICE:
+                theme = R.style.AppTheme_Service;
+                break;
+            default:
+                theme = R.style.AppTheme_Create;
+                break;
+        }
+        setTheme(theme);
     }
 
     private boolean exit = false;

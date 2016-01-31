@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.socketmint.cruzer.main.ViewVehicle">
 
-    <android.support.v7.widget.ContentFrameLayout
+    <android.support.design.widget.CoordinatorLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,36 +17,38 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <android.support.v7.widget.Toolbar
+            <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/toolbar"
-                app:borderWidth="0dp"
-                android:elevation="8dp"
-                android:background="@color/cruzer_blue"
-                android:paddingTop="16dp">
+                android:layout_height="wrap_content">
 
-                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                <android.support.v7.widget.Toolbar
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="14dp"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center_vertical">
+                    android:id="@+id/toolbar"
+                    app:borderWidth="0dp">
 
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/toolbar_title"
-                        android:text="@string/title_activity_workshop_locator"
-                        android:layout_gravity="center"
-                        android:textColor="@color/white_darken_0"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"/>
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical">
 
-                </android.support.v7.widget.LinearLayoutCompat>
+                        <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/toolbar_title"
+                            android:text="@string/title_activity_workshop_locator"
+                            android:layout_gravity="center"
+                            android:textColor="@color/white_darken_0"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"/>
 
-            </android.support.v7.widget.Toolbar>
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                </android.support.v7.widget.Toolbar>
+
+            </android.support.design.widget.AppBarLayout>
 
             <fragment
                 android:id="@+id/map"
@@ -57,7 +59,7 @@
 
         </android.support.v7.widget.LinearLayoutCompat>
 
-    </android.support.v7.widget.ContentFrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <fragment android:id="@+id/navigation_drawer"
         android:layout_width="@dimen/drawer_width" android:layout_height="match_parent"
