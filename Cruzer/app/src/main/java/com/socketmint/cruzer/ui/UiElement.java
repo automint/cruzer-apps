@@ -2,70 +2,31 @@ package com.socketmint.cruzer.ui;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
+import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
-import android.widget.EditText;
+import android.widget.TimePicker;
 
-import com.socketmint.cruzer.manage.LocData;
-
-import java.io.ByteArrayOutputStream;
-import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class UiElement {
-    private static UiElement instance;
-
     private Activity activity;
 
-    private SimpleDateFormat displayDateFormat, serverDateFormat;
+    private SimpleDateFormat displayDateFormat, displayTimeFormat, convertDateFormat, serverFormat;
 
-    private DatePickerDialog datePickerDialog;
-
-    private LocData locData = new LocData();
-
-    /** @deprecated Switch to non singleton */
-    @Deprecated
-    public static UiElement getInstance() {
-        if (instance == null)
-            instance = new UiElement();
-        return instance;
-    }
-
-    /** @deprecated Switch to non singleton */
-    @Deprecated
-    public void initInstance(Activity activity) {
-        this.activity = activity;
-        locData.formInstance(activity);
-        displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", activity.getResources().getConfiguration().locale);
-        serverDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
-    }
-
-    /** @deprecated Switch to non singleton */
-    @Deprecated
-    public void changeActivity(Activity activity) {
-        this.activity = activity;
-        locData.formInstance(activity);
-        displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", activity.getResources().getConfiguration().locale);
-        serverDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
-    }
-
-    /** @deprecated Switch to non singleton */
-    @Deprecated
-    public UiElement() { }
 
     public UiElement(Activity activity) {
         this.activity = activity;
-        locData.formInstance(activity);
         displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", activity.getResources().getConfiguration().locale);
-        serverDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
+        convertDateFormat = new SimpleDateFormat("yyyy-MM-dd", activity.getResources().getConfiguration().locale);
+        displayTimeFormat = new SimpleDateFormat("hh:mm:ss", activity.getResources().getConfiguration().locale);
+        serverFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
     }
 
     public boolean validateEmail(String email) {
@@ -75,94 +36,57 @@ public class UiElement {
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
-    public String imgToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] b = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(b, Base64.DEFAULT);
-    }
-
-    public Bitmap base64ToImg(String string) {
-        byte[] b = Base64.decode(string, 0);
-        return BitmapFactory.decodeByteArray(b, 0, b.length);
-    }
-
-    public void setDatePickerDialog(String title, final EditText editDate) {
+    public void datePickerDialog(final AppCompatEditText result) {
         Calendar calendar = Calendar.getInstance();
-        datePickerDialog = new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog dialog = new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar date = Calendar.getInstance();
                 date.set(year, monthOfYear, dayOfMonth);
-                Date longDate = date.getTime();
-                locData.storeLongDate(serverDateFormat.format(longDate));
-                editDate.setText(displayDateFormat.format(longDate));
+                result.setText(displayDateFormat.format(date.getTime()));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.getDatePicker().setMaxDate(new Date().getTime());
-        datePickerDialog.setTitle(title);
+        dialog.getDatePicker().setMaxDate(new Date().getTime());
+        dialog.show();
     }
 
-    public void showDatePickerDialog() {
-        datePickerDialog.show();
-    }
-
-    public int getDateFromString(String date) {
-        int result = 0;
-        final Calendar calendar = Calendar.getInstance();
-        try {
-            calendar.setTime(displayDateFormat.parse(date));
-            result = calendar.get(Calendar.DAY_OF_MONTH);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public String month(String date) {
-        String result = "";
-        final Calendar calendar = Calendar.getInstance();
-        try {
-            calendar.setTime(displayDateFormat.parse(date));
-            int month = calendar.get(Calendar.MONTH);
-            result = new DateFormatSymbols().getMonths()[month - 1];
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public int year(String date) {
-        int result = 0;
-        final Calendar calendar = Calendar.getInstance();
-        try {
-            calendar.setTime(displayDateFormat.parse(date));
-            result = calendar.get(Calendar.YEAR);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return result;
+    public void timePickerDialog(final AppCompatEditText result) {
+        Calendar calendar = Calendar.getInstance();
+        TimePickerDialog dialog = new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                String time = hourOfDay + ":" + minute + ":00";
+                result.setText(time);
+            }
+        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true);
+        dialog.show();
     }
 
     public String currentDate() {
-        try {
-            Calendar calendar = Calendar.getInstance();
-            Date date = calendar.getTime();
-            locData.storeLongDate(serverDateFormat.format(date));
-            return (displayDateFormat.format(date));
-        } catch (Exception e) { e.printStackTrace(); }
-        return null;
+        return (displayDateFormat.format(Calendar.getInstance().getTime()));
+    }
+
+    public String currentTime() {
+        return (displayTimeFormat.format(Calendar.getInstance().getTime()));
     }
 
     public String date(String longDate) {
         try {
-            locData.storeLongDate(longDate);
-            return displayDateFormat.format(serverDateFormat.parse(longDate));
+            return displayDateFormat.format(serverFormat.parse(longDate));
+        } catch (ParseException e) { return longDate; }
+    }
+
+    public String time(String longDate) {
+        try {
+            return displayTimeFormat.format(serverFormat.parse(longDate));
         } catch (ParseException e) { return longDate; }
     }
 
     public String date(String date, String time) {
-        return null;
+        try {
+            String intermediate = convertDateFormat.format(displayDateFormat.parseObject(date));
+            return intermediate.concat(" " + time);
+        } catch (ParseException e) { return null; }
     }
 
     public void hideKeyboard(View view) {

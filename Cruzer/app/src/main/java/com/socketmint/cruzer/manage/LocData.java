@@ -11,14 +11,10 @@ public class LocData {
         public static final String FORM_PREFERENCES_FILE = "form_preferences";
 
         public static final String TOKEN = "token";
-        public static final String LONG_DATE = "long-date";
         public static final String MANU_ID = "manu-id";
         public static final String MODEL_ID = "model-id";
-        public static final String VEHICLE_ID = "v-id";
-        public static final String WORKSHOP_ID = "workshop-id";
         public static final String LOGIN_TYPE = "login_type";
         public static final String GCM = "gcm";
-        public static final String GCM_SENT = "sentTokenToServer";
     }
 
     public void cruzerInstance(Context context) {
@@ -31,14 +27,6 @@ public class LocData {
 
     public void storeToken(String token) {
         sharedPreferences.edit().putString(Constants.TOKEN, token).apply();
-    }
-
-    public void storeLongDate(String longDate) {
-        sharedPreferences.edit().putString(Constants.LONG_DATE, longDate).apply();
-    }
-
-    public String longDate() {
-        return sharedPreferences.getString(Constants.LONG_DATE, "");
     }
 
     public String token() {
@@ -61,22 +49,6 @@ public class LocData {
         return sharedPreferences.getString(Constants.MODEL_ID, "0");
     }
 
-    public void storeVId(String id) {
-        sharedPreferences.edit().putString(Constants.VEHICLE_ID, id).apply();
-    }
-
-    public String vId() {
-        return sharedPreferences.getString(Constants.VEHICLE_ID, null);
-    }
-
-    public void storeWorkshopId(String id) {
-        sharedPreferences.edit().putString(Constants.WORKSHOP_ID, id).apply();
-    }
-
-    public String workshopId() {
-        return sharedPreferences.getString(Constants.WORKSHOP_ID, null);
-    }
-
     public void storeLoginType(int type) {
         sharedPreferences.edit().putInt(Constants.LOGIN_TYPE, type).apply();
     }
@@ -91,14 +63,6 @@ public class LocData {
 
     public String gcm() {
         return sharedPreferences.getString(Constants.GCM, "");
-    }
-
-    public void storeGcmSentStatus(boolean status) {
-        sharedPreferences.edit().putBoolean(Constants.GCM_SENT, status).apply();
-    }
-
-    public boolean gcmSentStatus() {
-        return sharedPreferences.getBoolean(Constants.GCM_SENT, false);
     }
 
     public void clearData() {

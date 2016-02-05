@@ -49,7 +49,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="0.1"
                             android:id="@+id/button_vehicle_list"
-                            android:background="@drawable/transparent_button"
+                            android:background="@android:color/transparent"
                             android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"
                             android:tint="@android:color/white"/>
 
@@ -67,7 +67,7 @@
                     android:id="@+id/list_history"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:listSelector="@drawable/selector_history_item"/>
+                    android:listSelector="@drawable/selector_history_item" />
 
                 <android.support.v7.widget.LinearLayoutCompat
                     android:id="@+id/layout_add_active"
@@ -98,7 +98,7 @@
             <android.support.v7.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_service"
+                android:text="@string/title_service"
                 android:layout_gravity="center"
                 android:paddingRight="@dimen/card_add_text_padding_vertical_sides"
                 android:paddingLeft="@dimen/card_add_text_padding_vertical_sides"
@@ -139,7 +139,7 @@
             <android.support.v7.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_refuel"
+                android:text="@string/title_refuel"
                 android:paddingRight="@dimen/card_add_text_padding_vertical_sides"
                 android:layout_gravity="center"
                 android:paddingLeft="@dimen/card_add_text_padding_vertical_sides"

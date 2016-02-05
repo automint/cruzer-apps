@@ -25,10 +25,11 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
+import com.socketmint.cruzer.crud.retrieve.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.main.History;
-import com.socketmint.cruzer.main.ViewVehicle;
+import com.socketmint.cruzer.main.Vehicles;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
@@ -80,10 +81,10 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
 
         drawerDataList = new ArrayList<>(Choices.DRAWER_ITEMS.values().length);
         drawerSettingsList = new ArrayList<>(Choices.DRAWER_SETTINGS.values().length);
-        drawerDataList.add(Choices.DRAWER_ITEMS.VIEW_HISTORY.ordinal(), new DrawerData(getString(R.string.drawer_item_history), R.drawable.expense_drawer_icon, 0));
-        drawerDataList.add(Choices.DRAWER_ITEMS.VIEW_VEHICLE.ordinal(), new DrawerData(getString(R.string.drawer_item_vehicle), R.drawable.vehicle_drawer_icon, databaseHelper.vehicleCount()));
-        drawerDataList.add(Choices.DRAWER_ITEMS.LOCATOR.ordinal(), new DrawerData(getString(R.string.drawer_item_locator), R.drawable.ic_location_searching_black_24dp, 0));
-        drawerSettingsList.add(Choices.DRAWER_SETTINGS.LOGOUT.ordinal(), new DrawerData(getString(R.string.drawer_settings_logout), R.drawable.logout_drawer_icon, 0));
+        drawerDataList.add(Choices.DRAWER_ITEMS.VIEW_HISTORY.ordinal(), new DrawerData(getString(R.string.drawer_item_history), R.drawable.ic_historic, 0));
+        drawerDataList.add(Choices.DRAWER_ITEMS.VIEW_VEHICLE.ordinal(), new DrawerData(getString(R.string.drawer_item_vehicle), R.drawable.ic_vehicle, databaseHelper.vehicleCount()));
+        drawerDataList.add(Choices.DRAWER_ITEMS.LOCATOR.ordinal(), new DrawerData(getString(R.string.drawer_item_locator), R.drawable.ic_workshop_locator, 0));
+        drawerSettingsList.add(Choices.DRAWER_SETTINGS.LOGOUT.ordinal(), new DrawerData(getString(R.string.drawer_settings_logout), R.drawable.ic_logout, 0));
     }
 
     @Override
@@ -144,7 +145,7 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
                     loginDialog.show(true);
                 } else {
                     analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_USER_DETAILS).build());
-                    // Add Here
+                    startActivity(new Intent(getActivity(), Retrieve.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.USER));
                 }
                 break;
 
@@ -237,7 +238,7 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
                 break;
             case VIEW_VEHICLE:
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_VIEW_VEHICLE).build());
-                startActivity(new Intent(getActivity(), ViewVehicle.class));
+                startActivity(new Intent(getActivity(), Vehicles.class));
                 getActivity().finish();
                 break;
             case LOCATOR:

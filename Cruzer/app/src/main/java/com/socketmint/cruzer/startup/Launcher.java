@@ -44,7 +44,7 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_launcher);
+        setContentView(R.layout.activity_launcher);
 
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 

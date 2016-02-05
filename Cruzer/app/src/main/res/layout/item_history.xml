@@ -6,91 +6,99 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
-    android:padding="10dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:background="@drawable/selector_history_item">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/ic_refuel"/>
+    <android.support.v7.widget.ContentFrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="14dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_road_card"
+            android:scaleType="fitXY"
+            android:id="@+id/icon_history_road"
+            android:layout_gravity="center"/>
+
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center"
+            android:id="@+id/icon_history_type"
+            android:src="@drawable/ic_refuel_card"/>
+
+    </android.support.v7.widget.ContentFrameLayout>
+
+    <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp">
 
         <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp">
+            android:layout_weight="0.6">
 
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:id="@+id/text_date"
+                android:text="@string/app_name"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:gravity="end">
 
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.6"
-                    android:id="@+id/text_date"
                     android:text="@string/app_name"
-                    android:fontFamily="sans-serif"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.4"
-                    android:gravity="end">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:src="@drawable/rupee_symbol"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginRight="4dp"
-                        android:layout_gravity="center_vertical"/>
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/text_amount"
-                        android:text="@string/app_name"
-                        android:fontFamily="sans-serif-light"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-                </android.support.v7.widget.LinearLayoutCompat>
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.6">
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_name"
-                        android:fontFamily="sans-serif-light"
-                        android:textColor="@color/grey_800"
-                        android:id="@+id/text_vehicle_name"
-                        android:paddingTop="4dp"
-                        android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-                </android.support.v7.widget.LinearLayoutCompat>
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="@color/grey_800"
+                    android:id="@+id/text_vehicle_name"
+                    android:paddingTop="4dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
 
         </android.support.v7.widget.LinearLayoutCompat>
 
-    </android.support.v7.widget.CardView>
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4">
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_amount"
+                    android:text="@string/app_name"
+                    android:layout_gravity="end"
+                    android:fontFamily="sans-serif-light"
+                    android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </android.support.v7.widget.LinearLayoutCompat>
 
 </android.support.v7.widget.LinearLayoutCompat>

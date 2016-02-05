@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.socketmint.cruzer.R;
@@ -16,7 +16,7 @@ import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
 
-public class Create extends AppCompatActivity implements View.OnClickListener {
+public class Create extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
     private Login login = new Login();
 
@@ -28,7 +28,7 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
         pageChoice = getIntent().getIntExtra(Constants.Bundle.PAGE_CHOICE, 0);
         chooseTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_create);
+        setContentView(R.layout.activity_create);
 
         databaseHelper = new DatabaseHelper(getApplicationContext());
         login.initInstance(this);
@@ -41,7 +41,13 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void initializeViews() {
-        findViewById(R.id.button_back).setOnClickListener(this);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     private void setContent() {
@@ -52,15 +58,15 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
             case Choices.VEHICLE:
                 title = getString(R.string.text_first_vehicle);
                 target = Vehicle.newInstance();
-                createIcon = R.mipmap.ic_launcher;
+                createIcon = R.drawable.ic_vehicle;
                 break;
             case Choices.REFUEL:
-                title = getString(R.string.label_refuel);
+                title = getString(R.string.title_refuel);
                 target = Refuel.newInstance(vehicleId);
                 createIcon = R.drawable.ic_refuel;
                 break;
             case Choices.SERVICE:
-                title = getString(R.string.label_service);
+                title = getString(R.string.title_service);
                 target = Service.newInstance(vehicleId);
                 createIcon = R.drawable.ic_service;
                 break;
@@ -73,15 +79,6 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
         ((AppCompatTextView) findViewById(R.id.text_create_type)).setText(title);
         ((AppCompatImageView) findViewById(R.id.image_create_icon)).setImageResource(createIcon);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_create_record, target).commit();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.button_back:
-                onBackPressed();
-                break;
-        }
     }
 
     private void chooseTheme() {
@@ -113,12 +110,14 @@ public class Create extends AppCompatActivity implements View.OnClickListener {
                     if (exit)
                         login.logout();
                     else {
-                        Snackbar.make(Create.this.findViewById(android.R.id.content), getString(R.string.message_back_logout), Snackbar.LENGTH_SHORT).show();
+                        final Snackbar exitBar = Snackbar.make(Create.this.findViewById(android.R.id.content), getString(R.string.message_back_logout), Snackbar.LENGTH_INDEFINITE);
+                        exitBar.show();
                         exit = true;
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exit = false;
+                                exitBar.dismiss();
                             }
                         }, 3 * 1000);
                     }

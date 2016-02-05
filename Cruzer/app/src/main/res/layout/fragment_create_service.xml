@@ -11,13 +11,37 @@
         android:paddingBottom="20dp"
         android:animateLayoutChanges="true">
 
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_service_vehicle"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_service_vehicle"/>
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner_vehicle"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
         <android.support.v7.widget.AppCompatEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/edit_amount"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:inputType="numberDecimal"
@@ -81,6 +105,7 @@
                 android:drawableRight="@drawable/ic_time"
                 android:drawableEnd="@drawable/ic_time"
                 android:drawablePadding="10dp"
+                android:visibility="gone"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
 
         </android.support.v7.widget.LinearLayoutCompat>
@@ -93,7 +118,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="10dp"
-            android:inputType="textMultiLine"
+            android:inputType="textCapSentences"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:hint="@string/hint_notes"

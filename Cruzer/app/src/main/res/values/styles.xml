@@ -38,6 +38,13 @@
         <item name="drawerArrowStyle">@style/WhiteDrawerToggle</item>
     </style>
 
+    <style name="AppTheme.Update" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerToggle</item>
+    </style>
+
     <style name="AppTheme.WorkshopLocator" parent="AppTheme">
         <item name="colorPrimary">@color/cruzer_blue_primary</item>
         <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
