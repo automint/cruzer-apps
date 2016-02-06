@@ -3,7 +3,7 @@ package com.socketmint.cruzer.manage;
 import com.socketmint.cruzer.database.DatabaseSchema;
 
 public class Constants {
-    private static final String URL_SERVER = "http://10.70.0.226:8080";         // (server_ip:8080) or (userapi.cruzer.io)
+    private static final String URL_SERVER = "http://10.70.0.50:8080";         // (server_ip:8080)
     private static final String URL_API_VERSION = "0.1";
     private static final String URL_API_DIR = "api";
     private static final String URL_API = URL_API_DIR + "/" + URL_API_VERSION;

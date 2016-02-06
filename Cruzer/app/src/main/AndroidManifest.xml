@@ -113,6 +113,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/key_google_api" />
 
+        <meta-data
+            android:name="com.google.android.gms.maps.v4.API_KEY"
+            android:value="@string/key_google_api" />
+
         <!-- activities -->
 
         <activity
