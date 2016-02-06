@@ -3,7 +3,7 @@ package com.socketmint.cruzer.manage;
 import com.socketmint.cruzer.database.DatabaseSchema;
 
 public class Constants {
-    private static final String URL_SERVER = "http://userapi.cruzer.io";         // (server_ip:8080) or (userapi.cruzer.io)
+    private static final String URL_SERVER = "http://10.70.0.226:8080";         // (server_ip:8080) or (userapi.cruzer.io)
     private static final String URL_API_VERSION = "0.1";
     private static final String URL_API_DIR = "api";
     private static final String URL_API = URL_API_DIR + "/" + URL_API_VERSION;
@@ -14,6 +14,7 @@ public class Constants {
         public static final String USER = URL_SERVER + "/" + URL_API + "/" + "users";
         public static final String MANU = URL_SERVER + "/" + URL_API + "/" + "manufacturers";
         public static final String MODEL = URL_SERVER + "/" + URL_API + "/" + "models";
+        public static String MODEL(String id) { return MODEL + "/" + id; }
         public static final String VEHICLE = URL_SERVER + "/" + URL_API + "/" + "vehicles";
         public static String VEHICLE(String id) { return VEHICLE + "/" + id; }
         public static final String WORKSHOP = URL_SERVER + "/" + URL_API + "/" + "workshops";
@@ -28,7 +29,6 @@ public class Constants {
 
     public static abstract class VolleyRequest {
         public static final String METHOD_PUT = "PUT";
-        public static final String METHOD_POST = "POST";
         public static final String ACCESS_TOKEN = "x-access-token";
         public static final String AUTH_TOKEN = "x-auth-token";
         public static final String AUTH_MOBILE_PARAM = DatabaseSchema.Users.COLUMN_MOBILE;
@@ -44,18 +44,21 @@ public class Constants {
         public static final String METHOD = "method";
         public static final String TABLE = "table";
         public static final String BODY = "body";
+        public static final String MODEL_NAME = "model_name";
+        public static final String MANU_NAME = "manu_name";
     }
 
     public static abstract class Gcm {
         public static final String FIELD_NEW_GCM = "newgcm";
         public static final String FIELD_OLD_GCM = "oldgcm";
-        public static final String ACTION_GCM_REG_COMPLETE = "registrationComplete";
+        public static final String INTENT_GCM = "GcmIntentFilter";
+        public static final String MESSAGE_UPDATE = "update";
+        public static final String MESSAGE_TOKEN_SENT = "tokenSent";
 
         public static final String KEY_DATA = "data";
     }
 
     public static abstract class Bundle {
-        public static final String FORM_TYPE = "what";
         public static final String VEHICLE_ID = DatabaseSchema.COLUMN_VEHICLE_ID;
         public static final String PAGE_CHOICE = "view_type";
         public static final String ID = DatabaseSchema.COLUMN_ID;

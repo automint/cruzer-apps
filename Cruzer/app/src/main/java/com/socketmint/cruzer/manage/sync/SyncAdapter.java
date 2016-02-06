@@ -705,16 +705,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void updateRefuel(final String sId, final String id, final String date, final String rate, final String volume, final String cost, final String odo) {
         final HashMap<String, String> bodyParams = new HashMap<>();
-        if (!date.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_DATE, date);
-        if (!rate.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_RATE, rate);
-        if (!volume.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_VOLUME, volume);
-        if (!cost.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
-        if (!odo.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_DATE, date);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_RATE, rate);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_VOLUME, volume);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
         Log.d("refuel put", bodyParams.toString());
         StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.REFUEL(sId), new Response.Listener<String>() {
             @Override

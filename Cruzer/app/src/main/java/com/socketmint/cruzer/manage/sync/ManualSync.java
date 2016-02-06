@@ -13,28 +13,20 @@ import com.android.volley.toolbox.Volley;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
-import com.socketmint.cruzer.dataholder.Manu;
-import com.socketmint.cruzer.dataholder.Model;
-import com.socketmint.cruzer.dataholder.Problem;
 import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
-import com.socketmint.cruzer.history.RefuelFragment;
-import com.socketmint.cruzer.history.ServiceFragment;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
-import com.socketmint.cruzer.ui.UserInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,80 +36,48 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 public class ManualSync {
-    private static ManualSync instance;
-
     private Activity activity;
     private final String TAG = "ManualSync";
 
     private DatabaseHelper databaseHelper;
     private LocData locData = new LocData();
+
+    private RequestQueue requestQueue;
+    private HashMap<String, String> headerParams = new HashMap<>();
+
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Refuel> refuels = new ArrayList<>();
     private List<Service> services = new ArrayList<>();
 
-    private RequestQueue requestQueue;
-    private int pendingRequests;
-    private HashMap<String, String> headerParams = new HashMap<>();
-
-    private UserInterface userInterface = UserInterface.getInstance();
-
     private Thread syncThread;
 
-    public static ManualSync getInstance() {
-        if (instance == null)
-            instance = new ManualSync();
-        return instance;
-    }
-
-    public void initInstance(Activity activity) {
+    public ManualSync(Activity activity) {
+        this.activity = activity;
         databaseHelper = new DatabaseHelper(activity.getApplicationContext());
         requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
-        this.activity = activity;
         locData.cruzerInstance(activity);
-        userInterface.changeActivity(activity);
     }
 
-    public void syncUser(Activity activity, String id, String password, String firstName, String lastName, String email) {
-        databaseHelper = new DatabaseHelper(activity.getApplicationContext());
-        requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
-        this.activity = activity;
-        locData.cruzerInstance(activity);
-        userInterface.changeActivity(activity);
+    public void syncUser() {
         headerParams.clear();
         headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
-        updateUser(id, password, firstName, lastName, email);
-    }
 
-    private void checkStop() {
-        if (pendingRequests <= 0) {
-            Log.d("pendingRequests", String.valueOf(pendingRequests));
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try { activity.findViewById(R.id.button_sync).clearAnimation(); } catch (NullPointerException e) { Log.d(TAG, "can't stop animation"); }
-                }
-            });
-        }
-    }
-
-    public void performSync() {
         syncThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                pendingRequests = 0;
-                locData.cruzerInstance(activity);
+                User user = databaseHelper.user(DatabaseHelper.SyncStatus.UPDATE);
+                updateUser(user.getId(), user.getPassword(), user.firstName, user.lastName, user.email);
+            }
+        });
+        syncThread.start();
+    }
 
+    public void syncEverything() {
+        syncThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
                 headerParams.clear();
                 headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
-
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            (activity.findViewById(R.id.button_sync)).startAnimation(userInterface.animation(UserInterface.animation.rotate));
-                        } catch (NullPointerException e) { Log.d(TAG, "can't start animation"); }
-                    }
-                });
 
                 try {
                     List<String> syncStatusConstraint = new ArrayList<>();
@@ -129,14 +89,15 @@ public class ManualSync {
                         vehicles.clear();
                         vehicles = databaseHelper.vehicles(DatabaseHelper.SyncStatus.NEW);
                         if (vehicles != null) {
-                            if (vehicles.isEmpty())
-                                for (Vehicle vehicle : vehicles) {
-                                    String modelId = (vehicle.model != null) ? vehicle.model.getId() : "";
-                                    uploadVehicle(vehicle.getId(), vehicle.reg, databaseHelper.user().getsId(), modelId, vehicle.name);
-                                }
+                            for (Vehicle vehicle : vehicles) {
+                                String modelId = (vehicle.model != null) ? vehicle.model.getId() : "";
+                                uploadVehicle(vehicle.getId(), vehicle.reg, databaseHelper.user().getsId(), modelId, vehicle.name);
+                            }
                         }
-                    } catch (NullPointerException e) { Log.d(TAG, "vehicle = Null Pointer, syncing stopped"); return; }
-
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        return;
+                    }
                     refuels.clear();
                     refuels = databaseHelper.refuels(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.NEW});
                     if (refuels != null) {
@@ -144,7 +105,6 @@ public class ManualSync {
                             uploadRefuel(refuel.getId(), databaseHelper.vehicle(refuel.getVehicleId()).getsId(), refuel.date, refuel.rate, refuel.volume, refuel.cost, refuel.odo);
                         }
                     }
-
                     services.clear();
                     services = databaseHelper.services(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.NEW});
                     if (services != null) {
@@ -168,7 +128,6 @@ public class ManualSync {
                             updateVehicle(vehicle.getsId(), vehicle.getId(), vehicle.reg, modelId, vehicle.name);
                         }
                     }
-
                     refuels.clear();
                     refuels = databaseHelper.refuels(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.UPDATE});
                     if (refuels != null) {
@@ -176,7 +135,6 @@ public class ManualSync {
                             updateRefuel(refuel.getsId(), refuel.getId(), refuel.date, refuel.rate, refuel.volume, refuel.cost, refuel.odo);
                         }
                     }
-
                     services.clear();
                     services = databaseHelper.services(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.UPDATE});
                     if (services != null) {
@@ -194,7 +152,6 @@ public class ManualSync {
                             deleteRefuel(refuel.getsId(), refuel.getId());
                         }
                     }
-
                     services.clear();
                     services = databaseHelper.deletedServices();
                     if (services != null) {
@@ -202,7 +159,6 @@ public class ManualSync {
                             deleteService(service.getsId(), service.getId());
                         }
                     }
-
                     vehicles.clear();
                     vehicles = databaseHelper.vehicles(DatabaseHelper.SyncStatus.DELETE);
                     if (vehicles != null) {
@@ -211,515 +167,60 @@ public class ManualSync {
                         }
                     }
 
-                    getRefuels();
-                    getWorkshops();
-                    getManus();
+                    int size = (databaseHelper.statusList() != null) ? databaseHelper.statusList().size() : 0;
+                    if (size == 0) {
+                        getStatusTable();
+                    }
                 } catch (Exception e) { e.printStackTrace(); }
             }
         });
         syncThread.start();
     }
 
-    private void getRefuels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.REFUEL, new Response.Listener<String>() {
+    private void getStatusTable() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.STATUS, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d(TAG, "refuel response = " + response);
-                pendingRequests--;
-                checkStop();
+                Log.d("sync", "get status = " + response);
                 try {
                     try {
                         JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
                         }
-                    } catch (JSONException e) { Log.e(TAG, "refuel array"); }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "status is array"); }
                     JSONArray array = new JSONArray(response);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String vehicleId = object.getString(DatabaseSchema.COLUMN_VEHICLE_ID);
-                        String date = object.optString(DatabaseSchema.Services.COLUMN_DATE);
-                        String cost = object.optString(DatabaseSchema.Services.COLUMN_COST);
-                        String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
-                        String rate = object.optString(DatabaseSchema.Refuels.COLUMN_RATE);
-                        String volume = object.optString(DatabaseSchema.Refuels.COLUMN_VOLUME);
-                        Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
-                        if (vehicle != null) {
-                            Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                            if (refuel == null)
-                                databaseHelper.addRefuel(sId, vehicle.getId(), date, rate, volume, cost, odo);
-                            else
-                                databaseHelper.updateRefuel(sId, vehicle.getId(), date, rate, volume, cost, odo);
-                        }
+                        String id = object.getString(DatabaseSchema.Status.COLUMN_ID);
+                        String details = object.optString(DatabaseSchema.Status.COLUMN_DETAILS);
+                        databaseHelper.addStatus(id, details);
                     }
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try { RefuelFragment.addData(); } catch (Exception e) { e.printStackTrace(); }
-                        }
-                    });
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "refuel : not json or not added"); }
+                } catch (JSONException e) { Log.d("sync", "get status is not in json"); }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
                 error.printStackTrace();
             }
         }) {
             @Override
             public Map<String, String> getHeaders() {
-                return headerParams;
+                HashMap<String, String> params = new HashMap<>();
+                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return params;
             }
         };
-        pendingRequests++;
-        requestQueue.add(request);
-    }
-
-    private void getServices() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.SERVICE, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "service response = " + response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e(TAG, "service array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String vehicleId = object.getString(DatabaseSchema.COLUMN_VEHICLE_ID);
-                        String date = object.optString(DatabaseSchema.Services.COLUMN_DATE);
-                        String workshopId = object.optString(DatabaseSchema.Services.COLUMN_WORKSHOP_ID);
-                        String cost = object.optString(DatabaseSchema.Services.COLUMN_COST);
-                        String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
-                        String details = object.optString(DatabaseSchema.Services.COLUMN_DETAILS);
-                        String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
-                        String userId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
-                        String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
-                        Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
-                        if (vehicle != null) {
-                            Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                            Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
-                            String wId = (workshop != null) ? workshop.getId() : "";
-                            if (service == null)
-                                databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId);
-                            else
-                                databaseHelper.updateService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId);
-                            getProblems(sId);
-                        }
-                    }
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try { ServiceFragment.addData(); } catch (Exception e) { e.printStackTrace(); }
-                        }
-                    });
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "service : not added or not json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingRequests++;
-        requestQueue.add(request);
-    }
-
-    private void getProblems(final String serviceId) {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_PROBLEMS(serviceId), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "problems response = " + response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e(TAG, "problems array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i =0; i < array.length(); i++) {
-                        JSONObject problem = array.getJSONObject(i);
-                        String sId = problem.getString(DatabaseSchema.COLUMN_ID);
-                        String lCost = problem.optString(DatabaseSchema.Problems.COLUMN_LCOST);
-                        String pCost = problem.optString(DatabaseSchema.Problems.COLUMN_PCOST);
-                        String details = problem.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
-                        String qty = problem.optString(DatabaseSchema.Problems.COLUMN_QTY);
-                        Problem item = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                        Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
-                        if (service != null) {
-                            if (item == null)
-                                databaseHelper.addProblem(sId, service.getId(), details, lCost, pCost, qty);
-                            else
-                                databaseHelper.updateProblem(sId, service.getId(), details, lCost, pCost, qty);
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "problems : not added or not json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingRequests++;
-        requestQueue.add(request);
-    }
-
-    private void getWorkshops() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "workshop response = " + response);
-                databaseHelper.delete(DatabaseSchema.Workshops.TABLE_NAME);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e(TAG, "workshop array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String name = object.optString(DatabaseSchema.Workshops.COLUMN_NAME);
-                        String address = object.optString(DatabaseSchema.Workshops.COLUMN_ADDRESS);
-                        String manager = object.optString(DatabaseSchema.Workshops.COLUMN_MANAGER);
-                        String contact = object.optString(DatabaseSchema.Workshops.COLUMN_CONTACT);
-                        String latitude = object.optString(DatabaseSchema.Workshops.COLUMN_LATITUDE);
-                        String longitude = object.optString(DatabaseSchema.Workshops.COLUMN_LONGITUDE);
-                        String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY);
-                        String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
-                        String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
-
-                        Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
-                        if (workshop != null) {
-                            databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
-                        } else
-                            databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
-                    }
-                    getServices();
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "workshop : not added or not json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingRequests++;
-        requestQueue.add(request);
-    }
-
-    private void getModels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MODEL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "model response = " + response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e(TAG, "model array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String manuId = object.getString(DatabaseSchema.Models.COLUMN_MANU_ID);
-                        String name = object.getString(DatabaseSchema.Models.COLUMN_NAME);
-                        Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{manuId});
-                        if (manu != null) {
-                            Model model = databaseHelper.model(Arrays.asList(DatabaseSchema.Models.COLUMN_MANU_ID, DatabaseSchema.Models.COLUMN_NAME), new String[]{manu.getId(), name});
-                            if (model != null) {
-                                if (!model.getManuId().equals(manu.getId()) || !model.name.equals(name))
-                                    databaseHelper.updateModel(sId, manu.getId(), name);
-                            } else
-                                databaseHelper.addModel(sId, manu.getId(), name);
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "model : not added or not json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingRequests++;
-        requestQueue.add(request);
-    }
-
-    private void getManus() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MANU, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e(TAG, "manus array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String name = object.getString(DatabaseSchema.Manus.COLUMN_NAME);
-                        Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
-                        if (manu != null) {
-                            if (!manu.name.equals(name))
-                                databaseHelper.updateManu(sId, name);
-                        } else
-                            databaseHelper.addManu(sId, name);
-                    }
-                    getModels();
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "manus : not added or not json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingRequests++;
-        requestQueue.add(request);
-    }
-
-    private void deleteService(final String sId, final String id) {
-        Log.d(TAG, "delete service = " + Constants.Url.SERVICE(sId));
-
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.SERVICE(sId), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "delete service = " + response);
-                try {
-                    JSONObject object = new JSONObject(response);
-                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                    if (success)
-                        databaseHelper.delete(DatabaseSchema.Services.TABLE_NAME, id);
-                    else {
-                        String message = object.getString(Constants.Json.MESSAGE);
-
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "service : not json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingRequests++;
-        requestQueue.add(request);
-    }
-
-    private void deleteRefuel(final String sId, final String id) {
-        Log.d(TAG, "delete refuel = " + Constants.Url.REFUEL(sId));
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.REFUEL(sId), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "delete refuel = " + response);
-                try {
-                    JSONObject object = new JSONObject(response);
-                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                    if (success)
-                        databaseHelper.delete(DatabaseSchema.Refuels.TABLE_NAME, id);
-                    else {
-                        String message = object.getString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "refuel : not json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingRequests++;
-        requestQueue.add(request);
-    }
-
-    private void deleteVehicle(final String sId, final String id) {
-        Log.d(TAG, "delete vehicle = " + Constants.Url.VEHICLE(sId));
-        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.VEHICLE(sId), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "delete vehicle = " + response);
-                try {
-                    JSONObject object = new JSONObject(response);
-                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                    if (success)
-                        databaseHelper.delete(DatabaseSchema.Vehicles.TABLE_NAME, id);
-                    else {
-                        String message = object.getString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "vehicle : not json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingRequests++;
         requestQueue.add(request);
     }
 
@@ -733,8 +234,6 @@ public class ManualSync {
         StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.USER, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
                 Log.d(TAG, "put user = " + response);
                 try {
                     JSONObject object = new JSONObject(response);
@@ -758,8 +257,6 @@ public class ManualSync {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
                 error.printStackTrace();
             }
         }) {
@@ -772,7 +269,123 @@ public class ManualSync {
                 return headerParams;
             }
         };
-        pendingRequests++;
+        requestQueue.add(request);
+    }
+
+    private void deleteService(final String sId, final String id) {
+        Log.d("service delete", Constants.Url.SERVICE(sId));
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.SERVICE(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("service delete", response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.delete(DatabaseSchema.Services.TABLE_NAME, id);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void deleteRefuel(final String sId, final String id) {
+        Log.d("refuel delete", Constants.Url.REFUEL(sId));
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.REFUEL(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("refuel delete", response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.delete(DatabaseSchema.Refuels.TABLE_NAME, id);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void deleteVehicle(final String sId, final String id) {
+        Log.d("vehicle delete", Constants.Url.VEHICLE(sId));
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.VEHICLE(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("vehicle delete", response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.delete(DatabaseSchema.Vehicles.TABLE_NAME, id);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
         requestQueue.add(request);
     }
 
@@ -784,13 +397,10 @@ public class ManualSync {
         bodyParams.put(DatabaseSchema.Services.COLUMN_COST, cost);
         bodyParams.put(DatabaseSchema.Services.COLUMN_ODO, odo);
         bodyParams.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
-        Log.d(TAG, "put service = " + Constants.Url.SERVICE(sId));
+        Log.d("service update", Constants.Url.SERVICE(sId));
         StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.SERVICE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "put service = " + response);
                 try {
                     JSONObject object = new JSONObject(response);
                     boolean success = object.getBoolean(Constants.Json.SUCCESS);
@@ -808,13 +418,11 @@ public class ManualSync {
                             authenticate();
                         }
                     }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "service :  not json"); }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
                 error.printStackTrace();
             }
         }) {
@@ -827,29 +435,21 @@ public class ManualSync {
                 return headerParams;
             }
         };
-        pendingRequests++;
         requestQueue.add(request);
     }
 
     private void updateRefuel(final String sId, final String id, final String date, final String rate, final String volume, final String cost, final String odo) {
         final HashMap<String, String> bodyParams = new HashMap<>();
-        if (!date.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_DATE, date);
-        if (!rate.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_RATE, rate);
-        if (!volume.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_VOLUME, volume);
-        if (!cost.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
-        if (!odo.isEmpty())
-            bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
-        Log.d(TAG, "put refuel = " + bodyParams.toString());
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_DATE, date);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_RATE, rate);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_VOLUME, volume);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
+        bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
+        Log.d("refuel put", bodyParams.toString());
         StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.REFUEL(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "put refuel = " + response);
+                Log.d("refuel put", response);
                 try {
                     JSONObject object = new JSONObject(response);
                     boolean success = object.getBoolean(Constants.Json.SUCCESS);
@@ -867,13 +467,11 @@ public class ManualSync {
                             authenticate();
                         }
                     }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "refuel : not json"); }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
                 error.printStackTrace();
             }
         }) {
@@ -883,11 +481,9 @@ public class ManualSync {
             }
             @Override
             public Map<String, String> getHeaders() {
-                Log.e("header", headerParams.toString());
                 return headerParams;
             }
         };
-        pendingRequests++;
         requestQueue.add(request);
     }
 
@@ -897,12 +493,11 @@ public class ManualSync {
         bodyParams.put(DatabaseSchema.Vehicles.COLUMN_MODEL_ID, modelId);
         if (!modelId.isEmpty())
             bodyParams.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
+        Log.d("vehicle update", bodyParams.toString());
         StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.VEHICLE(sId), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "put vehicle = " + response);
+                Log.d("vehicle update", response);
                 try {
                     JSONObject object = new JSONObject(response);
                     boolean success = object.getBoolean(Constants.Json.SUCCESS);
@@ -920,13 +515,11 @@ public class ManualSync {
                             authenticate();
                         }
                     }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "vehicle : not json"); }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
                 error.printStackTrace();
             }
         }) {
@@ -939,7 +532,6 @@ public class ManualSync {
                 return headerParams;
             }
         };
-        pendingRequests++;
         requestQueue.add(request);
     }
 
@@ -955,13 +547,11 @@ public class ManualSync {
             bodyParams.put(DatabaseSchema.Services.COLUMN_ODO, odo);
         if (!details.isEmpty())
             bodyParams.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
-        Log.d(TAG, "post service = " + bodyParams.toString());
+        Log.d("service post", bodyParams.toString());
         StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.SERVICE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "post service = " + response);
+                Log.d("service post", response);
                 try {
                     JSONObject object = new JSONObject(response);
                     boolean success = object.getBoolean(Constants.Json.SUCCESS);
@@ -980,13 +570,11 @@ public class ManualSync {
                             authenticate();
                         }
                     }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "service : not json"); }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
                 error.printStackTrace();
             }
         }) {
@@ -999,7 +587,6 @@ public class ManualSync {
                 return headerParams;
             }
         };
-        pendingRequests++;
         requestQueue.add(request);
     }
 
@@ -1011,13 +598,11 @@ public class ManualSync {
         bodyParams.put(DatabaseSchema.Refuels.COLUMN_VOLUME, volume);
         bodyParams.put(DatabaseSchema.Refuels.COLUMN_COST, cost);
         bodyParams.put(DatabaseSchema.Refuels.COLUMN_ODO, odo);
-        Log.d(TAG, "post refuel = " + bodyParams.toString());
+        Log.d("refuel post", bodyParams.toString());
         StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.REFUEL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "post refuel = " + response);
+                Log.d("refuel post", response);
                 try {
                     JSONObject object = new JSONObject(response);
                     boolean success = object.getBoolean(Constants.Json.SUCCESS);
@@ -1036,13 +621,11 @@ public class ManualSync {
                             authenticate();
                         }
                     }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "refuel : not json"); }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
                 error.printStackTrace();
             }
         }) {
@@ -1055,7 +638,6 @@ public class ManualSync {
                 return headerParams;
             }
         };
-        pendingRequests++;
         requestQueue.add(request);
     }
 
@@ -1067,13 +649,11 @@ public class ManualSync {
             bodyParams.put(DatabaseSchema.Vehicles.COLUMN_MODEL_ID, modelId);
         if (!name.isEmpty())
             bodyParams.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
-        Log.d(TAG, "post vehicle = " + bodyParams.toString());
-        final StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.VEHICLE, new Response.Listener<String>() {
+        Log.d("vehicle post", bodyParams.toString());
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.VEHICLE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                pendingRequests--;
-                checkStop();
-                Log.d(TAG, "post vehicle = " + response);
+                Log.d("vehicle post", response);
                 try {
                     JSONObject object = new JSONObject(response);
                     boolean success = object.getBoolean(Constants.Json.SUCCESS);
@@ -1092,13 +672,11 @@ public class ManualSync {
                             authenticate();
                         }
                     }
-                } catch (JSONException | NullPointerException e) { Log.e(TAG, "vehicle :  not json"); }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                pendingRequests--;
-                checkStop();
                 error.printStackTrace();
             }
         }) {
@@ -1111,7 +689,6 @@ public class ManualSync {
                 return headerParams;
             }
         };
-        pendingRequests++;
         requestQueue.add(request);
     }
 

@@ -35,11 +35,11 @@ import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
-import com.socketmint.cruzer.main.ViewHistory;
+import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 import com.socketmint.cruzer.manage.Login;
-import com.socketmint.cruzer.ui.UserInterface;
+import com.socketmint.cruzer.ui.UiElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,7 +58,7 @@ public class LoginDialog {
     private final int TYPE_DIRECT_LOGIN = 1;
     private final int TYPE_LOGIN_AR = 2;
 
-    private UserInterface userInterface = UserInterface.getInstance();
+    private UiElement uiElement;
     private DatabaseHelper databaseHelper;
     private LocData locData = new LocData();
     private Login sLogin = Login.getInstance();
@@ -84,7 +84,7 @@ public class LoginDialog {
     public void initInstance(Activity activity) {
         this.activity = activity;
         progressDialog = new ProgressDialog(activity);
-        userInterface.changeActivity(activity);
+        uiElement = new UiElement(activity);
         requestQueue = Volley.newRequestQueue(activity.getApplicationContext());
         databaseHelper = new DatabaseHelper(activity.getApplicationContext());
         locData.cruzerInstance(activity);
@@ -138,7 +138,7 @@ public class LoginDialog {
                     Snackbar.make(dialog.findViewById(android.R.id.content), R.string.message_fill_details, Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                userInterface.hideKeyboard(btnDone);
+                uiElement.hideKeyboard(btnDone);
 
                 loginThread = new Thread(new Runnable() {
                     @Override
@@ -178,7 +178,7 @@ public class LoginDialog {
                     progressDialog.setMessage(activity.getString(R.string.message_authenticating));
                     progressDialog.show();
                     dialog.setCancelable(false);
-                    textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
+                    textMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey_800));
                     textMessage.setText(R.string.message_authenticating);
                     blockButtons();
                 }
@@ -261,7 +261,7 @@ public class LoginDialog {
                             if (progressDialog != null)
                                 progressDialog.dismiss();
                             setFields(mobile, password);
-                            textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
+                            textMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey_800));
                             textMessage.setText(R.string.message_login_fail);
                         } else {
                             register(editMobile.getText().toString(), editPassword.getText().toString());
@@ -300,7 +300,7 @@ public class LoginDialog {
                     progressDialog.setMessage(activity.getString(R.string.message_registering));
                 dialog.setCancelable(false);
                 blockButtons();
-                textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
+                textMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey_800));
                 textMessage.setText(R.string.message_registering);
             }
         });
@@ -329,7 +329,7 @@ public class LoginDialog {
                         loginThread.interrupt();
 
                         setFields(mobile, password);
-                        textMessage.setTextColor(ContextCompat.getColor(activity, R.color.dark_v1));
+                        textMessage.setTextColor(ContextCompat.getColor(activity, R.color.grey_800));
                         textMessage.setText(R.string.message_signup_fail);
                         if (progressDialog != null)
                             progressDialog.dismiss();
@@ -378,7 +378,7 @@ public class LoginDialog {
             @Override
             public void onClick(View v) {
                 if (!editFirstName.getText().toString().isEmpty() || !editLastName.getText().toString().isEmpty() || !editEmail.getText().toString().isEmpty()) {
-                    if (!editEmail.getText().toString().isEmpty() && !userInterface.validateEmail(editEmail.getText().toString())) {
+                    if (!editEmail.getText().toString().isEmpty() && !uiElement.validateEmail(editEmail.getText().toString())) {
                         Snackbar.make(activity.findViewById(android.R.id.content), activity.getString(R.string.message_invalid_email), Snackbar.LENGTH_SHORT).show();
                         return;
                     }
@@ -483,7 +483,7 @@ public class LoginDialog {
                 if (progressDialog != null)
                     progressDialog.dismiss();
 
-                activity.startActivity(new Intent(activity, ViewHistory.class));
+                activity.startActivity(new Intent(activity, History.class));
                 activity.finish();
             }
         }, new Response.ErrorListener() {
@@ -494,7 +494,7 @@ public class LoginDialog {
                 if (progressDialog != null)
                     progressDialog.dismiss();
 
-                activity.startActivity(new Intent(activity, ViewHistory.class));
+                activity.startActivity(new Intent(activity, History.class));
                 activity.finish();
             }
         }) {

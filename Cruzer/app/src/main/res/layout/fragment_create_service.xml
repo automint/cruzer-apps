@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        android:animateLayoutChanges="true">
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_service_vehicle"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_service_vehicle"/>
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner_vehicle"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_amount"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:inputType="numberDecimal"
+            android:hint="@string/hint_amount"
+            android:drawablePadding="10dp"
+            android:drawableLeft="@drawable/ic_amount"
+            android:drawableStart="@drawable/ic_amount"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_odometer"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
+            android:inputType="numberDecimal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:hint="@string/label_odometer_reading"
+            android:drawableLeft="@drawable/ic_odometer"
+            android:drawableStart="@drawable/ic_odometer"
+            android:drawablePadding="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_date"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edit_date"
+                android:layout_weight="0.8"
+                android:layout_marginTop="6dp"
+                android:inputType="date"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:hint="@string/hint_edit_field"
+                android:focusable="false"
+                android:drawableLeft="@drawable/ic_date"
+                android:drawableStart="@drawable/ic_date"
+                android:drawablePadding="10dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:id="@+id/edit_time"
+                android:layout_marginTop="6dp"
+                android:inputType="time"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:hint="@string/hint_edit_field"
+                android:focusable="false"
+                android:gravity="end|center"
+                android:drawableRight="@drawable/ic_time"
+                android:drawableEnd="@drawable/ic_time"
+                android:drawablePadding="10dp"
+                android:visibility="gone"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_notes"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="10dp"
+            android:inputType="textCapSentences"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:hint="@string/hint_notes"
+            android:drawableLeft="@drawable/ic_notes"
+            android:drawableStart="@drawable/ic_notes"
+            android:drawablePadding="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:gravity="end"
+            android:padding="20dp">
+
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_create_record"
+                android:text="@string/label_done"
+                app:backgroundTint="@color/blue_800"
+                android:textColor="@android:color/white"
+                app:borderWidth="0dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+</ScrollView>

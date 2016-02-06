@@ -21,10 +21,11 @@
 
             <android.support.v7.widget.AppCompatTextView android:id="@+id/text_drawer_username"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="@string/app_name" android:textColor="@color/white_darken_0"
+                android:text="@string/app_name" android:textColor="@android:color/white"
                 android:textStyle="bold"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:drawableRight="@drawable/ic_edit_white_18dp"
+                android:drawableEnd="@drawable/ic_edit_white_18dp"
                 android:fontFamily="sans-serif-condensed"
                 android:drawablePadding="8dp"
                 android:layout_gravity="bottom"
@@ -40,6 +41,7 @@
         android:layout_width="@dimen/drawer_width" android:layout_height="match_parent"
         android:layout_below="@id/drawer_profile_box"
         android:animateLayoutChanges="true"
+        android:listSelector="@drawable/selector_history_item"
         android:choiceMode="singleChoice" android:background="#fff"
         android:layout_above="@+id/drawer_settings" />
 
@@ -48,7 +50,8 @@
         android:layout_width="@dimen/drawer_width"
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
-        android:background="@color/white_darken_0"
+        android:background="@color/grey_200"
+        android:listSelector="@drawable/selector_history_item"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:visibility="visible" />

@@ -26,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="0dp"
-        android:padding="0dp"/>
+        android:padding="0dp"
+        android:listSelector="@drawable/selector_history_item"/>
 
 </android.support.v7.widget.LinearLayoutCompat>

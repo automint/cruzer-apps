@@ -41,15 +41,9 @@ public class RegistrationService extends IntentService {
             Log.i(TAG, "GCM Registration Token: " + token);
 
             sendRegistrationToServer(token);
-
-            locData.storeGcmSentStatus(true);
         } catch (Exception e) {
             Log.d(TAG, "Failed to complete token refresh", e);
-            locData.storeGcmSentStatus(false);
         }
-
-        Intent registrationComplete = new Intent(Constants.Gcm.ACTION_GCM_REG_COMPLETE);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
     private void sendRegistrationToServer(final String token) {
@@ -75,8 +69,12 @@ public class RegistrationService extends IntentService {
                 try {
                     JSONObject object = new JSONObject(response);
                     boolean success = object.optBoolean(Constants.Json.SUCCESS);
-                    if (success)
+                    if (success) {
                         locData.storeGcm(token);
+                        Intent registrationComplete = new Intent(Constants.Gcm.INTENT_GCM);
+                        registrationComplete.putExtra(Constants.Gcm.MESSAGE_TOKEN_SENT, true);
+                        LocalBroadcastManager.getInstance(RegistrationService.this).sendBroadcast(registrationComplete);
+                    }
                 } catch (JSONException e) { Log.e(TAG, " can not parse response"); }
             }
         }, new Response.ErrorListener() {

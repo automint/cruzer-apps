@@ -3,14 +3,74 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorAccent">@color/cruzer_blue</item>
-        <item name="android:windowActionBar">false</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowSharedElementEnterTransition">@transition/change_transform_sharedelemets</item>
         <item name="android:windowSharedElementExitTransition">@transition/change_transform_sharedelemets</item>
+    </style>
+
+    <style name="AppTheme.Launcher" parent="AppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+    </style>
+
+    <style name="AppTheme.History" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerToggle</item>
+    </style>
+
+    <style name="AppTheme.Vehicles" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerToggle</item>
+    </style>
+
+    <style name="AppTheme.Create" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerToggle</item>
+    </style>
+
+    <style name="AppTheme.Retrieve" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerToggle</item>
+    </style>
+
+    <style name="AppTheme.Update" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerToggle</item>
+    </style>
+
+    <style name="AppTheme.WorkshopLocator" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerToggle</item>
+    </style>
+
+    <style name="AppTheme.Refuel" parent="AppTheme">
+        <item name="colorPrimary">@color/refuel_primary</item>
+        <item name="colorPrimaryDark">@color/refuel_primary_dark</item>
+        <item name="colorAccent">@color/red_600</item>
+    </style>
+
+    <style name="AppTheme.Service" parent="AppTheme">
+        <item name="colorPrimary">@color/service_primary</item>
+        <item name="colorPrimaryDark">@color/service_primary_dark</item>
+        <item name="colorAccent">@color/red_600</item>
+    </style>
+
+    <style name="WhiteDrawerToggle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@android:color/white</item>
     </style>
 
 </resources>
