@@ -33,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socketmint.cruzer.CruzerApp;
@@ -94,8 +95,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
 
     private void initMap() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
@@ -155,9 +155,8 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
         Log.d(TAG, "provider enabled : " + locationManager.isProviderEnabled(provider));
         Location location = locationManager.getLastKnownLocation(provider);
         Log.d(TAG, "location != null : " + (location != null));
-        if (location != null)
-            drawMarker(location);
-        else {
+        drawMarker(location);
+        if (location == null) {
             if (locationManager.isProviderEnabled(provider)) {
                 Snackbar.make(findViewById(android.R.id.content), R.string.message_wait_task_pending, Snackbar.LENGTH_SHORT).show();
                 locationManager.requestLocationUpdates(provider, 0, 0, this);
@@ -179,9 +178,8 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
     private void drawMarker(Location location){
         // Remove any existing markers on the map
         mMap.clear();
-        LatLng currentPosition = new LatLng(location.getLatitude(),location.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.4f));
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.message_wait_task_pending, Snackbar.LENGTH_INDEFINITE);
+        moveCamera(location);
+        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.message_wait_gps, Snackbar.LENGTH_INDEFINITE);
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -198,13 +196,13 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                         LatLng workshopPosition = new LatLng(Double.parseDouble(item.latitude), Double.parseDouble(item.longitude));
                         if ((workshopPosition.latitude == 0) && (workshopPosition.longitude == 0))
                             continue;
-                        Marker marker = mMap.addMarker(new MarkerOptions().position(workshopPosition)
+                        mMap.addMarker(new MarkerOptions().position(workshopPosition)
                                 .title(item.name)
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-                        marker.showInfoWindow();
                         markerCount++;
                     } catch (NumberFormatException e) { Log.d(TAG, "No position in workshop - " + item.name); }
                 }
+                mMap.setBuildingsEnabled(true);
                 if (markerCount == 0)
                     Snackbar.make(findViewById(android.R.id.content), R.string.message_locator_no_workshops, Snackbar.LENGTH_SHORT).show();
             }
@@ -232,9 +230,18 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
         }
     }
 
+    private void moveCamera(Location location) {
+        if (location != null) {
+            LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.4f));
+        } else {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(23.022505f, 72.5713621f), 10f));
+        }
+    }
+
     @Override
     public void onLocationChanged(Location location) {
-        drawMarker(location);
+        moveCamera(location);
     }
 
     @Override

@@ -231,7 +231,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return (newId);
             } else
                 return "0";
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { e.printStackTrace(); return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { e.printStackTrace(); return null; }
     }
 
     public String syncStatus(String tableName, List<String> constraints, String[] values) {
@@ -250,7 +250,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return syncState;
             } else
                 return null;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public boolean addUser(String sId, String mobile, String password, String firstName, String lastName, String email) {
@@ -304,7 +304,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             User user = new User(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_PASSWORD)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_MOBILE)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_EMAIL)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_FIRST_NAME)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_LAST_NAME)));
             cursor.close();
             return user;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public User user() {
@@ -315,7 +315,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             User user = new User(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_PASSWORD)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_MOBILE)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_EMAIL)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_FIRST_NAME)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_LAST_NAME)));
             cursor.close();
             return user;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public boolean addManu(String id, String name) {
@@ -361,7 +361,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public Manu manu(List<String> constraints, String[] values) {
@@ -378,7 +378,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Manu object = new Manu(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Manus.COLUMN_NAME)));
             cursor.close();
             return object;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public boolean addModel(String id, String manuId, String name) {
@@ -433,7 +433,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public Model model(List<String> constraints, String[] values) {
@@ -450,7 +450,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Model object = new Model(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Models.COLUMN_MANU_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Models.COLUMN_NAME)));
             cursor.close();
             return object;
-        } catch (IllegalArgumentException | CursorIndexOutOfBoundsException e) { return null; }
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
     }
 
     public boolean addVehicle(String sId, String reg, String name, String uId, String modelId) {
@@ -621,7 +621,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.moveToNext();
                         continue;
                     }
-                } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { e.printStackTrace(); break; }
+                } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { e.printStackTrace(); break; }
                 Vehicle object = new Vehicle(cursor.getString(cursor.getColumnIndex("vehicle_id")),
                         cursor.getString(cursor.getColumnIndex("vehicle_sid")),
                         cursor.getString(cursor.getColumnIndex("user_id")),
@@ -641,7 +641,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public List<Vehicle> vehicles(String syncStatus) {
@@ -694,7 +694,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public Vehicle vehicle(String id) {
@@ -741,7 +741,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             cursor.close();
             return object;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public Vehicle vehicleByReg(String reg) {
@@ -788,7 +788,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             cursor.close();
             return object;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public Vehicle vehicleBySid(String sId) {
@@ -799,7 +799,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Vehicle object = new Vehicle(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Vehicles.COLUMN_USER_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Vehicles.COLUMN_MODEL_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Vehicles.COLUMN_REG)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Vehicles.COLUMN_NAME)));
             cursor.close();
             return object;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public int vehicleCount() {
@@ -819,7 +819,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return count;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { e.printStackTrace(); return 0; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { e.printStackTrace(); return 0; }
     }
 
     public Vehicle firstVehicle() {
@@ -867,7 +867,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             cursor.close();
             return object;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { e.printStackTrace();  return null;}
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { e.printStackTrace();  return null;}
     }
 
     public boolean addRefuel(String sId, String vehicleId, String date, String rate, String volume, String cost, String odo) {
@@ -969,7 +969,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public List<Refuel> refuels(List<String> constraints, String[] values) {
@@ -1004,7 +1004,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public List<Refuel> deletedRefuels() {
@@ -1028,7 +1028,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public Refuel refuel(List<String> constraints, String[] values) {
@@ -1057,7 +1057,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return object;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public String addService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status, String userId, String roleId) {
@@ -1192,7 +1192,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public List<Service> deletedServices() {
@@ -1219,7 +1219,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public List<Service> services(List<String> constraints, String[] values) {
@@ -1257,7 +1257,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public Service service(List<String> constraints, String[] values) {
@@ -1289,7 +1289,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
             cursor.close();
             return object;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public boolean addProblem(String sId, String serviceId, String details, String lCost, String pCost, String qty) {
@@ -1352,7 +1352,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Problems.COLUMN_QTY)));
             cursor.close();
             return object;
-        } catch (IllegalArgumentException | CursorIndexOutOfBoundsException e) { return null; }
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
     }
 
     public List<Problem> problems(List<String> constraints, String[] values) {
@@ -1385,7 +1385,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             cursor.close();
             return list;
-        } catch (IllegalArgumentException | CursorIndexOutOfBoundsException e) { return null; }
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
     }
 
     public boolean addWorkshop(String id, String name, String address, String manager, String contact, String latitude, String longitude, String city, String area, String offerings) {
@@ -1461,7 +1461,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { e.printStackTrace(); return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { e.printStackTrace(); return null; }
     }
 
     public List<Workshop> workshops(List<String> constraints, String[] values) {
@@ -1494,7 +1494,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { e.printStackTrace(); return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { e.printStackTrace(); return null; }
     }
 
     public Workshop workshop(List<String> constraints, String[] values) {
@@ -1522,7 +1522,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return object;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException e) { return null; }
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
     public boolean addStatus(String id, String details) {
@@ -1552,7 +1552,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             cursor.close();
             return list;
-        } catch (IllegalArgumentException | CursorIndexOutOfBoundsException e) { return null; }
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
     }
 
     public boolean deleteLocal(String tableName, String id) {
