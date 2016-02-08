@@ -3,7 +3,7 @@ package com.socketmint.cruzer.crud.retrieve;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
@@ -31,7 +31,7 @@ public class Service extends Fragment {
     private static final String TAG = "RetrieveService";
 
     private AppCompatTextView textVehicleName, textWorkshopName, textAmount, textOdometer, textDate, textProblems, textStatus, textNotes;
-    private CardView cardOdometer, cardDate, cardProblems, cardStatus, cardNotes;
+    private LinearLayoutCompat layoutOdometer, layoutDate, layoutProblems, layoutStatus, layoutNotes;
 
     private DatabaseHelper databaseHelper;
     private UiElement uiElement;
@@ -78,11 +78,11 @@ public class Service extends Fragment {
         textProblems = (AppCompatTextView) v.findViewById(R.id.text_problems);
         textStatus = (AppCompatTextView) v.findViewById(R.id.text_status);
 
-        cardOdometer = (CardView) v.findViewById(R.id.card_odometer);
-        cardDate = (CardView) v.findViewById(R.id.card_date);
-        cardProblems = (CardView) v.findViewById(R.id.card_problems);
-        cardStatus = (CardView) v.findViewById(R.id.card_status);
-        cardNotes = (CardView) v.findViewById(R.id.card_notes);
+        layoutOdometer = (LinearLayoutCompat) v.findViewById(R.id.layout_odometer);
+        layoutDate = (LinearLayoutCompat) v.findViewById(R.id.layout_date);
+        layoutProblems = (LinearLayoutCompat) v.findViewById(R.id.layout_problems);
+        layoutStatus = (LinearLayoutCompat) v.findViewById(R.id.layout_service_status);
+        layoutNotes = (LinearLayoutCompat) v.findViewById(R.id.layout_notes);
     }
 
     private void setContent() {
@@ -125,11 +125,11 @@ public class Service extends Fragment {
         textStatus.setText(status);
         textNotes.setText(service.details);
 
-        cardOdometer.setVisibility((service.odo.isEmpty()) ? View.GONE : View.VISIBLE);
-        cardDate.setVisibility((service.date.isEmpty()) ? View.GONE : View.VISIBLE);
-        cardNotes.setVisibility((service.details.isEmpty()) ? View.GONE : View.VISIBLE);
-        cardProblems.setVisibility((problemList.isEmpty()) ? View.GONE :View.VISIBLE);
-        cardStatus.setVisibility((status.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutOdometer.setVisibility((service.odo.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutDate.setVisibility((service.date.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutNotes.setVisibility((service.details.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutProblems.setVisibility((problemList.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutStatus.setVisibility((status.isEmpty()) ? View.GONE : View.VISIBLE);
         textWorkshopName.setVisibility((workshopName.isEmpty()) ? View.GONE : View.VISIBLE);
     }
 

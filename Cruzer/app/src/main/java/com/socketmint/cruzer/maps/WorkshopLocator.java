@@ -33,7 +33,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socketmint.cruzer.CruzerApp;
@@ -321,15 +320,15 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                                 String contact = object.optString(DatabaseSchema.Workshops.COLUMN_CONTACT);
                                 String latitude = object.optString(DatabaseSchema.Workshops.COLUMN_LATITUDE);
                                 String longitude = object.optString(DatabaseSchema.Workshops.COLUMN_LONGITUDE);
-                                String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY);
+                                String cityId = object.optString(DatabaseSchema.Workshops.COLUMN_CITY_ID);
                                 String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                                 String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
 
                                 Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                                 if (workshop != null) {
-                                    databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
+                                    databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, cityId, area, offerings);
                                 } else
-                                    databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
+                                    databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, cityId, area, offerings);
                             }
                         } catch (JSONException e) { Log.d(TAG, "can not parse in background"); }
                         return null;
@@ -345,6 +344,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                initMap();
             }
         }) {
             @Override

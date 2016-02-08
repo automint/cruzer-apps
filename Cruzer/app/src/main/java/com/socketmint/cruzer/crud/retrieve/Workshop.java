@@ -13,6 +13,7 @@ import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.City;
 import com.socketmint.cruzer.manage.Constants;
 
 import java.util.Collections;
@@ -57,20 +58,22 @@ public class Workshop extends Fragment {
 
     private void setDetails(View v, String id) {
         com.socketmint.cruzer.dataholder.Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        City city = databaseHelper.city(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshop.getCityId()});
+        String cityName = (city != null) ? city.city : "";
         analyticsTracker.setScreenName(Constants.GoogleAnalytics.EVENT_WORKSHOP_DISPLAY + " : " + workshop.name);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
         textWorkshopName.setText(workshop.name);
         textManager.setText(workshop.manager);
         textMobile.setText(workshop.contact);
         textAddress.setText(workshop.address);
-        textCity.setText(workshop.city);
+        textCity.setText(cityName);
         textArea.setText(workshop.area);
         textOfferings.setText(workshop.offerings);
-        v.findViewById(R.id.card_workshop_manager).setVisibility((workshop.manager.isEmpty()) ? View.GONE : View.VISIBLE);
-        v.findViewById(R.id.card_workshop_contact).setVisibility((workshop.contact.isEmpty() || workshop.contact.equalsIgnoreCase("null")) ? View.GONE : View.VISIBLE);
-        v.findViewById(R.id.card_workshop_address).setVisibility((workshop.address.isEmpty()) ? View.GONE : View.VISIBLE);
-        v.findViewById(R.id.card_workshop_city).setVisibility((workshop.city.isEmpty()) ? View.GONE :View.VISIBLE);
-        v.findViewById(R.id.card_workshop_area).setVisibility((workshop.area.isEmpty()) ? View.GONE : View.VISIBLE);
-        v.findViewById(R.id.card_workshop_offerings).setVisibility((workshop.offerings.isEmpty()) ? View.GONE : View.VISIBLE);
+        v.findViewById(R.id.layout_workshop_manager).setVisibility((workshop.manager.isEmpty()) ? View.GONE : View.VISIBLE);
+        v.findViewById(R.id.layout_workshop_contact).setVisibility((workshop.contact.isEmpty() || workshop.contact.equalsIgnoreCase("null")) ? View.GONE : View.VISIBLE);
+        v.findViewById(R.id.layout_workshop_address).setVisibility((workshop.address.isEmpty()) ? View.GONE : View.VISIBLE);
+        v.findViewById(R.id.layout_workshop_city).setVisibility((cityName.isEmpty()) ? View.GONE :View.VISIBLE);
+        v.findViewById(R.id.layout_workshop_area).setVisibility((workshop.area.isEmpty()) ? View.GONE : View.VISIBLE);
+        v.findViewById(R.id.layout_workshop_offerings).setVisibility((workshop.offerings.isEmpty()) ? View.GONE : View.VISIBLE);
     }
 }

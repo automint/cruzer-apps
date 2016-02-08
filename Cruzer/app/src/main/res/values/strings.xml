@@ -32,7 +32,7 @@
     <string name="label_vehicle_manu">Vehicle Company</string>
     <string name="label_vehicle_model">Vehicle Model</string>
     <string name="label_vehicle_reg">Vehicle Registration Number</string>
-    <string name="label_odometer_reading">Odometer Reading</string>
+    <string name="label_odometer_reading">Odometer</string>
     <string name="label_enable">Enable</string>
     <string name="label_delete">delete</string>
     <string name="label_done">Go!</string>

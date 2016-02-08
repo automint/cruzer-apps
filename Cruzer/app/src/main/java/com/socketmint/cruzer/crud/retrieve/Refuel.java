@@ -3,7 +3,7 @@ package com.socketmint.cruzer.crud.retrieve;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
@@ -26,7 +26,7 @@ import java.util.Collections;
 public class Refuel extends Fragment {
     private static final String TAG = "RetrieveRefuel";
     private AppCompatTextView textVehicleName, textAmount, textOdometer, textDate, textVolume, textRate;
-    private CardView cardOdometer, cardDate, cardVolume, cardRate;
+    private LinearLayoutCompat layoutOdometer, layoutDate, layoutRate, layoutVolume;
 
     private DatabaseHelper databaseHelper;
     private UiElement uiElement;
@@ -71,10 +71,10 @@ public class Refuel extends Fragment {
         textVolume = (AppCompatTextView) v.findViewById(R.id.text_refuel_volume);
         textRate = (AppCompatTextView) v.findViewById(R.id.text_refuel_rate);
 
-        cardOdometer = (CardView) v.findViewById(R.id.card_odometer);
-        cardDate = (CardView) v.findViewById(R.id.card_date);
-        cardVolume = (CardView) v.findViewById(R.id.card_refuel_volume);
-        cardRate = (CardView) v.findViewById(R.id.card_refuel_rate);
+        layoutDate = (LinearLayoutCompat) v.findViewById(R.id.layout_date);
+        layoutOdometer = (LinearLayoutCompat) v.findViewById(R.id.layout_odometer);
+        layoutRate = (LinearLayoutCompat) v.findViewById(R.id.layout_refuel_rate);
+        layoutVolume = (LinearLayoutCompat) v.findViewById(R.id.layout_refuel_volume);
     }
 
     private void setContent() {
@@ -87,10 +87,10 @@ public class Refuel extends Fragment {
         textVolume.setText(Html.fromHtml(getString(R.string.text_volume, refuel.volume)));
         textRate.setText(Html.fromHtml(getString(R.string.text_rate, refuel.rate)));
 
-        cardOdometer.setVisibility((refuel.odo.isEmpty()) ? View.GONE : View.VISIBLE);
-        cardDate.setVisibility((refuel.date.isEmpty()) ? View.GONE : View.VISIBLE);
-        cardVolume.setVisibility((refuel.volume.isEmpty()) ? View.GONE : View.VISIBLE);
-        cardRate.setVisibility((refuel.rate.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutOdometer.setVisibility((refuel.odo.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutDate.setVisibility((refuel.date.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutVolume.setVisibility((refuel.volume.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutRate.setVisibility((refuel.rate.isEmpty()) ? View.GONE : View.VISIBLE);
     }
 
     private SpannableString vehicleName(Vehicle vehicle) {
