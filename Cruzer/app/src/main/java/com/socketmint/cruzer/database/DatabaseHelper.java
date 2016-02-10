@@ -9,7 +9,10 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import com.socketmint.cruzer.dataholder.City;
+import com.socketmint.cruzer.dataholder.Country;
 import com.socketmint.cruzer.dataholder.Manu;
 import com.socketmint.cruzer.dataholder.Model;
 import com.socketmint.cruzer.dataholder.Problem;
@@ -19,6 +22,7 @@ import com.socketmint.cruzer.dataholder.Status;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
+import com.socketmint.cruzer.dataholder.WorkshopType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String FOREIGN_KEY = " foreign key ";
     private static final String DELETE_CASCADE = " on delete cascade";
     private static final String CONFLICT = " on conflict abort";
-//    public static final String DROP_TABLE = "drop table if exists ";
+    public static final String DROP_TABLE = "drop table if exists ";
     public static final String SELECT_ALL = "select * from ";
     public static final String DELETE = "delete from ";
     public static final String[] ALTER_TABLE = {"alter table ", " add column "};
@@ -56,6 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseSchema.Users.COLUMN_FIRST_NAME + " text, "
                 + DatabaseSchema.Users.COLUMN_LAST_NAME + " text, "
                 + DatabaseSchema.Users.COLUMN_PASSWORD + " text, "
+                + DatabaseSchema.Users.COLUMN_CITY_ID + " text, "
                 + DatabaseSchema.Users.COLUMN_MOBILE + " text unique" + CONFLICT + ", "
                 + DatabaseSchema.SYNC_STATUS + " text" + ")";
         public static final String MANUS = CREATE_TABLE + DatabaseSchema.Manus.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + " text primary key, "
@@ -86,10 +91,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseSchema.Workshops.COLUMN_CONTACT + " text, "
                 + DatabaseSchema.Workshops.COLUMN_LATITUDE + " text, "
                 + DatabaseSchema.Workshops.COLUMN_LONGITUDE + " text, "
-                + DatabaseSchema.Workshops.COLUMN_CITY + " text, "
+                + DatabaseSchema.Workshops.COLUMN_CITY_ID + " text, "
                 + DatabaseSchema.Workshops.COLUMN_AREA + " text, "
                 + DatabaseSchema.Workshops.COLUMN_OFFERINGS + " text, "
-                + DatabaseSchema.SYNC_STATUS + " text" + ")";
+                + DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID + " text, "
+                + DatabaseSchema.SYNC_STATUS + " text, "
+                + FOREIGN_KEY + "(" + DatabaseSchema.Workshops.COLUMN_CITY_ID + ") references " + DatabaseSchema.Cities.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ","
+                + FOREIGN_KEY + "(" + DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID + ") references " + DatabaseSchema.WorkshopTypes.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
         public static final String SERVICES = CREATE_TABLE + DatabaseSchema.Services.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + " text primary key, "
                 + DatabaseSchema.COLUMN_SID + " text unique" + CONFLICT + ", "
                 + DatabaseSchema.COLUMN_VEHICLE_ID + " text, "
@@ -123,32 +131,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseSchema.SYNC_STATUS + " text, "
                 + DatabaseSchema.Problems.COLUMN_QTY + " text, "
                 + FOREIGN_KEY + "(" + DatabaseSchema.Problems.COLUMN_SERVICE_ID + ") references " + DatabaseSchema.Services.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
-        public static final String ERRORS = CREATE_TABLE + DatabaseSchema.Errors.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + " text primary key, "
-                + DatabaseSchema.Errors.COLUMN_CODE + " text, "
-                + DatabaseSchema.Errors.COLUMN_MESSAGE + " text" + ")";
-        public static final String STATUS = CREATE_TABLE + DatabaseSchema.Status.TABLE_NAME + "(" + DatabaseSchema.Status.COLUMN_ID + " text primary key, "
-                + DatabaseSchema.Status.COLUMN_DETAILS + " text" + ")";
+        public static final String SERVICE_STATUS = CREATE_TABLE + DatabaseSchema.ServiceStatus.TABLE_NAME + "(" + DatabaseSchema.ServiceStatus.COLUMN_ID + " text primary key, "
+                + DatabaseSchema.ServiceStatus.COLUMN_DETAILS + " text" + ")";
+        public static final String CITIES = CREATE_TABLE + DatabaseSchema.Cities.TABLE_NAME + "(" + DatabaseSchema.Cities.COLUMN_ID + " text primary key, "
+                + DatabaseSchema.Cities.COLUMN_CITY + " text, "
+                + DatabaseSchema.Cities.COLUMN_COUNTRY_ID + " text,"
+                + FOREIGN_KEY + "(" + DatabaseSchema.Cities.COLUMN_COUNTRY_ID + ") references " + DatabaseSchema.Countries.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
+        public static final String COUNTRIES = CREATE_TABLE + DatabaseSchema.Countries.TABLE_NAME + "(" + DatabaseSchema.Countries.COLUMN_ID + " text primary key, "
+                + DatabaseSchema.Countries.COLUMN_COUNTRY + " text" + ")";
+        public static final String WORKSHOP_TYPE = CREATE_TABLE + DatabaseSchema.WorkshopTypes.TABLE_NAME + "(" + DatabaseSchema.WorkshopTypes.COLUMN_ID + " text primary key, "
+                + DatabaseSchema.WorkshopTypes.COLUMN_TYPE + " text" + ")";
     }
 
     private static abstract class Versions {
-        /** Version from where database schema initiated */
         public static final int VC_14 = 1;
-        /** Update database schema for - problems[qty], services[status]
-         * @since 15 */
         public static final int VC_15 = 2;
-        /** Update database schema - on delete cascade
-         * @since 16 */
         public static final int VC_16 = 3;
-        /** Update database schema - add latitude and longitude in workshop table
-         * @since 17 */
         public static final int VC_17 = 4;
-        /** Update database schema - add role id and user id in service table
-         * @since 19 */
         public static final int VC_19 = 5;
+        public static final int VC_22 = 6;
     }
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, Versions.VC_19);
+        super(context, DATABASE_NAME, null, Versions.VC_22);
         this.context = context;
     }
 
@@ -160,16 +165,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // extras
+        try { db.execSQL(CreateStrings.CITIES); } catch (SQLException e) { e.printStackTrace(); }
+        try { db.execSQL(CreateStrings.COUNTRIES); } catch (SQLException e) { e.printStackTrace(); }
+
+        // users
         try { db.execSQL(CreateStrings.USERS); } catch (SQLException e) { e.printStackTrace(); }
+
+        // vehicle
         try { db.execSQL(CreateStrings.MANUS); } catch (SQLException e) { e.printStackTrace(); }
         try { db.execSQL(CreateStrings.MODELS); } catch (SQLException e) { e.printStackTrace(); }
         try { db.execSQL(CreateStrings.VEHICLES); } catch (SQLException e) { e.printStackTrace(); }
-        try { db.execSQL(CreateStrings.WORKSHOPS); } catch (SQLException e) { e.printStackTrace(); }
-        try { db.execSQL(CreateStrings.SERVICES); } catch (SQLException e) { e.printStackTrace(); }
+
+        // refuels
         try { db.execSQL(CreateStrings.REFUELS); } catch (SQLException e) { e.printStackTrace(); }
-        try { db.execSQL(CreateStrings.ERRORS); } catch (SQLException e) { e.printStackTrace(); }
+
+        // workshops
+        try { db.execSQL(CreateStrings.WORKSHOP_TYPE); } catch (SQLException e) { e.printStackTrace(); }
+        try { db.execSQL(CreateStrings.WORKSHOPS); } catch (SQLException e) { e.printStackTrace(); }
+
+        //services
+        try { db.execSQL(CreateStrings.SERVICE_STATUS); } catch (SQLException e) { e.printStackTrace(); }
+        try { db.execSQL(CreateStrings.SERVICES); } catch (SQLException e) { e.printStackTrace(); }
         try { db.execSQL(CreateStrings.PROBLEMS); } catch (SQLException e) { e.printStackTrace(); }
-        try { db.execSQL(CreateStrings.STATUS); } catch (SQLException e) { e.printStackTrace(); }
     }
 
     @Override
@@ -192,13 +210,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             case Versions.VC_16:
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_LATITUDE + " text"); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_LONGITUDE + " text"); } catch (SQLException e) { e.printStackTrace(); }
-                try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_CITY + " text"); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_CITY_ID + " text"); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_AREA + " text"); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Workshops.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Workshops.COLUMN_OFFERINGS + " text"); } catch (SQLException e) { e.printStackTrace(); }
             case Versions.VC_17:
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Services.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Services.COLUMN_USER_ID + " text"); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Services.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Services.COLUMN_ROLE_ID + " text"); } catch (SQLException e) { e.printStackTrace(); }
-                try { db.execSQL(CreateStrings.STATUS); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.SERVICE_STATUS); } catch (SQLException e) { e.printStackTrace(); }
+            case Versions.VC_19:
+                try { db.execSQL(DROP_TABLE + "messages"); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.CITIES); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.COUNTRIES); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.WORKSHOP_TYPE); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Users.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Users.COLUMN_CITY_ID + " text"); } catch (SQLException e) { e.printStackTrace(); }
+                try {
+                    db.execSQL("PRAGMA writable_schema=1");
+                    db.execSQL("UPDATE sqlite_master SET sql='" + CreateStrings.WORKSHOPS + "' WHERE type='table' AND name='" + DatabaseSchema.Workshops.TABLE_NAME + "';");
+                    db.execSQL("PRAGMA writable_schema=0");
+                } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
@@ -253,7 +282,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
-    public boolean addUser(String sId, String mobile, String password, String firstName, String lastName, String email) {
+    public boolean addUser(String sId, String mobile, String password, String firstName, String lastName, String email, String cityId) {
         try {
             ContentValues values = new ContentValues();
 
@@ -264,6 +293,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.Users.COLUMN_FIRST_NAME, (firstName.equalsIgnoreCase("null")) ? "" : firstName);
             values.put(DatabaseSchema.Users.COLUMN_LAST_NAME, (lastName.equalsIgnoreCase("null")) ? "" : lastName);
             values.put(DatabaseSchema.Users.COLUMN_EMAIL, (email.equalsIgnoreCase("null")) ? "" : email);
+            cityId = (cityId.equalsIgnoreCase("null") ? "" : cityId);
+            if (!cityId.isEmpty())
+                values.put(DatabaseSchema.Users.COLUMN_CITY_ID, cityId);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().insert(DatabaseSchema.Users.TABLE_NAME, null, values);
@@ -296,12 +328,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
+    public boolean updateUserCity(String id, String cityId) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.Users.COLUMN_CITY_ID, cityId);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.UPDATE);
+
+            getWritableDatabase().update(DatabaseSchema.Users.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
     public User user(String syncStatus) {
         try {
             Cursor cursor = getReadableDatabase().query(DatabaseSchema.Users.TABLE_NAME, new String[]{"*"}, DatabaseSchema.SYNC_STATUS + "=?", new String[]{syncStatus}, null, null, null);
             cursor.moveToFirst();
 
-            User user = new User(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_PASSWORD)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_MOBILE)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_EMAIL)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_FIRST_NAME)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_LAST_NAME)));
+            User user = new User(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_PASSWORD)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_MOBILE)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_EMAIL)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_FIRST_NAME)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_LAST_NAME)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_CITY_ID)));
             cursor.close();
             return user;
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
@@ -312,7 +356,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.Users.TABLE_NAME, null);
             cursor.moveToFirst();
 
-            User user = new User(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_PASSWORD)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_MOBILE)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_EMAIL)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_FIRST_NAME)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_LAST_NAME)));
+            User user = new User(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_PASSWORD)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_MOBILE)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_EMAIL)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_FIRST_NAME)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_LAST_NAME)), cursor.getString(cursor.getColumnIndex(DatabaseSchema.Users.COLUMN_CITY_ID)));
             cursor.close();
             return user;
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
@@ -472,26 +516,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
-    public boolean addVehicleFromServer(String sId, String reg, String name, String uId) {                              // [ CHANGE THIS ]
-        try {
-            ContentValues values = new ContentValues();
-
-            values.put(DatabaseSchema.COLUMN_ID, generateId(DatabaseSchema.Vehicles.TABLE_NAME));
-            values.put(DatabaseSchema.COLUMN_SID, sId);
-            if (reg.equals("null"))
-                reg = "";
-            values.put(DatabaseSchema.Vehicles.COLUMN_REG, reg);
-            if (name.equals("null"))
-                name = "";
-            values.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
-            values.put(DatabaseSchema.Vehicles.COLUMN_USER_ID, uId);
-            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
-
-            getWritableDatabase().insert(DatabaseSchema.Vehicles.TABLE_NAME, null, values);
-            return true;
-        } catch (SQLiteConstraintException e) { return false; }
-    }
-
     public boolean addVehicle(String reg, String name, String uId, String modelId) {
         try {
             ContentValues values = new ContentValues();
@@ -509,7 +533,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
     }
 
-    public String addVehicleFromGcm(String reg, String sId, String modelId) {                               // [ CHANGE THIS ]
+    public String addVehicle(String reg, String sId, String modelId) {
         try {
             ContentValues values = new ContentValues();
 
@@ -546,7 +570,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             values.put(DatabaseSchema.Vehicles.COLUMN_REG, reg);
             values.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
-            values.put(DatabaseSchema.Vehicles.COLUMN_MODEL_ID, modelId);
+            if (!modelId.isEmpty())
+                values.put(DatabaseSchema.Vehicles.COLUMN_MODEL_ID, modelId);
             if (syncStatus(DatabaseSchema.Vehicles.TABLE_NAME, Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id}).equals(SyncStatus.NEW))
                 values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
             else
@@ -557,23 +582,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
-    public boolean updateVehicle(String id, String reg, String name) {
-        try {
-            ContentValues values = new ContentValues();
-
-            values.put(DatabaseSchema.Vehicles.COLUMN_REG, reg);
-            values.put(DatabaseSchema.Vehicles.COLUMN_NAME, name);
-            if (syncStatus(DatabaseSchema.Vehicles.TABLE_NAME, Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id}).equals(SyncStatus.NEW))
-                values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
-            else
-                values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.UPDATE);
-
-            getWritableDatabase().update(DatabaseSchema.Vehicles.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
-            return true;
-        } catch (SQLiteConstraintException e) { return false; }
-    }
-
-    public boolean updateVehicleFromGcm(String sId, String reg, String modelId) {
+    public boolean updateVehicle(String sId, String reg, String modelId) {
         try {
             ContentValues values = new ContentValues();
 
@@ -926,23 +935,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
-    public boolean updateRefuel(String sId, String vehicleId, String date, String rate, String volume, String cost, String odo) {
-        try {
-            ContentValues values = new ContentValues();
-
-            values.put(DatabaseSchema.Refuels.COLUMN_DATE, (date.equalsIgnoreCase("null")) ? "" : date);
-            values.put(DatabaseSchema.Refuels.COLUMN_RATE, (rate.equalsIgnoreCase("null")) ? "" : rate);
-            values.put(DatabaseSchema.Refuels.COLUMN_VOLUME, (volume.equalsIgnoreCase("null")) ? "" : volume);
-            values.put(DatabaseSchema.Refuels.COLUMN_COST, (cost.equalsIgnoreCase("null")) ? "" : cost);
-            values.put(DatabaseSchema.Refuels.COLUMN_ODO, (odo.equalsIgnoreCase("null")) ? "" : odo);
-            values.put(DatabaseSchema.COLUMN_VEHICLE_ID, vehicleId);
-            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
-
-            getWritableDatabase().update(DatabaseSchema.Refuels.TABLE_NAME, values, DatabaseSchema.COLUMN_SID + "=?", new String[]{sId});
-            return true;
-        } catch (SQLiteConstraintException e) { return false; }
-    }
-
     public List<Refuel> refuels() {
         try {
             List<Refuel> list = new ArrayList<>();
@@ -1109,25 +1101,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
 
             values.put(DatabaseSchema.Services.COLUMN_DATE, date);
-            values.put(DatabaseSchema.Services.COLUMN_COST, cost);
-            values.put(DatabaseSchema.Services.COLUMN_ODO, odo);
-            values.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
-            if (syncStatus(DatabaseSchema.Services.TABLE_NAME, Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id}).equals(SyncStatus.NEW))
-                values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
-            else
-                values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.UPDATE);
-
-            getWritableDatabase().update(DatabaseSchema.Services.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
-            return true;
-        } catch (SQLiteConstraintException e) { return false; }
-    }
-
-    public boolean updateService(String id, String date, String workshopId, String cost, String odo, String details) {
-        try {
-            ContentValues values = new ContentValues();
-
-            values.put(DatabaseSchema.Services.COLUMN_DATE, date);
-            values.put(DatabaseSchema.Services.COLUMN_WORKSHOP_ID, workshopId);
             values.put(DatabaseSchema.Services.COLUMN_COST, cost);
             values.put(DatabaseSchema.Services.COLUMN_ODO, odo);
             values.put(DatabaseSchema.Services.COLUMN_DETAILS, details);
@@ -1388,9 +1361,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
     }
 
-    public boolean addWorkshop(String id, String name, String address, String manager, String contact, String latitude, String longitude, String city, String area, String offerings) {
+    public boolean addWorkshop(String id, String name, String address, String manager, String contact, String latitude, String longitude, String cityId, String area, String offerings, String workshopTypeId) {
         try {
             ContentValues values = new ContentValues();
+
+            String city = (cityId.equalsIgnoreCase("null") ? "" : cityId);
+            String workshopType = (workshopTypeId.equalsIgnoreCase("null") ? "" : workshopTypeId);
 
             values.put(DatabaseSchema.COLUMN_ID, id);
             if (name.equals("null"))
@@ -1401,19 +1377,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.Workshops.COLUMN_CONTACT, (contact.equalsIgnoreCase("null")) ? "" : contact);
             values.put(DatabaseSchema.Workshops.COLUMN_LATITUDE, (latitude.equals("null")) ? "" : latitude);
             values.put(DatabaseSchema.Workshops.COLUMN_LONGITUDE, (longitude.equals("null")) ? "" : longitude);
-            values.put(DatabaseSchema.Workshops.COLUMN_CITY, (city.equalsIgnoreCase("null")) ? "" : city);
+            if (!city.isEmpty())
+                values.put(DatabaseSchema.Workshops.COLUMN_CITY_ID, city);
             values.put(DatabaseSchema.Workshops.COLUMN_AREA, (area.equalsIgnoreCase("null")) ? "" : area);
             values.put(DatabaseSchema.Workshops.COLUMN_OFFERINGS, (offerings.equalsIgnoreCase("null")) ? "" : offerings);
+            if (!workshopType.isEmpty())
+                values.put(DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID, workshopType);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
+            Log.d("DBHelper", "addWorkshop - " + values.toString());
             getWritableDatabase().insert(DatabaseSchema.Workshops.TABLE_NAME, null, values);
             return true;
         } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
     }
 
-    public boolean updateWorkshop(String id, String name, String address, String manager, String contact, String latitude, String longitude, String city, String area, String offerings) {
+    public boolean updateWorkshop(String id, String name, String address, String manager, String contact, String latitude, String longitude, String cityId, String area, String offerings, String workshopTypeId) {
         try {
             ContentValues values = new ContentValues();
+
+            String city = (cityId.equalsIgnoreCase("null") ? "" : cityId);
+            String workshopType = (workshopTypeId.equalsIgnoreCase("null") ? "" : workshopTypeId);
 
             if (name.equals("null"))
                 return false;
@@ -1423,9 +1406,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.Workshops.COLUMN_CONTACT, (contact.equalsIgnoreCase("null")) ? "" : contact);
             values.put(DatabaseSchema.Workshops.COLUMN_LATITUDE, (latitude.equals("null")) ? "" : latitude);
             values.put(DatabaseSchema.Workshops.COLUMN_LONGITUDE, (longitude.equals("null")) ? "" : longitude);
-            values.put(DatabaseSchema.Workshops.COLUMN_CITY, (city.equalsIgnoreCase("null")) ? "" : city);
+            if (!city.isEmpty())
+                values.put(DatabaseSchema.Workshops.COLUMN_CITY_ID, city);
             values.put(DatabaseSchema.Workshops.COLUMN_AREA, (area.equalsIgnoreCase("null")) ? "" : area);
             values.put(DatabaseSchema.Workshops.COLUMN_OFFERINGS, (offerings.equalsIgnoreCase("null")) ? "" : offerings);
+            if (!workshopType.isEmpty())
+                values.put(DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID, workshopType);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().update(DatabaseSchema.Workshops.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
@@ -1452,42 +1438,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_CONTACT)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_LATITUDE)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_LONGITUDE)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_CITY)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_CITY_ID)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_AREA)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_OFFERINGS)));
-                list.add(object);
-                cursor.moveToNext();
-            }
-
-            cursor.close();
-            return list;
-        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { e.printStackTrace(); return null; }
-    }
-
-    public List<Workshop> workshops(List<String> constraints, String[] values) {
-        try {
-            String conString = constraints.get(0) + "=?";
-            if (constraints.size() > 1) {
-                for (int i = 1; i < constraints.size(); i++) {
-                    conString = conString.concat(" and " + constraints.get(i) + "=?");
-                }
-            }
-            List<Workshop> list = new ArrayList<>();
-            Cursor cursor = getReadableDatabase().query(DatabaseSchema.Workshops.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
-            cursor.moveToFirst();
-
-            while (!cursor.isAfterLast()) {
-                Workshop object = new Workshop(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_NAME)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_ADDRESS)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_MANAGER)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_CONTACT)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_LATITUDE)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_LONGITUDE)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_CITY)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_AREA)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_OFFERINGS)));
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_OFFERINGS)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID)));
                 list.add(object);
                 cursor.moveToNext();
             }
@@ -1516,9 +1470,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_CONTACT)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_LATITUDE)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_LONGITUDE)),
-                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_CITY)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_CITY_ID)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_AREA)),
-                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_OFFERINGS)));
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_OFFERINGS)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID)));
 
             cursor.close();
             return object;
@@ -1529,10 +1484,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
 
-            values.put(DatabaseSchema.Status.COLUMN_ID, id);
-            values.put(DatabaseSchema.Status.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.ServiceStatus.COLUMN_ID, id);
+            values.put(DatabaseSchema.ServiceStatus.COLUMN_DETAILS, details);
 
-            getWritableDatabase().insert(DatabaseSchema.Status.TABLE_NAME, null, values);
+            getWritableDatabase().insert(DatabaseSchema.ServiceStatus.TABLE_NAME, null, values);
             return true;
         } catch (SQLiteConstraintException e) { return false; }
     }
@@ -1540,12 +1495,221 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Status> statusList() {
         try {
             List<Status> list = new ArrayList<>();
-            Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.Status.TABLE_NAME, null);
+            Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.ServiceStatus.TABLE_NAME, null);
             cursor.moveToFirst();
 
             while (!cursor.isAfterLast()) {
-                Status object = new Status(cursor.getString(cursor.getColumnIndex(DatabaseSchema.Status.COLUMN_ID)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Status.COLUMN_DETAILS)));
+                Status object = new Status(cursor.getString(cursor.getColumnIndex(DatabaseSchema.ServiceStatus.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.ServiceStatus.COLUMN_DETAILS)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public boolean addCity(String id, String city, String countryId) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.Cities.COLUMN_ID, id);
+            values.put(DatabaseSchema.Cities.COLUMN_CITY, city);
+            values.put(DatabaseSchema.Cities.COLUMN_COUNTRY_ID, countryId);
+
+            getWritableDatabase().insert(DatabaseSchema.Cities.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean updateCity(String id, String city, String countryId) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.Cities.COLUMN_CITY, city);
+            values.put(DatabaseSchema.Cities.COLUMN_COUNTRY_ID, countryId);
+
+            getWritableDatabase().update(DatabaseSchema.Cities.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean addCountry(String id, String country) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.Countries.COLUMN_ID, id);
+            values.put(DatabaseSchema.Countries.COLUMN_COUNTRY, country);
+
+            getWritableDatabase().insert(DatabaseSchema.Countries.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean updateCountry(String id, String country) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.Countries.COLUMN_COUNTRY, country);
+
+            getWritableDatabase().update(DatabaseSchema.Countries.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public City city(List<String> constraints, String[] values) {
+        try {
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.Cities.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            City object = new City(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Cities.COLUMN_COUNTRY_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Cities.COLUMN_CITY)));
+
+            cursor.close();
+            return object;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<City> cities() {
+        try {
+            List<City> list = new ArrayList<>();
+            Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.Cities.TABLE_NAME, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                City object = new City(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Cities.COLUMN_COUNTRY_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Cities.COLUMN_CITY)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<City> cities(List<String> constraints, String[] values) {
+        try {
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+            List<City> list = new ArrayList<>();
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.Cities.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                City object = new City(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Cities.COLUMN_COUNTRY_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Cities.COLUMN_CITY)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public Country country(List<String> constraints, String[] values) {
+        try {
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.Countries.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            Country object = new Country(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Countries.COLUMN_COUNTRY)));
+
+            cursor.close();
+            return object;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<Country> countries() {
+        try {
+            List<Country> list = new ArrayList<>();
+            Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.Countries.TABLE_NAME, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                Country object = new Country(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Countries.COLUMN_COUNTRY)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public boolean addWorkshopType(String id, String type) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.WorkshopTypes.COLUMN_ID, id);
+            values.put(DatabaseSchema.WorkshopTypes.COLUMN_TYPE, type);
+
+            getWritableDatabase().insert(DatabaseSchema.WorkshopTypes.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean updateWorkshopType(String id, String type) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.WorkshopTypes.COLUMN_TYPE, type);
+
+            getWritableDatabase().update(DatabaseSchema.WorkshopTypes.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public WorkshopType workshopType(List<String> constraints, String[] values) {
+        try {
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+            Cursor cursor = getWritableDatabase().query(DatabaseSchema.WorkshopTypes.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            WorkshopType object = new WorkshopType(cursor.getString(cursor.getColumnIndex(DatabaseSchema.WorkshopTypes.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.WorkshopTypes.COLUMN_TYPE)));
+
+            cursor.close();
+            return object;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<WorkshopType> workshopTypes() {
+        try {
+            List<WorkshopType> list = new ArrayList<>();
+            Cursor cursor = getWritableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.WorkshopTypes.TABLE_NAME, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                WorkshopType object = new WorkshopType(cursor.getString(cursor.getColumnIndex(DatabaseSchema.WorkshopTypes.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.WorkshopTypes.COLUMN_TYPE)));
                 list.add(object);
                 cursor.moveToNext();
             }
@@ -1588,13 +1752,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
-    public boolean delete(String tableName) {
-        try {
-            try { getWritableDatabase().execSQL(DELETE + tableName); } catch (SQLException e) { e.printStackTrace(); }
-            return true;
-        } catch (SQLiteConstraintException e) { return false; }
-    }
-
     public boolean logout() {
         try {
             try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Users.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
@@ -1605,7 +1762,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Services.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
             try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Refuels.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
             try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Problems.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Status.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
+            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.ServiceStatus.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
+            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Cities.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
+            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Countries.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
             return true;
         } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
     }

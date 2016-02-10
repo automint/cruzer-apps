@@ -1,10 +1,10 @@
 package com.socketmint.cruzer.dataholder;
 
 public class Workshop {
-    private String id, sId, cityId;
+    private String id, sId, cityId, workshopTypeId;
     public String name, address, manager, contact, latitude, longitude, area, offerings;
 
-    public Workshop(String id, String sId, String name, String address, String manager, String contact, String latitude, String longitude, String cityId, String area, String offerings) {
+    public Workshop(String id, String sId, String name, String address, String manager, String contact, String latitude, String longitude, String cityId, String area, String offerings, String workshopTypeId) {
         this.id = id;
         this.sId = sId;
         this.name = name;
@@ -16,6 +16,7 @@ public class Workshop {
         this.cityId = cityId;
         this.area = area;
         this.offerings = offerings;
+        this.workshopTypeId = workshopTypeId;
     }
 
     public String getId() {
@@ -28,5 +29,9 @@ public class Workshop {
 
     public String getCityId() {
         return cityId;
+    }
+
+    public String getWorkshopTypeId() {
+        return workshopTypeId;
     }
 }

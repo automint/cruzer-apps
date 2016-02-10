@@ -7,6 +7,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +30,7 @@ import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -54,14 +59,17 @@ import com.socketmint.cruzer.manage.LocData;
 import com.socketmint.cruzer.manage.Login;
 import com.socketmint.cruzer.manage.gcm.RegistrationService;
 import com.socketmint.cruzer.manage.sync.ManualSync;
+import com.socketmint.cruzer.maps.WorkshopFilter;
 import com.socketmint.cruzer.ui.UiElement;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
-public class History extends AppCompatActivity implements View.OnClickListener {
+public class History extends AppCompatActivity implements View.OnClickListener, Toolbar.OnMenuItemClickListener {
     private static final String TAG = "History ";
     private static final String ACTION_ADD_FAB = "Add Fab";
     private static final String ACTION_ADD_REFUEL = "Add Refuel";
@@ -77,14 +85,15 @@ public class History extends AppCompatActivity implements View.OnClickListener {
 
     private Adapter adapter;
     private List<Holder> holders = new ArrayList<>();
-    private boolean isFabOpen = false;
-    private String vehicleId;
+    private boolean isFabOpen = false, getLocation = false;
+    private String vehicleId, nation, locality;
     private Vehicle vehicle;
 
     private DatabaseHelper databaseHelper;
     private UiElement uiElement;
     private ChoiceDialog choiceDialog;
     private Login login = Login.getInstance();
+    private LocData locData = new LocData();
     private ManualSync manualSync;
 
     private BroadcastReceiver gcmBroadcast;
@@ -95,6 +104,7 @@ public class History extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
+        getLocation = false;
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
         initializeBroadcasts();
 
@@ -108,6 +118,7 @@ public class History extends AppCompatActivity implements View.OnClickListener {
         choiceDialog = new ChoiceDialog(this);
         login.initInstance(this);
         manualSync = new ManualSync(this);
+        locData.cruzerInstance(this);
 
         if (databaseHelper.vehicleCount() == 0) {
             startActivity(new Intent(History.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE));
@@ -130,9 +141,38 @@ public class History extends AppCompatActivity implements View.OnClickListener {
         super.onStart();
         analyticsTracker.setScreenName(TAG);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        if (login.login() > Login.LoginType.TRIAL)
-            androidSync();
+
         addData();
+
+        // get location
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    if (getLocation)
+                        return null;
+                    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    Log.d(TAG, "Last Known Location = " + location.getLatitude() + ", " + location.getLongitude());
+                    Geocoder geocoder = new Geocoder(History.this, Locale.getDefault());
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    locality = addresses.get(0).getLocality();
+                    String subLocality = addresses.get(0).getSubLocality();
+                    nation = addresses.get(0).getCountryName();
+                    Log.d(TAG, "Geo Address : " + addresses.get(0).toString());
+                    Log.d(TAG, "Locality = " + locality + " | Sub Locality = " + subLocality + " | countryName = " + nation);
+                } catch (SecurityException | IOException e) { e.printStackTrace(); }
+                return null;
+            }
+            @Override
+            public void onPostExecute(Void result) {
+                Bundle syncBundle = new Bundle();
+                syncBundle.putString(Constants.Bundle.CITY, locality);
+                syncBundle.putString(Constants.Bundle.COUNTRY, nation);
+                if (login.login() > Login.LoginType.TRIAL)
+                    manualSync.syncEverything(syncBundle);
+            }
+        }.execute();
     }
 
     @Override
@@ -170,7 +210,8 @@ public class History extends AppCompatActivity implements View.OnClickListener {
 
     private void initializeViews() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        toolbar.inflateMenu(R.menu.menu_history);
+        toolbar.setOnMenuItemClickListener(this);
 
         drawerFragment = (DrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         drawerFragment.setUp(R.id.navigation_drawer, toolbar, (DrawerLayout) findViewById(R.id.drawer_layout));
@@ -189,7 +230,6 @@ public class History extends AppCompatActivity implements View.OnClickListener {
         fabAdd.setOnClickListener(this);
         fabRefuel.setOnClickListener(this);
         fabService.setOnClickListener(this);
-        findViewById(R.id.button_vehicle_list).setOnClickListener(this);
         toolbarTitle.setOnClickListener(this);
     }
 
@@ -296,10 +336,6 @@ public class History extends AppCompatActivity implements View.OnClickListener {
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_ADD_SERVICE).build());
                 startActivity(new Intent(History.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.SERVICE).putExtra(Constants.Bundle.VEHICLE_ID, vehicleId));
                 break;
-            case R.id.button_vehicle_list:
-                analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(TAG + ACTION_VEHICLE_LIST).build());
-                choiceDialog.chooseVehicle();
-                break;
             case R.id.toolbar_title:
                 if (!vehicleId.equals("all"))
                     startActivity(new Intent(History.this, Retrieve.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE).putExtra(Constants.Bundle.ID, vehicleId));
@@ -329,6 +365,21 @@ public class History extends AppCompatActivity implements View.OnClickListener {
             fabService.setClickable(true);
             isFabOpen = true;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_history:
+                analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(TAG + ACTION_VEHICLE_LIST).build());
+                choiceDialog.chooseVehicle();
+                break;
+            case R.id.item_locate:
+                startActivity(new Intent(History.this, WorkshopFilter.class));
+                finish();
+                break;
+        }
+        return false;
     }
 
     private class Adapter extends BaseAdapter implements View.OnClickListener {
@@ -501,10 +552,6 @@ public class History extends AppCompatActivity implements View.OnClickListener {
             this.object = object;
             this.all = all;
         }
-    }
-
-    public void androidSync() {
-        manualSync.syncEverything();
     }
 
     public void sync() {

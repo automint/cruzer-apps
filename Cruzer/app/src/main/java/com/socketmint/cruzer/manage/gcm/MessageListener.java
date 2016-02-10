@@ -126,11 +126,11 @@ public class MessageListener extends GcmListenerService {
                     if (vehicle != null) {
                         Log.d(TAG, "vehicle exists");
                         if (!reg.equals(vehicle.reg) || !modelId.equals(vehicle.getModelId()))
-                            databaseHelper.updateVehicleFromGcm(vehicleId, reg, modelId);
+                            databaseHelper.updateVehicle(vehicleId, reg, modelId);
                         vId = vehicle.getId();
                     } else {
                         Log.d(TAG, "new vehicle");
-                        vId = databaseHelper.addVehicleFromGcm(reg, vehicleId, modelId);
+                        vId = databaseHelper.addVehicle(reg, vehicleId, modelId);
 
                         if (vId == null) {
                             Log.e(TAG, "can not insert vehicle. exiting");
@@ -182,7 +182,7 @@ public class MessageListener extends GcmListenerService {
                                 databaseHelper.updateProblem(problemId, serviceId, problemDetails, lCost, pCost, qty);
                         }
                     } catch (JSONException e) { Log.e(TAG, "problems is not json"); }
-                    Intent updateIntent = new Intent(Constants.Gcm.INTENT_GCM);
+                    Intent updateIntent = new Intent(Constants.IntentFilters.GCM);
                     updateIntent.putExtra(Constants.Gcm.MESSAGE_UPDATE, true);
                     LocalBroadcastManager.getInstance(MessageListener.this).sendBroadcast(updateIntent);
                     if (!method.equals(Constants.VolleyRequest.METHOD_PUT))

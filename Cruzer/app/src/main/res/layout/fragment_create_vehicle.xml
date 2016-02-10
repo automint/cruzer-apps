@@ -95,7 +95,7 @@
                     android:layout_gravity="center_vertical"
                     android:background="@android:color/transparent"
                     android:tint="@color/grey_800"
-                    android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
+                    android:src="@drawable/ic_arrow_drop_down_circle_white_24dp"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
 
@@ -145,7 +145,7 @@
                     android:layout_gravity="center_vertical"
                     android:background="@android:color/transparent"
                     android:tint="@color/grey_800"
-                    android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
+                    android:src="@drawable/ic_arrow_drop_down_circle_white_24dp"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
 

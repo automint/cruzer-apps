@@ -33,6 +33,7 @@ import com.socketmint.cruzer.main.Vehicles;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
+import com.socketmint.cruzer.maps.WorkshopFilter;
 import com.socketmint.cruzer.maps.WorkshopLocator;
 import com.socketmint.cruzer.startup.LoginDialog;
 
@@ -243,7 +244,7 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
                 break;
             case LOCATOR:
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_LOCATOR).build());
-                startActivity(new Intent(getActivity(), WorkshopLocator.class));
+                startActivity(new Intent(getActivity(), WorkshopFilter.class));
                 getActivity().finish();
                 break;
         }

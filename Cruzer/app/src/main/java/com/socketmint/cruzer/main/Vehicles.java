@@ -73,7 +73,7 @@ public class Vehicles extends AppCompatActivity implements View.OnClickListener 
     }
 
     private void androidSync() {
-        manualSync.syncEverything();
+        manualSync.syncEverything(new Bundle());
     }
 
     @Override

@@ -18,6 +18,7 @@ public class DatabaseSchema {
         public static final String COLUMN_LAST_NAME = "lastname";
         public static final String COLUMN_PASSWORD = "password";
         public static final String COLUMN_MOBILE = "mobile";
+        public static final String COLUMN_CITY_ID = "city_id";
     }
 
     public static abstract class Manus implements BaseColumns {
@@ -47,9 +48,16 @@ public class DatabaseSchema {
         public static final String COLUMN_CONTACT = "contact";
         public static final String COLUMN_LATITUDE = "latitude";
         public static final String COLUMN_LONGITUDE = "longitude";
-        public static final String COLUMN_CITY = "city";
+        public static final String COLUMN_CITY_ID = "city_id";
         public static final String COLUMN_AREA = "area";
         public static final String COLUMN_OFFERINGS = "offerings";
+        public static final String COLUMN_WORKSHOP_TYPE_ID = "workshoptype_id";
+    }
+
+    public static abstract class WorkshopTypes implements BaseColumns {
+        public static final String TABLE_NAME = "workshoptypes";
+        public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
+        public static final String COLUMN_TYPE = "type";
     }
 
     public static abstract class Services implements BaseColumns {
@@ -73,12 +81,6 @@ public class DatabaseSchema {
         public static final String COLUMN_ODO = "odo";
     }
 
-    public static abstract class Errors implements BaseColumns {
-        public static final String TABLE_NAME = "messages";
-        public static final String COLUMN_CODE = "code";
-        public static final String COLUMN_MESSAGE = "message";
-    }
-
     public static abstract class Problems implements BaseColumns {
         public static final String TABLE_NAME = "problems";
         public static final String COLUMN_SERVICE_ID = "service_id";
@@ -88,9 +90,22 @@ public class DatabaseSchema {
         public static final String COLUMN_QTY = "qty";
     }
 
-    public static abstract class Status implements BaseColumns {
+    public static abstract class ServiceStatus implements BaseColumns {
         public static final String TABLE_NAME = "status";
         public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
         public static final String COLUMN_DETAILS = "details";
+    }
+
+    public static abstract class Cities implements BaseColumns {
+        public static final String TABLE_NAME = "cities";
+        public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
+        public static final String COLUMN_CITY = "city";
+        public static final String COLUMN_COUNTRY_ID = "country_id";
+    }
+
+    public static abstract class Countries implements BaseColumns {
+        public static final String TABLE_NAME = "countries";
+        public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
+        public static final String COLUMN_COUNTRY = "country";
     }
 }

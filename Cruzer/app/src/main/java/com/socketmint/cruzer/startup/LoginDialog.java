@@ -35,6 +35,7 @@ import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
+import com.socketmint.cruzer.dataholder.WorkshopType;
 import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
@@ -213,10 +214,11 @@ public class LoginDialog {
                         String email = info.optString(DatabaseSchema.Users.COLUMN_EMAIL);
                         String firstName = info.optString(DatabaseSchema.Users.COLUMN_FIRST_NAME);
                         String lastName = info.optString(DatabaseSchema.Users.COLUMN_LAST_NAME);
+                        String cityId = info.optString(DatabaseSchema.Users.COLUMN_CITY_ID);
 
                         sLogin.login(Login.LoginType.PHONE);
 
-                        databaseHelper.addUser(id, mobile, password, firstName, lastName, email);
+                        databaseHelper.addUser(id, mobile, password, firstName, lastName, email, cityId);
                         if (databaseHelper.vehicleCount() > 0) {
                             for (Vehicle vehicle : databaseHelper.vehicles()) {
                                 databaseHelper.updateVehicle(vehicle.getId(), databaseHelper.user().getId());
@@ -469,14 +471,12 @@ public class LoginDialog {
                         String name = object.optString(DatabaseSchema.Vehicles.COLUMN_NAME);
                         String modelId = object.optString(DatabaseSchema.Vehicles.COLUMN_MODEL_ID);
                         Model model = databaseHelper.model(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{modelId});
-                        if (model != null)
-                            databaseHelper.addVehicle(sId, reg, name, databaseHelper.user().getId(), model.getId());
-                        else
-                            databaseHelper.addVehicleFromServer(sId, reg, name, databaseHelper.user().getId());
+                        modelId = (model != null) ? model.getId() : "";
+                        databaseHelper.addVehicle(sId, reg, name, databaseHelper.user().getId(), modelId);
                     }
                 } catch (JSONException e) { Log.e(TAG, "vehicle : is not json"); }
 
-                getWorkshops();
+                getWorkshopTypes();
                 getRefuels();
 
                 loginThread.interrupt();
@@ -638,6 +638,42 @@ public class LoginDialog {
         requestQueue.add(request);
     }
 
+    private void getWorkshopTypes() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP_TYPES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "workshop types = " + response);
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.COLUMN_ID);
+                        String type = object.optString(DatabaseSchema.WorkshopTypes.COLUMN_TYPE);
+                        WorkshopType workshopType = databaseHelper.workshopType(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (workshopType == null)
+                            databaseHelper.addWorkshopType(id, type);
+                        else if (!workshopType.type.equals(type))
+                            databaseHelper.updateWorkshopType(id, type);
+                    }
+                    getWorkshops();
+                } catch (JSONException e) { Log.e(TAG, "workshop type is not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return params;
+            }
+        };
+        requestQueue.add(request);
+    }
+
     private void getWorkshops() {
         StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
             @Override
@@ -654,16 +690,16 @@ public class LoginDialog {
                         String contact = object.optString(DatabaseSchema.Workshops.COLUMN_CONTACT);
                         String latitude = object.optString(DatabaseSchema.Workshops.COLUMN_LATITUDE);
                         String longitude = object.optString(DatabaseSchema.Workshops.COLUMN_LONGITUDE);
-                        String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY);
+                        String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY_ID);
                         String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                         String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
-
+                        String workshopTypeId = object.optString(DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID);
                         Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                         Log.e(TAG, "workshop != null - " + (workshop != null));
                         if (workshop != null)
-                            databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
+                            databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings, workshopTypeId);
                         else
-                            databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
+                            databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings, workshopTypeId);
                     }
                     getServices();
                 } catch (JSONException | NullPointerException e) { Log.e(TAG, "workshops not in json"); }
@@ -693,8 +729,8 @@ public class LoginDialog {
                     JSONArray array = new JSONArray(response);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject object = array.getJSONObject(i);
-                        String id = object.getString(DatabaseSchema.Status.COLUMN_ID);
-                        String details = object.optString(DatabaseSchema.Status.COLUMN_DETAILS);
+                        String id = object.getString(DatabaseSchema.ServiceStatus.COLUMN_ID);
+                        String details = object.optString(DatabaseSchema.ServiceStatus.COLUMN_DETAILS);
                         databaseHelper.addStatus(id, details);
                     }
                 } catch (JSONException e) { Log.d(TAG, "get status is not in json"); }

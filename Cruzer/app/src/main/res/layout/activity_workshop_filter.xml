@@ -1,0 +1,356 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".main.Vehicles">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="@android:color/white">
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.design.widget.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.Toolbar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/toolbar"
+                    app:borderWidth="0dp">
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical">
+
+                        <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/toolbar_title"
+                            android:text="@string/title_activity_workshop_locator"
+                            android:layout_gravity="center"
+                            android:textColor="@android:color/white"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"/>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                </android.support.v7.widget.Toolbar>
+
+            </android.support.design.widget.AppBarLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:divider="@drawable/divider_vertical_layout"
+                    app:showDividers="middle"
+                    android:padding="20dp">
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp">
+
+                        <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_locator_filter_vehicle_type"
+                            android:gravity="center"
+                            android:layout_marginBottom="10dp"
+                            android:fontFamily="sans-serif-light"
+                            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+                        <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp">
+
+                            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/layout_filter_vehicle_two_wheeler"
+                                android:layout_weight="0.5"
+                                android:gravity="center_horizontal"
+                                android:animateLayoutChanges="true">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="58dp"
+                                    android:layout_height="58dp"
+                                    android:id="@+id/image_filter_vehicle_two_wheeler"
+                                    android:src="@drawable/ic_2_wheelers_disabled"/>
+
+                                <android.support.v7.widget.AppCompatCheckedTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_vehicle_type_two_w"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                            </android.support.v7.widget.LinearLayoutCompat>
+
+                            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:id="@+id/layout_filter_vehicle_four_wheeler"
+                                android:gravity="center_horizontal"
+                                android:animateLayoutChanges="true">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="58dp"
+                                    android:layout_height="58dp"
+                                    android:id="@+id/image_filter_vehicle_four_wheeler"
+                                    android:src="@drawable/ic_4_wheelers_disabled"/>
+
+                                <android.support.v7.widget.AppCompatCheckedTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_vehicle_type_four_w"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                            </android.support.v7.widget.LinearLayoutCompat>
+
+                        </android.support.v7.widget.LinearLayoutCompat>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                    <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp">
+
+                        <android.support.v7.widget.AppCompatTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/label_locator_filter_workshop_offerings"
+                            android:fontFamily="sans-serif-light"
+                            android:layout_marginBottom="14dp"
+                            android:gravity="center"
+                            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+                        <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:gravity="center">
+
+                            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:id="@+id/layout_filter_offering_service"
+                                android:gravity="center_horizontal"
+                                android:animateLayoutChanges="true">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="44dp"
+                                    android:layout_height="44dp"
+                                    android:id="@+id/image_filter_offering_service"
+                                    android:src="@drawable/ic_service_disabled"/>
+
+                                <android.support.v7.widget.AppCompatCheckedTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:text="@string/text_offering_service"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                            </android.support.v7.widget.LinearLayoutCompat>
+
+                            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:id="@+id/layout_filter_offering_tyres"
+                                android:gravity="center_horizontal"
+                                android:animateLayoutChanges="true">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="44dp"
+                                    android:layout_height="44dp"
+                                    android:id="@+id/image_filter_offering_tyre"
+                                    android:src="@drawable/ic_tyres_disabled"/>
+
+                                <android.support.v7.widget.AppCompatCheckedTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_offering_tyre"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                            </android.support.v7.widget.LinearLayoutCompat>
+
+                            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:id="@+id/layout_filter_offering_batteries"
+                                android:gravity="center_horizontal"
+                                android:animateLayoutChanges="true">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="44dp"
+                                    android:layout_height="44dp"
+                                    android:id="@+id/image_filter_offering_batteries"
+                                    android:src="@drawable/ic_batter_disabled"/>
+
+                                <android.support.v7.widget.AppCompatCheckedTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_offering_batteries"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                            </android.support.v7.widget.LinearLayoutCompat>
+
+                        </android.support.v7.widget.LinearLayoutCompat>
+
+                        <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:gravity="center">
+
+                            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:id="@+id/layout_filter_offering_accessories"
+                                android:gravity="center_horizontal"
+                                android:animateLayoutChanges="true">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="44dp"
+                                    android:layout_height="44dp"
+                                    android:id="@+id/image_filter_offering_accessories"
+                                    android:src="@drawable/ic_accessories_disabled"/>
+
+                                <android.support.v7.widget.AppCompatCheckedTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:text="@string/text_offering_accessories"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                            </android.support.v7.widget.LinearLayoutCompat>
+
+                            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:id="@+id/layout_filter_offering_beautification"
+                                android:gravity="center_horizontal"
+                                android:animateLayoutChanges="true">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="44dp"
+                                    android:layout_height="44dp"
+                                    android:id="@+id/image_filter_offering_beautification"
+                                    android:src="@drawable/ic_beautification_disabled"/>
+
+                                <android.support.v7.widget.AppCompatCheckedTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_offering_beautification"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                            </android.support.v7.widget.LinearLayoutCompat>
+
+                            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:id="@+id/layout_filter_offering_puncture"
+                                android:gravity="center_horizontal"
+                                android:animateLayoutChanges="true">
+
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="44dp"
+                                    android:layout_height="44dp"
+                                    android:id="@+id/image_filter_offering_puncture"
+                                    android:src="@drawable/ic_puncture_disabled"/>
+
+                                <android.support.v7.widget.AppCompatCheckedTextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/text_offering_puncture"
+                                    android:layout_marginTop="6dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                            </android.support.v7.widget.LinearLayoutCompat>
+
+                        </android.support.v7.widget.LinearLayoutCompat>
+
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/button_filter_workshops"
+                        android:text="@string/label_find"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@android:color/white"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:drawableRight="@drawable/ic_send_white_24dp"
+                        android:drawableEnd="@drawable/ic_send_white_24dp"
+                        android:drawablePadding="10dp"
+                        android:paddingLeft="30dp"
+                        android:paddingRight="30dp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/cruzer_blue_accent" />
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </ScrollView>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <fragment android:id="@+id/navigation_drawer"
+        android:layout_width="@dimen/drawer_width" android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:name="com.socketmint.cruzer.drawer.DrawerFragment" />
+
+</android.support.v4.widget.DrawerLayout>

@@ -35,7 +35,7 @@
     <string name="label_odometer_reading">Odometer</string>
     <string name="label_enable">Enable</string>
     <string name="label_delete">delete</string>
-    <string name="label_done">Go!</string>
+    <string name="label_done">Go</string>
     <string name="label_show_password">Show Password</string>
     <string name="label_add">Add</string>
 
@@ -87,7 +87,7 @@
     <!-- drawer strings -->
     <string name="drawer_item_history">History</string>
     <string name="drawer_item_vehicle">Vehicle</string>
-    <string name="drawer_item_locator">Find Workshops</string>
+    <string name="drawer_item_locator">Nearby</string>
     <string name="drawer_settings_general">Settings</string>
     <string name="drawer_settings_logout">Logout</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -117,4 +117,16 @@
     <string name="text_odometer_suffix">&#160;km</string>
     <string name="label_refuel_vehicle">Refuel entry for</string>
     <string name="example_vehicle_reg">e.g. GJ01AB9999</string>
+    <string name="label_locator_filter_vehicle_type">Select your vehicle</string>
+    <string name="text_vehicle_type_two_w">2-Wheelers</string>
+    <string name="text_vehicle_type_four_w">4-Wheelers</string>
+    <string name="label_locator_filter_workshop_offerings">What are you looking for?</string>
+    <string name="text_offering_service"><![CDATA[Service & Repair]]></string>
+    <string name="text_offering_tyre">Tyres</string>
+    <string name="text_offering_batteries">Batteries</string>
+    <string name="text_offering_accessories">Accessories</string>
+    <string name="text_offering_beautification">Beautification</string>
+    <string name="text_offering_puncture">Puncture</string>
+    <string name="label_history">Vehicle List</string>
+    <string name="label_find">Find</string>
 </resources>

@@ -3,8 +3,8 @@ package com.socketmint.cruzer.manage;
 import com.socketmint.cruzer.database.DatabaseSchema;
 
 public class Constants {
-    private static final String URL_SERVER = "http://10.70.0.50:8080";         // (server_ip:8080)
-    private static final String URL_API_VERSION = "0.1";
+    private static final String URL_SERVER = "http://10.70.0.100:8080";         // (server_ip:8080)
+    private static final String URL_API_VERSION = "0.2";
     private static final String URL_API_DIR = "api";
     private static final String URL_API = URL_API_DIR + "/" + URL_API_VERSION;
 
@@ -25,6 +25,21 @@ public class Constants {
         public static String GET_PROBLEMS(String serviceId) { return SERVICE(serviceId) + "/problems"; }
         public static final String GCM = URL_SERVER + "/" + URL_API + "/" + "gcm";
         public static final String STATUS = URL_SERVER + "/" + URL_API + "/" + "status";
+        public static final String CITIES = URL_SERVER + "/" + URL_API + "/" + "cities";
+        public static final String COUNTRIES = URL_SERVER + "/" + URL_API + "/" + "countries";
+        public static final String WORKSHOP_TYPES = URL_SERVER + "/" + URL_API + "/" + "workshoptypes";
+        public static String WORKSHOP_CITY(String cityId) {
+            return WORKSHOP + "/cities/" + cityId;
+        }
+        public static String WORKSHOP_CITY_VEHICLE_TYPE(String cityId, String vehicleTypeId) {
+            return WORKSHOP_CITY(cityId) + "/vehicletypes/" + vehicleTypeId;
+        }
+        public static String WORKSHOP_CITY_OFFERING(String cityId, String offeringId) {
+            return WORKSHOP_CITY(cityId) + "/offerings/" + offeringId;
+        }
+        public static String WORKSHOP_CITY_VEHICLE_TYPE_OFFERING(String cityId, String vehicleTypeId, String offeringId) {
+            return WORKSHOP_CITY_VEHICLE_TYPE(cityId, vehicleTypeId) + "/offerings/" + offeringId;
+        }
     }
 
     public static abstract class VolleyRequest {
@@ -62,6 +77,11 @@ public class Constants {
         public static final String VEHICLE_ID = DatabaseSchema.COLUMN_VEHICLE_ID;
         public static final String PAGE_CHOICE = "view_type";
         public static final String ID = DatabaseSchema.COLUMN_ID;
+        public static final String OFFERING_FILTER = "offeringFilter";
+        public static final String VEHICLE_TYPE_FILTER = "vehicleTypeFilter";
+
+        public static final String CITY = "city";
+        public static final String COUNTRY = "country";
     }
 
     public static abstract class Sync {
@@ -78,8 +98,11 @@ public class Constants {
 
     public static abstract class GoogleAnalytics {
         public static final String EVENT_CLICK = "OnClick";
-        public static final String EVENT_PAGER = "Pager";
         public static final String EVENT_DIALOG = "Dialog";
         public static final String EVENT_WORKSHOP_DISPLAY = "Workshop";
+    }
+
+    public static abstract class IntentFilters {
+        public static final String GCM = Gcm.INTENT_GCM;
     }
 }
