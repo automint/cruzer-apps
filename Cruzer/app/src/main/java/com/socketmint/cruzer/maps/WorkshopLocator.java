@@ -239,9 +239,11 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
     private void moveCamera(Location location) {
         if (location != null) {
             LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.4f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.4f));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.4f));
         } else {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(23.022505f, 72.5713621f), 10f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(23.022505f, 72.5713621f), 10f));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(23.022505f, 72.5713621f), 10f));
         }
     }
 

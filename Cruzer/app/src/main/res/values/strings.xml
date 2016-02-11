@@ -130,5 +130,5 @@
     <string name="label_history">Vehicle List</string>
     <string name="label_find">Find</string>
     <string name="label_get_started">Get Started</string>
-    <string name="text_filter_footnote">select none to see all workshops</string>
+    <string name="text_filter_footnote">* select none to see all workshops</string>
 </resources>
