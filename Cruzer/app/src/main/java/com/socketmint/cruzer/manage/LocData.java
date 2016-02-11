@@ -10,6 +10,7 @@ public class LocData {
         public static final String COMMON_PREFERENCES_FILE = "cruzer_preferences";
         public static final String FORM_PREFERENCES_FILE = "form_preferences";
 
+        public static final String HELP_SCREEN = "helpScreen";
         public static final String TOKEN = "token";
         public static final String MANU_ID = "manu-id";
         public static final String MODEL_ID = "model-id";
@@ -23,6 +24,14 @@ public class LocData {
 
     public void formInstance(Context context) {
         sharedPreferences = context.getSharedPreferences(Constants.FORM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+    }
+
+    public void storeHelpScreenSeen(boolean seen) {
+        sharedPreferences.edit().putBoolean(Constants.HELP_SCREEN, seen).apply();
+    }
+
+    public boolean helpScreenSeen() {
+        return sharedPreferences.getBoolean(Constants.HELP_SCREEN, false);
     }
 
     public void storeToken(String token) {

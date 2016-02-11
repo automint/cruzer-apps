@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/splash_background">
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/pager_help"/>
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:id="@+id/image_help_item_1"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/ic_indicator_selected"/>
+
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:id="@+id/image_help_item_2"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/ic_indicator"/>
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:id="@+id/image_help_item_3"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/ic_indicator"/>
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:id="@+id/image_help_item_4"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/ic_indicator"/>
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:id="@+id/image_help_item_5"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/ic_indicator"/>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+</android.support.design.widget.CoordinatorLayout>

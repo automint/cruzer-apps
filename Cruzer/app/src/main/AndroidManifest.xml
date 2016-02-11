@@ -119,8 +119,7 @@
 
         <!-- activities -->
 
-        <activity
-            android:name=".startup.Launcher"
+        <activity android:name=".startup.SplashScreen"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
@@ -131,6 +130,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".startup.LauncherHelp"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/AppTheme.Launcher" />
+
+        <activity
+            android:name=".startup.Launcher"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/AppTheme.Launcher" />
+
         <activity
             android:name=".main.Vehicles"
             android:label="@string/app_name"
