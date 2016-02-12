@@ -1,6 +1,9 @@
 package com.socketmint.cruzer.manage.sync;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
 import android.util.Log;
 
@@ -13,11 +16,18 @@ import com.android.volley.toolbox.Volley;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.City;
+import com.socketmint.cruzer.dataholder.Country;
+import com.socketmint.cruzer.dataholder.Offering;
 import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
+import com.socketmint.cruzer.dataholder.Status;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
+import com.socketmint.cruzer.dataholder.VehicleSubType;
+import com.socketmint.cruzer.dataholder.VehicleType;
 import com.socketmint.cruzer.dataholder.Workshop;
+import com.socketmint.cruzer.dataholder.WorkshopType;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 
@@ -26,7 +36,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +60,9 @@ public class ManualSync {
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Refuel> refuels = new ArrayList<>();
     private List<Service> services = new ArrayList<>();
+    private String locality, nation;
+    private int pendingOfferings, pendingVehicleSubTypes, pendingVehicleTypes, pendingWorkshopTypes;
+    private boolean workshopDependSuccess = true;
 
     private Thread syncThread;
 
@@ -66,13 +81,13 @@ public class ManualSync {
             @Override
             public void run() {
                 User user = databaseHelper.user(DatabaseHelper.SyncStatus.UPDATE);
-                updateUser(user.getId(), user.getPassword(), user.firstName, user.lastName, user.email);
+                updateUser(user.getId(), user.getPassword(), user.firstName, user.lastName, user.email, user.getCityId());
             }
         });
         syncThread.start();
     }
 
-    public void syncEverything() {
+    public void syncEverything(final Bundle syncBundle) {
         syncThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -117,7 +132,7 @@ public class ManualSync {
 
                     User user = databaseHelper.user(DatabaseHelper.SyncStatus.UPDATE);
                     if (user != null) {
-                        updateUser(user.getId(), user.getPassword(), user.firstName, user.lastName, user.email);
+                        updateUser(user.getId(), user.getPassword(), user.firstName, user.lastName, user.email, user.getCityId());
                     }
 
                     vehicles.clear();
@@ -167,14 +182,457 @@ public class ManualSync {
                         }
                     }
 
-                    int size = (databaseHelper.statusList() != null) ? databaseHelper.statusList().size() : 0;
-                    if (size == 0) {
+                    List<Status> statusList = databaseHelper.statusList();
+                    if (((statusList != null) ? statusList.size() : 0) == 0)
                         getStatusTable();
-                    }
+
+                    locality = syncBundle.getString(Constants.Bundle.CITY);
+                    nation = syncBundle.getString(Constants.Bundle.COUNTRY);
+                    notifyUserCity(false, false);
                 } catch (Exception e) { e.printStackTrace(); }
             }
         });
         syncThread.start();
+    }
+
+    /*private void getVehicleTypes() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.VEHICLE_TYPES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "vehicle types = " + response);
+                pendingVehicleTypes--;
+                checkWorkshopDataUpdate();
+                try {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
+                        }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "vehicle types is array"); }
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.VehicleTypes.COLUMN_ID);
+                        String type = object.optString(DatabaseSchema.VehicleTypes.COLUMN_TYPE);
+                        VehicleType vehicleType = databaseHelper.vehicleType(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (vehicleType == null)
+                            databaseHelper.addVehicleType(id, type);
+                        else if (!vehicleType.type.equals(type))
+                            databaseHelper.updateVehicleType(id, type);
+                    }
+                } catch (JSONException e) { Log.e(TAG, "vehicle types not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                pendingVehicleTypes--;
+                workshopDependSuccess = false;
+                checkWorkshopDataUpdate();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        pendingVehicleTypes++;
+        requestQueue.add(request);
+    }
+
+    private void getVehicleSubTypes() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.VEHICLE_SUB_TYPES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "vehicle sub types = " + response);
+                pendingVehicleSubTypes--;
+                checkWorkshopDataUpdate();
+                try {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
+                        }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "cities is array"); }
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.VehicleSubTypes.COLUMN_ID);
+                        String subTypes = object.optString(DatabaseSchema.VehicleSubTypes.COLUMN_SUB_TYPE);
+                        String vehicleTypeId = object.optString(DatabaseSchema.VehicleSubTypes.COLUMN_TYPE_ID);
+                        VehicleSubType vehicleSubType = databaseHelper.vehicleSubType(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (vehicleSubType == null)
+                            databaseHelper.addVehicleSubTypes(id, subTypes, vehicleTypeId);
+                        else if (!vehicleSubType.subType.equals(subTypes) || !vehicleSubType.getVehicleTypeId().equals(vehicleTypeId))
+                            databaseHelper.updateVehicleSubTypes(id, subTypes, vehicleTypeId);
+                    }
+                } catch (JSONException e) { Log.e(TAG, "vehicle sub types not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pendingVehicleSubTypes--;
+                workshopDependSuccess = false;
+                checkWorkshopDataUpdate();
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        pendingVehicleSubTypes++;
+        requestQueue.add(request);
+    }
+
+    private void getOfferings() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.OFFERINGS, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                pendingOfferings--;
+                checkWorkshopDataUpdate();
+                Log.d(TAG, "offerings = " + response);
+                try {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
+                        }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "cities is array"); }
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.Offerings.COLUMN_ID);
+                        String offering = object.optString(DatabaseSchema.Offerings.COLUMN_OFFERING);
+                        Offering item = databaseHelper.offering(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (item == null)
+                            databaseHelper.addOffering(id, offering);
+                        else if (!item.offering.equals(offering))
+                            databaseHelper.updateOffering(id, offering);
+                    }
+                } catch (JSONException e) { Log.e(TAG, "offerings not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pendingOfferings--;
+                workshopDependSuccess = false;
+                checkWorkshopDataUpdate();
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        pendingOfferings++;
+        requestQueue.add(request);
+    }
+
+    private void getWorkshopTypes() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP_TYPES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "workshop types = " + response);
+                pendingWorkshopTypes--;
+                checkWorkshopDataUpdate();
+                try {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
+                        }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "workshop type is array"); }
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.COLUMN_ID);
+                        String type = object.optString(DatabaseSchema.WorkshopTypes.COLUMN_TYPE);
+                        WorkshopType workshopType = databaseHelper.workshopType(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (workshopType == null)
+                            databaseHelper.addWorkshopType(id, type);
+                        else if (!workshopType.type.equals(type))
+                            databaseHelper.updateWorkshopType(id, type);
+                    }
+                } catch (JSONException e) { Log.e(TAG, "workshop type is not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                pendingWorkshopTypes--;
+                workshopDependSuccess = false;
+                checkWorkshopDataUpdate();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        pendingWorkshopTypes++;
+        requestQueue.add(request);
+    }*/
+
+    private void notifyUserCity(final boolean citySynced, final boolean countrySynced) {
+        if (locality == null || nation == null)
+            return;
+        final Country country = databaseHelper.country(Collections.singletonList(DatabaseSchema.Countries.COLUMN_COUNTRY), new String[]{nation});
+        Log.d(TAG, "country != null : " + (country != null) + " | citySynced : " + citySynced + " | countrySynced : " + countrySynced);
+        if (country != null) {
+            final City city = databaseHelper.city(Arrays.asList(DatabaseSchema.Cities.COLUMN_CITY, DatabaseSchema.Cities.COLUMN_COUNTRY_ID), new String[]{locality, country.getId()});
+            Log.d(TAG, "city != null : " + (city != null) + " | citySynced : " + citySynced + " | countrySynced : " + countrySynced);
+            if (city != null) {
+                User user = databaseHelper.user();
+                Log.d(TAG, "user.getChildId == null : " + (user.getCityId() == null) + " | !user.getCityId().equals(city.getId()) : " + ((user.getCityId() !=  null) ? !user.getCityId().equals(city.getId()) : "null"));
+                if (user.getCityId() == null || !user.getCityId().equals(city.getId()))
+                    databaseHelper.updateUserCity(databaseHelper.user().getId(), city.getId());
+            } else if (!citySynced)
+                getCities(countrySynced);
+            else
+                uploadCity(locality, country.getId(), countrySynced);
+        } else if (!countrySynced)
+            getCountries();
+        else
+            uploadCountry(nation);
+    }
+
+    public void getCities(final boolean countrySynced) {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.CITIES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "fetch cities = " + response);
+                try {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
+                        }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "cities is array"); }
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.COLUMN_ID);
+                        String city = object.optString(DatabaseSchema.Cities.COLUMN_CITY);
+                        String countryId = object.optString(DatabaseSchema.Cities.COLUMN_COUNTRY_ID);
+                        City item = databaseHelper.city(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (item == null)
+                            databaseHelper.addCity(id, city, countryId);
+                        else if (!item.city.equals(city))
+                            databaseHelper.updateCity(id, city, countryId);
+                    }
+                    notifyUserCity(true, countrySynced);
+                } catch (JSONException e) { Log.d(TAG, "cities not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> headerParams = new HashMap<>();
+                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    public void getCountries() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.COUNTRIES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "fetch countries = " + response);
+                try {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
+                        }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "countries is array"); }
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.COLUMN_ID);
+                        String country = object.optString(DatabaseSchema.Countries.COLUMN_COUNTRY);
+                        Country item = databaseHelper.country(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (item == null)
+                            databaseHelper.addCountry(id, country);
+                        else if (!item.country.equals(country))
+                            databaseHelper.updateCountry(id, country);
+                    }
+                    notifyUserCity(false, true);
+                } catch (JSONException e) { Log.d(TAG, "countries not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    public void uploadCity(final String city, final String countryId, final boolean countrySynced) {
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        bodyParams.put(DatabaseSchema.Cities.COLUMN_CITY, city);
+        bodyParams.put(DatabaseSchema.Cities.COLUMN_COUNTRY_ID, countryId);
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.CITIES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "upload city = " + response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success) {
+                        String id = object.getString(Constants.Json.ID);
+                        databaseHelper.addCity(id, city, countryId);
+                        notifyUserCity(true, countrySynced);
+                    } else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException e) { Log.d(TAG, "upload city not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+            @Override
+            public Map<String, String> getParams() {
+                return bodyParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    public void uploadCountry(final String country) {
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        bodyParams.put(DatabaseSchema.Countries.COLUMN_COUNTRY, country);
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.COUNTRIES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "upload country = " + response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success) {
+                        String id = object.getString(Constants.Json.ID);
+                        databaseHelper.addCountry(id, country);
+                        notifyUserCity(false, true);
+                    } else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException e) { Log.d(TAG, "upload city not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+            @Override
+            public Map<String, String> getParams() {
+                return bodyParams;
+            }
+        };
+        requestQueue.add(request);
     }
 
     private void getStatusTable() {
@@ -202,8 +660,8 @@ public class ManualSync {
                     JSONArray array = new JSONArray(response);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject object = array.getJSONObject(i);
-                        String id = object.getString(DatabaseSchema.Status.COLUMN_ID);
-                        String details = object.optString(DatabaseSchema.Status.COLUMN_DETAILS);
+                        String id = object.getString(DatabaseSchema.ServiceStatus.COLUMN_ID);
+                        String details = object.optString(DatabaseSchema.ServiceStatus.COLUMN_DETAILS);
                         databaseHelper.addStatus(id, details);
                     }
                 } catch (JSONException e) { Log.d("sync", "get status is not in json"); }
@@ -216,21 +674,20 @@ public class ManualSync {
         }) {
             @Override
             public Map<String, String> getHeaders() {
-                HashMap<String, String> params = new HashMap<>();
-                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
-                return params;
+                return headerParams;
             }
         };
         requestQueue.add(request);
     }
 
-    private void updateUser(final String id, final String password, final String firstName, final String lastName, final String email) {
+    private void updateUser(final String id, final String password, final String firstName, final String lastName, final String email, final String cityId) {
         Log.d(TAG, "put user = " + Constants.Url.USER);
         final HashMap<String, String> bodyParams = new HashMap<>();
         bodyParams.put(DatabaseSchema.Users.COLUMN_PASSWORD, password);
         bodyParams.put(DatabaseSchema.Users.COLUMN_FIRST_NAME, firstName);
         bodyParams.put(DatabaseSchema.Users.COLUMN_LAST_NAME, lastName);
         bodyParams.put(DatabaseSchema.Users.COLUMN_EMAIL, email);
+        bodyParams.put(DatabaseSchema.Users.COLUMN_CITY_ID, cityId);
         StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.USER, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

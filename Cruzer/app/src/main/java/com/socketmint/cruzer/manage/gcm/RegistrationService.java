@@ -71,7 +71,7 @@ public class RegistrationService extends IntentService {
                     boolean success = object.optBoolean(Constants.Json.SUCCESS);
                     if (success) {
                         locData.storeGcm(token);
-                        Intent registrationComplete = new Intent(Constants.Gcm.INTENT_GCM);
+                        Intent registrationComplete = new Intent(Constants.IntentFilters.GCM);
                         registrationComplete.putExtra(Constants.Gcm.MESSAGE_TOKEN_SENT, true);
                         LocalBroadcastManager.getInstance(RegistrationService.this).sendBroadcast(registrationComplete);
                     }

@@ -1,191 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white">
 
     <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:paddingTop="4dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="20dp">
 
-        <android.support.v7.widget.CardView
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:background="@android:color/white">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_amount"
+                android:text="@string/hint_amount"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_vehicle_name"
+                android:layout_marginTop="6dp"
+                android:text="@string/app_name"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/card_amount">
+            app:divider="@drawable/divider_vertical_layout"
+            app:showDividers="beginning|end|middle">
 
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="20dp"
-                android:background="@android:color/white">
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/text_amount"
-                    android:text="@string/hint_amount"
-                    android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/text_vehicle_name"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/app_name"
-                    android:fontFamily="sans-serif"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:id="@+id/card_odometer">
-
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:background="@android:color/white">
+                app:divider="@drawable/divider_horizontal_layout"
+                app:showDividers="middle">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/label_odometer"
-                    android:text="@string/label_odometer_reading"
-                    android:fontFamily="sans-serif-light"
-                    android:textStyle="italic"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+                    android:id="@+id/layout_odometer"
+                    android:layout_weight="0.5"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/label_odometer"
+                        android:text="@string/label_odometer_reading"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="italic"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_odometer"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/text_odometer"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/app_name"
-                    android:fontFamily="sans-serif-light"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:id="@+id/layout_date"
+                    android:layout_weight="0.5"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/label_date"
+                        android:text="@string/label_date"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="italic"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_date"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
 
             </android.support.v7.widget.LinearLayoutCompat>
 
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:id="@+id/card_date">
-
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:background="@android:color/white">
+                app:divider="@drawable/divider_horizontal_layout"
+                app:showDividers="middle">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/label_date"
-                    android:text="@string/label_date"
-                    android:fontFamily="sans-serif-light"
-                    android:textStyle="italic"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+                    android:id="@+id/layout_refuel_volume"
+                    android:layout_weight="0.5"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/label_refuel_volume"
+                        android:text="@string/hint_volume"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="italic"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_refuel_volume"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/text_date"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/app_name"
-                    android:fontFamily="sans-serif-light"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:id="@+id/layout_refuel_rate"
+                    android:layout_weight="0.5"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/label_refuel_rate"
+                        android:text="@string/hint_rate"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="italic"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_refuel_rate"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
 
             </android.support.v7.widget.LinearLayoutCompat>
 
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:id="@+id/card_refuel_volume">
-
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:background="@android:color/white">
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/label_refuel_volume"
-                    android:text="@string/hint_volume"
-                    android:fontFamily="sans-serif-light"
-                    android:textStyle="italic"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/text_refuel_volume"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/app_name"
-                    android:fontFamily="sans-serif-light"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:id="@+id/card_refuel_rate">
-
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:background="@android:color/white">
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/label_refuel_rate"
-                    android:text="@string/hint_rate"
-                    android:fontFamily="sans-serif-light"
-                    android:textStyle="italic"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/text_refuel_rate"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/app_name"
-                    android:fontFamily="sans-serif-light"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-        </android.support.v7.widget.CardView>
+        </android.support.v7.widget.LinearLayoutCompat>
 
     </android.support.v7.widget.LinearLayoutCompat>
 

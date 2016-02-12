@@ -125,7 +125,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             User user = databaseHelper.user(DatabaseHelper.SyncStatus.UPDATE);
             if (user != null) {
-                updateUser(user.getId(), user.getPassword(), user.firstName, user.lastName, user.email);
+                updateUser(user.getId(), user.getPassword(), user.firstName, user.lastName, user.email, user.getCityId());
             }
 
             vehicles.clear();
@@ -188,11 +188,27 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             public void onResponse(String response) {
                 Log.d("sync", "get status = " + response);
                 try {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
+                        }
+                    } catch (JSONException | NullPointerException e) { Log.e("status", "is array"); }
                     JSONArray array = new JSONArray(response);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject object = array.getJSONObject(i);
-                        String id = object.getString(DatabaseSchema.Status.COLUMN_ID);
-                        String details = object.optString(DatabaseSchema.Status.COLUMN_DETAILS);
+                        String id = object.getString(DatabaseSchema.ServiceStatus.COLUMN_ID);
+                        String details = object.optString(DatabaseSchema.ServiceStatus.COLUMN_DETAILS);
                         databaseHelper.addStatus(id, details);
                     }
                 } catch (JSONException e) { Log.d("sync", "get status is not in json"); }
@@ -212,330 +228,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         };
         requestQueue.add(request);
     }
-
-    /*private void getRefuels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.REFUEL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("refuel get", response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e("refuel", "array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String vehicleId = object.getString(DatabaseSchema.COLUMN_VEHICLE_ID);
-                        String date = object.optString(DatabaseSchema.Services.COLUMN_DATE);
-                        String cost = object.optString(DatabaseSchema.Services.COLUMN_COST);
-                        String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
-                        String rate = object.optString(DatabaseSchema.Refuels.COLUMN_RATE);
-                        String volume = object.optString(DatabaseSchema.Refuels.COLUMN_VOLUME);
-                        Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
-                        if (vehicle != null) {
-                            Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                            if (refuel == null)
-                                databaseHelper.addRefuel(sId, vehicle.getId(), date, rate, volume, cost, odo);
-                            else
-                                databaseHelper.updateRefuel(sId, vehicle.getId(), date, rate, volume, cost, odo);
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        requestQueue.add(request);
-    }
-
-    private void getProblems(final String serviceId) {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.GET_PROBLEMS(serviceId), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("problems get", response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e("problems", "array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i =0; i < array.length(); i++) {
-                        JSONObject problem = array.getJSONObject(i);
-                        String sId = problem.getString(DatabaseSchema.COLUMN_ID);
-                        String lCost = problem.optString(DatabaseSchema.Problems.COLUMN_LCOST);
-                        String pCost = problem.optString(DatabaseSchema.Problems.COLUMN_PCOST);
-                        String details = problem.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
-                        String qty = problem.optString(DatabaseSchema.Problems.COLUMN_QTY);
-                        Problem item = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                        Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
-                        if (service != null) {
-                            if (item == null)
-                                databaseHelper.addProblem(sId, service.getId(), details, lCost, pCost, qty);
-                            else
-                                databaseHelper.updateProblem(sId, service.getId(), details, lCost, pCost, qty);
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        requestQueue.add(request);
-    }
-
-    private void getServices() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.SERVICE, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("service get", response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e("service", "array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String vehicleId = object.getString(DatabaseSchema.COLUMN_VEHICLE_ID);
-                        String date = object.optString(DatabaseSchema.Services.COLUMN_DATE);
-                        String workshopId = object.optString(DatabaseSchema.Services.COLUMN_WORKSHOP_ID);
-                        String cost = object.optString(DatabaseSchema.Services.COLUMN_COST);
-                        String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
-                        String details = object.optString(DatabaseSchema.Services.COLUMN_DETAILS);
-                        String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
-                        Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
-                        if (vehicle != null) {
-                            Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                            Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
-                            String wId = (workshop != null) ? workshop.getId() : "";
-                            if (service == null)
-                                databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status);
-                            else
-                                databaseHelper.updateService(sId, vehicle.getId(), date, wId, cost, odo, details, status);
-                            getProblems(sId);
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        requestQueue.add(request);
-    }
-
-    private void getWorkshops() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("workshop get", response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e("workshops", "array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String name = object.optString(DatabaseSchema.Workshops.COLUMN_NAME);
-                        String address = object.optString(DatabaseSchema.Workshops.COLUMN_ADDRESS);
-                        String manager = object.optString(DatabaseSchema.Workshops.COLUMN_MANAGER);
-                        String contact = object.optString(DatabaseSchema.Workshops.COLUMN_CONTACT);
-                        String latitude = object.optString(DatabaseSchema.Workshops.COLUMN_LATITUDE);
-                        String longitude = object.optString(DatabaseSchema.Workshops.COLUMN_LONGITUDE);
-                        String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY);
-                        String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
-                        String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
-
-                        Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
-                        if (workshop != null) {
-                            databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
-                        } else
-                            databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
-                    }
-                    getServices();
-                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        requestQueue.add(request);
-    }
-
-    private void getModels() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MODEL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("model get", response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e("model", "array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String manuId = object.getString(DatabaseSchema.Models.COLUMN_MANU_ID);
-                        String name = object.optString(DatabaseSchema.Models.COLUMN_NAME);
-                        Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{manuId});
-                        if (manu != null) {
-                            Model model = databaseHelper.model(Arrays.asList(DatabaseSchema.Models.COLUMN_MANU_ID, DatabaseSchema.Models.COLUMN_NAME), new String[]{manu.getId(), name});
-                            if (model != null) {
-                                if (!model.getManuId().equals(manu.getId()) || !model.name.equals(name))
-                                    databaseHelper.updateModel(sId, manu.getId(), name);
-                            } else
-                                databaseHelper.addModel(sId, manu.getId(), name);
-                        }
-                    }
-                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        requestQueue.add(request);
-    }
-
-    private void getManus() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.MANU, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        String message = object.optString(Constants.Json.MESSAGE);
-                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                            return;
-                        }
-                    } catch (JSONException e) { Log.e("manu", "array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String sId = object.getString(DatabaseSchema.COLUMN_ID);
-                        String name = object.getString(DatabaseSchema.Manus.COLUMN_NAME);
-                        Manu manu = databaseHelper.manu(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
-                        if (manu != null) {
-                            if (!manu.name.equals(name))
-                                databaseHelper.updateManu(sId, name);
-                        } else
-                            databaseHelper.addManu(sId, name);
-                    }
-                    getModels();
-                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        requestQueue.add(request);
-    }*/
 
     private void deleteService(final String sId, final String id) {
         Log.d("service delete", Constants.Url.SERVICE(sId));
@@ -800,13 +492,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         requestQueue.add(request);
     }
 
-    private void updateUser(final String id, final String password, final String firstName, final String lastName, final String email) {
+    private void updateUser(final String id, final String password, final String firstName, final String lastName, final String email, final String cityId) {
         Log.d("user update", Constants.Url.USER);
         final HashMap<String, String> bodyParams = new HashMap<>();
         bodyParams.put(DatabaseSchema.Users.COLUMN_FIRST_NAME, firstName);
         bodyParams.put(DatabaseSchema.Users.COLUMN_LAST_NAME, lastName);
         bodyParams.put(DatabaseSchema.Users.COLUMN_PASSWORD, password);
         bodyParams.put(DatabaseSchema.Users.COLUMN_EMAIL, email);
+        bodyParams.put(DatabaseSchema.Users.COLUMN_CITY_ID, cityId);
         StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.USER, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

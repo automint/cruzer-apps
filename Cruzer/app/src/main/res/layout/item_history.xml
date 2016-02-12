@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.AppCompatImageView
-            android:layout_width="14dp"
+            android:layout_width="12dp"
             android:layout_height="match_parent"
             android:src="@drawable/ic_road_card"
             android:scaleType="fitXY"

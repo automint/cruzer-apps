@@ -4,6 +4,6 @@
     <dimen name="transparent_button_radius">4dp</dimen>
     <dimen name="fab_bottom_corner_margin">30dp</dimen>
     <dimen name="card_add_radius">6dp</dimen>
-    <dimen name="card_add_text_padding_vertical_sides">12dp</dimen>
-    <dimen name="card_add_text_padding_horizontal_sides">6dp</dimen>
+    <dimen name="card_add_text_padding_vertical_sides">6dp</dimen>
+    <dimen name="card_add_text_padding_horizontal_sides">1dp</dimen>
 </resources>

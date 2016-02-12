@@ -61,9 +61,8 @@ public class Vehicle extends Fragment implements View.OnClickListener {
         editModel = (AppCompatEditText) v.findViewById(R.id.edit_vehicle_model);
         editVehicleName = (AppCompatEditText) v.findViewById(R.id.edit_vehicle_name);
 
-        InputFilter[] lengthFilter = { new InputFilter.LengthFilter(15) };
+        InputFilter[] lengthFilter = { new InputFilter.AllCaps() };
         editReg.setFilters(lengthFilter);
-        editVehicleName.setFilters(lengthFilter);
 
         editCompany.addTextChangedListener(companyChange);
         editCompany.setOnClickListener(this);

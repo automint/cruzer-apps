@@ -10,6 +10,8 @@
     <color name="service_primary">@color/blue_600</color>
     <color name="service_primary_dark">@color/blue_800</color>
 
+    <color name="splash_background">#0090E9</color>
+
     <color name="grey_800">#424242</color>
     <color name="grey_500">#9E9E9E</color>
     <color name="grey_400">#BDBDBD</color>

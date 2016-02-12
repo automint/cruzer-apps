@@ -10,10 +10,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.crud.update.Update;
 import com.socketmint.cruzer.database.DatabaseHelper;
@@ -21,16 +24,21 @@ import com.socketmint.cruzer.database.DatabaseSchema;
 import com.socketmint.cruzer.main.Vehicles;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
+import com.socketmint.cruzer.manage.Login;
 
 import java.util.Collections;
 
-public class Retrieve extends AppCompatActivity implements View.OnClickListener, Toolbar.OnMenuItemClickListener {
+public class Retrieve extends AppCompatActivity implements View.OnClickListener, Toolbar.OnMenuItemClickListener, GoogleApiClient.ConnectionCallbacks {
+    private static final String TAG = "Retrieve";
     private FloatingActionButton fabEdit;
     private Menu menu;
 
     private DatabaseHelper databaseHelper;
     private int choice;
     private String id;
+
+    private Login login = Login.getInstance();
+    private GoogleApiClient googleApiClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,7 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
             onBackPressed();
         }
 
+        login.initInstance(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
 
         initializeViews();
@@ -118,21 +127,26 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
 
     private void refuelPermissions() {
         fabEdit.setVisibility(View.VISIBLE);
+        menu.findItem(R.id.item_delete).setVisible(true);
+        menu.findItem(R.id.item_logout).setVisible(false);
     }
 
     private void userPermissions() {
         fabEdit.setVisibility(View.VISIBLE);
         menu.findItem(R.id.item_delete).setVisible(false);
+        menu.findItem(R.id.item_logout).setVisible(true);
     }
 
     private void workshopPermissions() {
         fabEdit.setVisibility(View.GONE);
         menu.findItem(R.id.item_delete).setVisible(false);
+        menu.findItem(R.id.item_logout).setVisible(false);
     }
 
     private void vehiclePermissions() {
         fabEdit.setVisibility(View.VISIBLE);
         menu.findItem(R.id.item_delete).setVisible(false);
+        menu.findItem(R.id.item_logout).setVisible(false);
     }
 
     private void servicePermissions() {
@@ -140,6 +154,7 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
         boolean allow = service.getUserId().equals(databaseHelper.user().getsId());
         fabEdit.setVisibility((allow) ? View.VISIBLE : View.GONE);
         menu.findItem(R.id.item_delete).setVisible(allow);
+        menu.findItem(R.id.item_logout).setVisible(false);
     }
 
     private void chooseTheme() {
@@ -189,7 +204,38 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
                         .setNegativeButton(R.string.label_no, null)
                         .show();
                 break;
+            case R.id.item_logout:
+                new AlertDialog.Builder(Retrieve.this)
+                        .setMessage(getString(R.string.message_confirm_logout))
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (login.login()) {
+                                    case Login.LoginType.GOOGLE:
+                                        googleApiClient = new GoogleApiClient.Builder(Retrieve.this)
+                                                .addConnectionCallbacks(Retrieve.this)
+                                                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                                                .build();
+                                        googleApiClient.connect();
+                                        break;
+                                }
+                                login.logout();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
         }
         return false;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Auth.GoogleSignInApi.signOut(googleApiClient);
+        Log.d(TAG, "googleApi - connected");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
     }
 }

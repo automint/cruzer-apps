@@ -13,7 +13,6 @@ import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
@@ -33,7 +32,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.socketmint.cruzer.CruzerApp;
@@ -41,10 +39,9 @@ import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.crud.retrieve.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.City;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Workshop;
-import com.socketmint.cruzer.drawer.DrawerFragment;
-import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
@@ -53,6 +50,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -60,6 +58,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -76,6 +75,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
     private RequestQueue requestQueue;
 
     private boolean reset = false;
+    private String filterOffering, filterVehicleType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +87,16 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
         requestQueue = Volley.newRequestQueue(this);
         locData.cruzerInstance(WorkshopLocator.this);
 
-        DrawerFragment drawerFragment = (DrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-        drawerFragment.setUp(R.id.navigation_drawer, (Toolbar) findViewById(R.id.toolbar), (DrawerLayout) findViewById(R.id.drawer_layout));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        filterOffering = getIntent().getStringExtra(Constants.Bundle.OFFERING_FILTER);
+        filterVehicleType = getIntent().getStringExtra(Constants.Bundle.VEHICLE_TYPE_FILTER);
 
         fetchWorkshops();
     }
@@ -104,7 +112,6 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
         super.onStart();
         analyticsTracker.setScreenName(TAG);
         analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
-        Log.d(TAG, "analytics screen sent");
     }
 
     @Override
@@ -184,7 +191,6 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
             @Override
             protected Void doInBackground(Void... params) {
                 snackbar.show();
-                workshops = databaseHelper.workshops();
                 return null;
             }
             @Override
@@ -204,7 +210,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                 }
                 mMap.setBuildingsEnabled(true);
                 if (markerCount == 0)
-                    Snackbar.make(findViewById(android.R.id.content), R.string.message_locator_no_workshops, Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(android.R.id.content), R.string.message_locator_no_workshops, Snackbar.LENGTH_INDEFINITE).show();
             }
         }.execute();
     }
@@ -218,7 +224,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                         if ((checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, android.os.Process.myPid(), android.os.Process.myUid()) != PackageManager.PERMISSION_GRANTED)
                                 && (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, android.os.Process.myPid(), Process.myUid()) != PackageManager.PERMISSION_GRANTED)) {
                             Snackbar.make(findViewById(android.R.id.content), getString(R.string.message_location_access_fail), Snackbar.LENGTH_SHORT).show();
-                            onBackPressed();
+                            super.onBackPressed();
                             return;
                         }
                         mMap.setMyLocationEnabled(true);
@@ -233,9 +239,11 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
     private void moveCamera(Location location) {
         if (location != null) {
             LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.4f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.4f));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.4f));
         } else {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(23.022505f, 72.5713621f), 10f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(23.022505f, 72.5713621f), 10f));
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(23.022505f, 72.5713621f), 10f));
         }
     }
 
@@ -260,20 +268,24 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
     }
 
     @Override
-    public void onBackPressed() {
-        startActivity(new Intent(WorkshopLocator.this, History.class));
-        finish();
-    }
-
-    @Override
     public void onInfoWindowClick(Marker marker) {
-        List<Workshop> workshops = databaseHelper.workshops();
         for (Workshop item : workshops) {
             try {
                 LatLng workshopPosition = new LatLng(Double.parseDouble(item.latitude), Double.parseDouble(item.longitude));
                 if (marker.getPosition().equals(workshopPosition)) {
                     reset = false;
-                    startActivity(new Intent(WorkshopLocator.this, Retrieve.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.WORKSHOP).putExtra(Constants.Bundle.ID, item.getId()));
+                    City city = databaseHelper.city(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{item.getCityId()});
+                    try {
+                        JSONObject object = new JSONObject();
+                        object.put(DatabaseSchema.Workshops.COLUMN_NAME, item.name);
+                        object.put(DatabaseSchema.Workshops.COLUMN_ADDRESS, item.address);
+                        object.put(DatabaseSchema.Workshops.COLUMN_MANAGER, item.manager);
+                        object.put(DatabaseSchema.Workshops.COLUMN_CONTACT, item.contact);
+                        object.put(DatabaseSchema.Workshops.COLUMN_CITY_ID, (city != null) ? city.city : "");
+                        object.put(DatabaseSchema.Workshops.COLUMN_AREA, item.area);
+                        object.put(DatabaseSchema.Workshops.COLUMN_OFFERINGS, item.offerings);
+                        startActivity(new Intent(WorkshopLocator.this, Retrieve.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.WORKSHOP).putExtra(Constants.Bundle.ID, object.toString()));
+                    } catch (JSONException e) { e.printStackTrace(); }
                     break;
                 }
             } catch (NumberFormatException e) {
@@ -283,7 +295,18 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
     }
 
     private void fetchWorkshops() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
+        String cityId = databaseHelper.user().getCityId();
+        String requestUrl = Constants.Url.WORKSHOP_CITY(cityId);
+        if (filterOffering != null && filterVehicleType != null)
+            requestUrl = Constants.Url.WORKSHOP_CITY_VEHICLE_TYPE_OFFERING(cityId, filterVehicleType, filterOffering);
+        else {
+            if (filterOffering != null)
+                requestUrl = Constants.Url.WORKSHOP_CITY_OFFERING(cityId, filterOffering);
+            else if (filterVehicleType != null)
+                requestUrl = Constants.Url.WORKSHOP_CITY_VEHICLE_TYPE(cityId, filterVehicleType);
+        }
+        Log.d(TAG, "workshop request url = " + requestUrl);
+        StringRequest request = new StringRequest(Request.Method.GET, requestUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(final String response) {
                 Log.d(TAG, "workshop get = " + response);
@@ -312,6 +335,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                     protected Void doInBackground(Void... params) {
                         try {
                             JSONArray array = new JSONArray(response);
+                            workshops.clear();
                             for (int i = 0; i < array.length(); i++) {
                                 JSONObject object = array.getJSONObject(i);
                                 String sId = object.getString(DatabaseSchema.COLUMN_ID);
@@ -321,15 +345,11 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                                 String contact = object.optString(DatabaseSchema.Workshops.COLUMN_CONTACT);
                                 String latitude = object.optString(DatabaseSchema.Workshops.COLUMN_LATITUDE);
                                 String longitude = object.optString(DatabaseSchema.Workshops.COLUMN_LONGITUDE);
-                                String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY);
+                                String cityId = object.optString(DatabaseSchema.Workshops.COLUMN_CITY_ID);
                                 String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                                 String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
 
-                                Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
-                                if (workshop != null) {
-                                    databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
-                                } else
-                                    databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
+                                workshops.add(new Workshop(sId, "", name, address, manager, contact, latitude, longitude, cityId, area, offerings, ""));
                             }
                         } catch (JSONException e) { Log.d(TAG, "can not parse in background"); }
                         return null;
@@ -345,6 +365,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                initMap();
             }
         }) {
             @Override

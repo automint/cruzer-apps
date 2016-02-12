@@ -3,7 +3,7 @@ package com.socketmint.cruzer.crud.retrieve;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,7 @@ import com.socketmint.cruzer.database.DatabaseHelper;
 public class User extends Fragment {
     private static final String TAG = "RetrieveUser";
     private AppCompatTextView textUserName, textMobile, textEmail;
-    private CardView cardUserName, cardMobile, cardEmail;
+    private LinearLayoutCompat layoutUserName, layoutMobile, layoutEmail;
 
     private DatabaseHelper databaseHelper;
 
@@ -54,9 +54,9 @@ public class User extends Fragment {
         textMobile = (AppCompatTextView) v.findViewById(R.id.text_mobile);
         textEmail = (AppCompatTextView) v.findViewById(R.id.text_email);
 
-        cardUserName = (CardView) v.findViewById(R.id.card_user_name);
-        cardMobile = (CardView) v.findViewById(R.id.card_mobile);
-        cardEmail = (CardView) v.findViewById(R.id.card_email);
+        layoutUserName = (LinearLayoutCompat) v.findViewById(R.id.layout_user_name);
+        layoutMobile = (LinearLayoutCompat) v.findViewById(R.id.layout_mobile);
+        layoutEmail = (LinearLayoutCompat) v.findViewById(R.id.layout_email);
     }
 
     private void setContent() {
@@ -66,8 +66,8 @@ public class User extends Fragment {
         textMobile.setText(user.mobile);
         textEmail.setText(user.email);
 
-        cardUserName.setVisibility((user.firstName.isEmpty() && user.lastName.isEmpty()) ? View.GONE : View.VISIBLE);
-        cardMobile.setVisibility((user.mobile.isEmpty()) ? View.GONE : View.VISIBLE);
-        cardEmail.setVisibility((user.email.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutUserName.setVisibility((user.firstName.isEmpty() && user.lastName.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutMobile.setVisibility((user.mobile.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutEmail.setVisibility((user.email.isEmpty()) ? View.GONE : View.VISIBLE);
     }
 }

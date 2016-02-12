@@ -27,6 +27,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.City;
+import com.socketmint.cruzer.dataholder.Country;
 import com.socketmint.cruzer.dataholder.Manu;
 import com.socketmint.cruzer.dataholder.Model;
 import com.socketmint.cruzer.dataholder.Problem;
@@ -34,6 +36,7 @@ import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
 import com.socketmint.cruzer.dataholder.Vehicle;
 import com.socketmint.cruzer.dataholder.Workshop;
+import com.socketmint.cruzer.dataholder.WorkshopType;
 import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.startup.Launcher;
 import com.socketmint.cruzer.ui.UiElement;
@@ -116,6 +119,7 @@ public class Login {
         int lastSpace = (name != null) ? name.lastIndexOf(" ") : -1;
         String firstName = (lastSpace > 0) ? name.substring(0, lastSpace) : ((name != null) ? name : "");
         String lastName = (lastSpace > 0) ? name.substring(lastSpace + 1) : "";
+        Log.d(TAG, "firstName = " + firstName + " | lastName = " + lastName);
         login(account.getEmail(), firstName, lastName, "");
     }
 
@@ -174,12 +178,16 @@ public class Login {
 
                         JSONObject info = new JSONObject(authResponse.getString(Constants.Json.INFO));
                         String id = info.optString(DatabaseSchema.COLUMN_ID);
+                        String fName = info.optString(DatabaseSchema.Users.COLUMN_FIRST_NAME);
+                        String lName = info.optString(DatabaseSchema.Users.COLUMN_LAST_NAME);
                         String password = info.optString(DatabaseSchema.Users.COLUMN_PASSWORD);
                         String contact = info.optString(DatabaseSchema.Users.COLUMN_MOBILE);
+                        String cityId = info.optString(DatabaseSchema.Users.COLUMN_CITY_ID);
 
                         currentLoginType = LoginType.GOOGLE;
 
-                        databaseHelper.addUser(id, (mobile.isEmpty()) ? contact : mobile, password, firstName, lastName, email);
+                        Log.d(TAG, "firstName = " + firstName + " | lastName = " + lastName);
+                        databaseHelper.addUser(id, (mobile.isEmpty()) ? contact : mobile, password, (firstName.isEmpty() ? fName : firstName), (lastName.isEmpty() ? lName : lastName), email, cityId);
                         if (databaseHelper.vehicleCount() > 0) {
                             for (Vehicle vehicle : databaseHelper.vehicles()) {
                                 databaseHelper.updateVehicle(vehicle.getId(), databaseHelper.user().getId());
@@ -194,11 +202,10 @@ public class Login {
                             progressDialog.setMessage(activity.getString(R.string.message_getting_data));
 
                     } else {
+                        if (progressDialog != null)
+                            progressDialog.dismiss();
                         String message = authResponse.getString(Constants.Json.MESSAGE);
                         if (message.equals(activity.getString(R.string.error_no_user))) {
-                            if (progressDialog != null)
-                                progressDialog.dismiss();
-
                             if (mobile.isEmpty())
                                 show(email, firstName, lastName);
                             else
@@ -442,10 +449,8 @@ public class Login {
                                     String name = object.optString(DatabaseSchema.Vehicles.COLUMN_NAME);
                                     String modelId = object.optString(DatabaseSchema.Vehicles.COLUMN_MODEL_ID);
                                     Model model = databaseHelper.model(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{modelId});
-                                    if (model != null)
-                                        databaseHelper.addVehicle(sId, reg, name, databaseHelper.user().getId(), model.getId());
-                                    else
-                                        databaseHelper.addVehicleFromServer(sId, reg, name, databaseHelper.user().getId());
+                                    modelId = (model != null) ? model.getId() : "";
+                                    databaseHelper.addVehicle(sId, reg, name, databaseHelper.user().getId(), modelId);
                                 }
                             } catch (JSONException e) { cancel(true); moveForward(); }
                             return null;
@@ -511,12 +516,12 @@ public class Login {
                         }
                         @Override
                         public void onPostExecute(Void result) {
-                            getWorkshops();
+                            getCountries();
                         }
                     }.execute();
                 } catch (JSONException | NullPointerException e) {
                     Log.e(TAG, "refuels not in json");
-                    getWorkshops();
+                    getCountries();
                 }
             }
         }, new Response.ErrorListener() {
@@ -627,6 +632,118 @@ public class Login {
         requestQueue.add(request);
     }
 
+    public void getCities() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.CITIES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "fetch cities = " + response);
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.COLUMN_ID);
+                        String city = object.optString(DatabaseSchema.Cities.COLUMN_CITY);
+                        String countryId = object.optString(DatabaseSchema.Cities.COLUMN_COUNTRY_ID);
+                        City item = databaseHelper.city(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (item == null)
+                            databaseHelper.addCity(id, city, countryId);
+                        else if (!item.city.equals(city))
+                            databaseHelper.updateCity(id, city, countryId);
+                    }
+                    getWorkshopTypes();
+                } catch (JSONException e) { Log.d(TAG, "cities not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                moveForward();
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> headerParams = new HashMap<>();
+                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    public void getCountries() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.COUNTRIES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "fetch countries = " + response);
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.COLUMN_ID);
+                        String country = object.optString(DatabaseSchema.Countries.COLUMN_COUNTRY);
+                        Country item = databaseHelper.country(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (item == null)
+                            databaseHelper.addCountry(id, country);
+                        else if (!item.country.equals(country))
+                            databaseHelper.updateCountry(id, country);
+                    }
+                    getCities();
+                } catch (JSONException e) { Log.d(TAG, "countries not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                moveForward();
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> headerParams = new HashMap<>();
+                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void getWorkshopTypes() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP_TYPES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "workshop types = " + response);
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.COLUMN_ID);
+                        String type = object.optString(DatabaseSchema.WorkshopTypes.COLUMN_TYPE);
+                        WorkshopType workshopType = databaseHelper.workshopType(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (workshopType == null)
+                            databaseHelper.addWorkshopType(id, type);
+                        else if (!workshopType.type.equals(type))
+                            databaseHelper.updateWorkshopType(id, type);
+                    }
+                    getWorkshops();
+                } catch (JSONException e) { Log.e(TAG, "workshop type is not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                moveForward();
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return params;
+            }
+        };
+        requestQueue.add(request);
+    }
+
     private void getWorkshops() {
         StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP, new Response.Listener<String>() {
             @Override
@@ -647,15 +764,16 @@ public class Login {
                                     String contact = object.optString(DatabaseSchema.Workshops.COLUMN_CONTACT);
                                     String latitude = object.optString(DatabaseSchema.Workshops.COLUMN_LATITUDE);
                                     String longitude = object.optString(DatabaseSchema.Workshops.COLUMN_LONGITUDE);
-                                    String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY);
+                                    String city = object.optString(DatabaseSchema.Workshops.COLUMN_CITY_ID);
                                     String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                                     String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
+                                    String workshopTypeId = object.optString(DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID);
                                     Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
                                     Log.e(TAG, "workshop != null - " + (workshop != null));
                                     if (workshop != null)
-                                        databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
+                                        databaseHelper.updateWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings, workshopTypeId);
                                     else
-                                        databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings);
+                                        databaseHelper.addWorkshop(sId, name, address, manager, contact, latitude, longitude, city, area, offerings, workshopTypeId);
                                 }
                             } catch (JSONException e) { cancel(true); moveForward(); }
                             return null;
@@ -696,8 +814,8 @@ public class Login {
                     JSONArray array = new JSONArray(response);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject object = array.getJSONObject(i);
-                        String id = object.getString(DatabaseSchema.Status.COLUMN_ID);
-                        String details = object.optString(DatabaseSchema.Status.COLUMN_DETAILS);
+                        String id = object.getString(DatabaseSchema.ServiceStatus.COLUMN_ID);
+                        String details = object.optString(DatabaseSchema.ServiceStatus.COLUMN_DETAILS);
                         databaseHelper.addStatus(id, details);
                     }
                 } catch (JSONException e) { Log.d(TAG, "get status is not in json"); }
@@ -742,7 +860,7 @@ public class Login {
 
     public void logout() {
         locData.clearData();
-        databaseHelper.logout();
+        activity.deleteDatabase(DatabaseHelper.DATABASE_NAME);
         activity.startActivity(new Intent(activity, Launcher.class));
         activity.finish();
     }
