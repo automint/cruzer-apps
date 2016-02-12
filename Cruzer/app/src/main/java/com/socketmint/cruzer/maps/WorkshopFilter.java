@@ -9,23 +9,37 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 
 import com.socketmint.cruzer.R;
+import com.socketmint.cruzer.database.DatabaseHelper;
+import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.City;
+import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.drawer.DrawerFragment;
 import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class WorkshopFilter extends AppCompatActivity implements View.OnClickListener, Toolbar.OnMenuItemClickListener {
     private static final String TAG = "WorkshopFilter";
 
     private AppCompatImageView imageVehicleTypeTW, imageVehicleTypeFW, imageOfferingService, imageOfferingTyre, imageOfferingBattery, imageOfferingAccessories, imageOfferingBeautification, imageOfferingPuncture;
+    private AppCompatSpinner citySpinner;
 
     private Login login = new Login();
+    private DatabaseHelper databaseHelper;
 
+    private List<City> cities = new ArrayList<>();
+    private List<String> cityList = new ArrayList<>();
     private String vehicleType, offeringType;
 
     @Override
@@ -34,6 +48,7 @@ public class WorkshopFilter extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_workshop_filter);
 
         login.initInstance(this);
+        databaseHelper = new DatabaseHelper(getApplicationContext());
 
         initializeViews();
     }
@@ -53,6 +68,22 @@ public class WorkshopFilter extends AppCompatActivity implements View.OnClickLis
         imageOfferingAccessories = (AppCompatImageView) findViewById(R.id.image_filter_offering_accessories);
         imageOfferingBeautification = (AppCompatImageView) findViewById(R.id.image_filter_offering_beautification);
         imageOfferingPuncture = (AppCompatImageView) findViewById(R.id.image_filter_offering_puncture);
+
+        User user = databaseHelper.user();
+        City city = databaseHelper.city(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{user.getCityId()});
+        citySpinner = (AppCompatSpinner) findViewById(R.id.spinner_city_name);
+        cities = databaseHelper.cities();
+        cityList.clear();
+        for (City item : cities) {
+            cityList.add(item.city);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, R.id.text_spinner_item, cityList);
+        citySpinner.setAdapter(adapter);
+        if (city != null) {
+            int index = cityList.indexOf(city.city);
+            citySpinner.setSelection(index);
+        }
 
         findViewById(R.id.layout_filter_vehicle_two_wheeler).setOnClickListener(this);
         findViewById(R.id.layout_filter_vehicle_four_wheeler).setOnClickListener(this);
@@ -111,7 +142,8 @@ public class WorkshopFilter extends AppCompatActivity implements View.OnClickLis
                     snackbar.show();
                     return;
                 }
-                startActivity(new Intent(WorkshopFilter.this, WorkshopLocator.class).putExtra(Constants.Bundle.OFFERING_FILTER, offeringType).putExtra(Constants.Bundle.VEHICLE_TYPE_FILTER, vehicleType));
+                int position = citySpinner.getSelectedItemPosition();
+                startActivity(new Intent(WorkshopFilter.this, WorkshopLocator.class).putExtra(Constants.Bundle.OFFERING_FILTER, offeringType).putExtra(Constants.Bundle.VEHICLE_TYPE_FILTER, vehicleType).putExtra(Constants.Bundle.CITY, cities.get(position).getId()));
                 break;
         }
     }
