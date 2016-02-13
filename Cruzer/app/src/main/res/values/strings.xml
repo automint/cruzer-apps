@@ -76,6 +76,7 @@
     <string name="message_no_vehicles">No Vehicles Found!</string>
     <string name="message_location_access_fail">Check your location permissions</string>
     <string name="message_locator_no_workshops">No workshops around!</string>
+    <string name="message_locator_workshops">%1$d workshop(s) found!</string>
     <string name="message_gps_ask">Please turn on location services!</string>
     <string name="message_select_vehicle">Please select a vehicle!</string>
 

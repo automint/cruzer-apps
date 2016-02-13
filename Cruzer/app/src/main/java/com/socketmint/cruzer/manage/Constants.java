@@ -18,6 +18,7 @@ public class Constants {
         public static final String VEHICLE = URL_SERVER + "/" + URL_API + "/" + "vehicles";
         public static String VEHICLE(String id) { return VEHICLE + "/" + id; }
         public static final String WORKSHOP = URL_SERVER + "/" + URL_API + "/" + "workshops";
+        public static String WORKSHOP(String workshopId) { return WORKSHOP + "/" + workshopId; }
         public static final String REFUEL = URL_SERVER + "/" + URL_API + "/" + "refuels";
         public static String REFUEL(String id) { return REFUEL + "/" + id; }
         public static final String SERVICE = URL_SERVER + "/" + URL_API + "/" + "services";
@@ -28,18 +29,10 @@ public class Constants {
         public static final String CITIES = URL_SERVER + "/" + URL_API + "/" + "cities";
         public static final String COUNTRIES = URL_SERVER + "/" + URL_API + "/" + "countries";
         public static final String WORKSHOP_TYPES = URL_SERVER + "/" + URL_API + "/" + "workshoptypes";
-        public static String WORKSHOP_CITY(String cityId) {
-            return WORKSHOP + "/cities/" + cityId;
-        }
-        public static String WORKSHOP_CITY_VEHICLE_TYPE(String cityId, String vehicleTypeId) {
-            return WORKSHOP_CITY(cityId) + "/vehicletypes/" + vehicleTypeId;
-        }
-        public static String WORKSHOP_CITY_OFFERING(String cityId, String offeringId) {
-            return WORKSHOP_CITY(cityId) + "/offerings/" + offeringId;
-        }
-        public static String WORKSHOP_CITY_VEHICLE_TYPE_OFFERING(String cityId, String vehicleTypeId, String offeringId) {
-            return WORKSHOP_CITY_VEHICLE_TYPE(cityId, vehicleTypeId) + "/offerings/" + offeringId;
-        }
+        public static String WORKSHOP_CITY(String cityId) { return WORKSHOP + "/cities/" + cityId; }
+        public static String WORKSHOP_CITY_VEHICLE_TYPE(String cityId, String vehicleTypeId) { return WORKSHOP_CITY(cityId) + "/vehicletypes/" + vehicleTypeId; }
+        public static String WORKSHOP_CITY_OFFERING(String cityId, String offeringId) { return WORKSHOP_CITY(cityId) + "/offerings/" + offeringId; }
+        public static String WORKSHOP_CITY_VEHICLE_TYPE_OFFERING(String cityId, String vehicleTypeId, String offeringId) { return WORKSHOP_CITY_VEHICLE_TYPE(cityId, vehicleTypeId) + "/offerings/" + offeringId; }
     }
 
     public static abstract class VolleyRequest {
@@ -104,5 +97,8 @@ public class Constants {
 
     public static abstract class IntentFilters {
         public static final String GCM = Gcm.INTENT_GCM;
+        public static final String CITY = "getCityIntentFilter";
+
+        public static final String FLAG_CITY_STATUS = "getCityStatus";
     }
 }

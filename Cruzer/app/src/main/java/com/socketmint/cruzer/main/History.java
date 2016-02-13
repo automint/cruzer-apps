@@ -161,7 +161,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                     nation = addresses.get(0).getCountryName();
                     Log.d(TAG, "Geo Address : " + addresses.get(0).toString());
                     Log.d(TAG, "Locality = " + locality + " | Sub Locality = " + subLocality + " | countryName = " + nation);
-                } catch (SecurityException | IOException e) { e.printStackTrace(); }
+                } catch (SecurityException | IOException | NullPointerException e) { e.printStackTrace(); }
                 return null;
             }
             @Override
@@ -184,7 +184,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(gcmBroadcast, new IntentFilter(Constants.Gcm.INTENT_GCM));
+        LocalBroadcastManager.getInstance(this).registerReceiver(gcmBroadcast, new IntentFilter(Constants.IntentFilters.GCM));
         drawerFragment.changeVehicleCount();
         drawerFragment.changeUserName();
     }
