@@ -184,7 +184,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(gcmBroadcast, new IntentFilter(Constants.Gcm.INTENT_GCM));
+        LocalBroadcastManager.getInstance(this).registerReceiver(gcmBroadcast, new IntentFilter(Constants.IntentFilters.GCM));
         drawerFragment.changeVehicleCount();
         drawerFragment.changeUserName();
     }

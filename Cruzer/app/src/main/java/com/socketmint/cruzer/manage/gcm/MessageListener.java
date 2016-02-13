@@ -144,12 +144,25 @@ public class MessageListener extends GcmListenerService {
                     String odo = object.optString(DatabaseSchema.Services.COLUMN_ODO);
                     String details = object.optString(DatabaseSchema.Services.COLUMN_DETAILS);
                     String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
-                    String workshopId = object.optString(DatabaseSchema.Services.COLUMN_WORKSHOP_ID);
+                    final String workshopId = object.optString(DatabaseSchema.Services.COLUMN_WORKSHOP_ID);
                     String uId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
                     String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
 
                     Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{id});
                     Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
+                    if (workshop == null) {
+                        gcmOperation.interrupt();
+                        networkOperation = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                fetchWorkshop(workshopId);
+                            }
+                        });
+                        if (networkOperation.getState() == Thread.State.NEW)
+                            networkOperation.start();
+                        else
+                            networkOperation.run();
+                    }
                     String serviceId;
 
                     if (service == null) {
@@ -190,6 +203,68 @@ public class MessageListener extends GcmListenerService {
                 } catch (JSONException e) { Log.e(TAG, "body is not json"); }
                 break;
         }
+    }
+
+    private void fetchWorkshop(String id) {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP(id), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "workshop = " + response);
+                try {
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                        if (!success) {
+                            String message = object.getString(Constants.Json.MESSAGE);
+                            if (message.equals(getString(R.string.error_auth_fail))) {
+                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                    @Override
+                                    public boolean apply(Request<?> request) {
+                                        return true;
+                                    }
+                                });
+                                authenticate();
+                            }
+                        }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "model is array"); }
+                    JSONArray array = new JSONArray(response);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        String id = object.getString(DatabaseSchema.COLUMN_ID);
+                        String name = object.optString(DatabaseSchema.Workshops.COLUMN_NAME);
+                        String address = object.optString(DatabaseSchema.Workshops.COLUMN_ADDRESS);
+                        String manager = object.optString(DatabaseSchema.Workshops.COLUMN_MANAGER);
+                        String contact = object.optString(DatabaseSchema.Workshops.COLUMN_CONTACT);
+                        String latitude = object.optString(DatabaseSchema.Workshops.COLUMN_LATITUDE);
+                        String longitude = object.optString(DatabaseSchema.Workshops.COLUMN_LONGITUDE);
+                        String cityId = object.optString(DatabaseSchema.Workshops.COLUMN_CITY_ID);
+                        String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
+                        String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
+                        String workshopTypeId = object.optString(DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID);
+
+                        Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+                        if (workshop == null)
+                            databaseHelper.addWorkshop(id, name, address, manager, contact, latitude, longitude, cityId, area, offerings, workshopTypeId);
+                        else
+                            databaseHelper.updateWorkshop(id, name, address, manager, contact, latitude, longitude, cityId, area, offerings, workshopTypeId);
+                    }
+                    gcmOperation.run();
+                } catch (JSONException e) { Log.d(TAG, "workshops not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> headerParams = new HashMap<>();
+                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
     }
 
     private void fetchModel(String id) {

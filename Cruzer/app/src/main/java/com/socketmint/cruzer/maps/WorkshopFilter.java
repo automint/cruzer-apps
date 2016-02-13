@@ -1,16 +1,27 @@
 package com.socketmint.cruzer.maps;
 
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,33 +35,110 @@ import com.socketmint.cruzer.drawer.DrawerFragment;
 import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
+import com.socketmint.cruzer.manage.sync.ManualSync;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class WorkshopFilter extends AppCompatActivity implements View.OnClickListener, Toolbar.OnMenuItemClickListener {
     private static final String TAG = "WorkshopFilter";
 
     private AppCompatImageView imageVehicleTypeTW, imageVehicleTypeFW, imageOfferingService, imageOfferingTyre, imageOfferingBattery, imageOfferingAccessories, imageOfferingBeautification, imageOfferingPuncture;
     private AppCompatSpinner citySpinner;
+    private ProgressDialog progressDialog;
 
     private Login login = new Login();
     private DatabaseHelper databaseHelper;
+    private ManualSync manualSync;
 
     private List<City> cities = new ArrayList<>();
     private List<String> cityList = new ArrayList<>();
-    private String vehicleType, offeringType;
+    private String vehicleType, offeringType, nation, locality;
+    private boolean getLocation = false;
+
+    private BroadcastReceiver getCityBroadcast;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workshop_filter);
 
+        getLocation = false;
+        initializeBroadcasts();
         login.initInstance(this);
+        manualSync = new ManualSync(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
 
+        progressDialog = new ProgressDialog(this);
         initializeViews();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // get location
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            public void onPreExecute() {
+                if (progressDialog != null) {
+                    progressDialog.setMessage(getString(R.string.message_wait_task_pending));
+                    progressDialog.show();
+                }
+            }
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    if (getLocation)
+                        return null;
+                    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    Log.d(TAG, "Last Known Location = " + location.getLatitude() + ", " + location.getLongitude());
+                    Geocoder geocoder = new Geocoder(WorkshopFilter.this, Locale.getDefault());
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    locality = addresses.get(0).getLocality();
+                    String subLocality = addresses.get(0).getSubLocality();
+                    nation = addresses.get(0).getCountryName();
+                    Log.d(TAG, "Geo Address : " + addresses.get(0).toString());
+                    Log.d(TAG, "Locality = " + locality + " | Sub Locality = " + subLocality + " | countryName = " + nation);
+                } catch (SecurityException | IOException | NullPointerException e) { e.printStackTrace(); }
+                return null;
+            }
+            @Override
+            public void onPostExecute(Void result) {
+                Bundle syncBundle = new Bundle();
+                syncBundle.putString(Constants.Bundle.CITY, locality);
+                syncBundle.putString(Constants.Bundle.COUNTRY, nation);
+                if (login.login() > Login.LoginType.TRIAL)
+                    manualSync.syncEverything(syncBundle);
+            }
+        }.execute();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(getCityBroadcast);
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(getCityBroadcast, new IntentFilter(Constants.IntentFilters.CITY));
+    }
+
+    private void initializeBroadcasts() {
+        getCityBroadcast = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (progressDialog != null)
+                    progressDialog.dismiss();
+                setSpinnerContent();
+            }
+        };
     }
 
     private void initializeViews() {
@@ -68,10 +156,24 @@ public class WorkshopFilter extends AppCompatActivity implements View.OnClickLis
         imageOfferingAccessories = (AppCompatImageView) findViewById(R.id.image_filter_offering_accessories);
         imageOfferingBeautification = (AppCompatImageView) findViewById(R.id.image_filter_offering_beautification);
         imageOfferingPuncture = (AppCompatImageView) findViewById(R.id.image_filter_offering_puncture);
+        citySpinner = (AppCompatSpinner) findViewById(R.id.spinner_city_name);
 
+        setSpinnerContent();
+
+        findViewById(R.id.layout_filter_vehicle_two_wheeler).setOnClickListener(this);
+        findViewById(R.id.layout_filter_vehicle_four_wheeler).setOnClickListener(this);
+        findViewById(R.id.layout_filter_offering_service).setOnClickListener(this);
+        findViewById(R.id.layout_filter_offering_tyres).setOnClickListener(this);
+        findViewById(R.id.layout_filter_offering_batteries).setOnClickListener(this);
+        findViewById(R.id.layout_filter_offering_accessories).setOnClickListener(this);
+        findViewById(R.id.layout_filter_offering_beautification).setOnClickListener(this);
+        findViewById(R.id.layout_filter_offering_puncture).setOnClickListener(this);
+        findViewById(R.id.button_filter_workshops).setOnClickListener(this);
+    }
+
+    private void setSpinnerContent() {
         User user = databaseHelper.user();
         City city = databaseHelper.city(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{user.getCityId()});
-        citySpinner = (AppCompatSpinner) findViewById(R.id.spinner_city_name);
         cities = databaseHelper.cities();
         cityList.clear();
         for (City item : cities) {
@@ -84,16 +186,6 @@ public class WorkshopFilter extends AppCompatActivity implements View.OnClickLis
             int index = cityList.indexOf(city.city);
             citySpinner.setSelection(index);
         }
-
-        findViewById(R.id.layout_filter_vehicle_two_wheeler).setOnClickListener(this);
-        findViewById(R.id.layout_filter_vehicle_four_wheeler).setOnClickListener(this);
-        findViewById(R.id.layout_filter_offering_service).setOnClickListener(this);
-        findViewById(R.id.layout_filter_offering_tyres).setOnClickListener(this);
-        findViewById(R.id.layout_filter_offering_batteries).setOnClickListener(this);
-        findViewById(R.id.layout_filter_offering_accessories).setOnClickListener(this);
-        findViewById(R.id.layout_filter_offering_beautification).setOnClickListener(this);
-        findViewById(R.id.layout_filter_offering_puncture).setOnClickListener(this);
-        findViewById(R.id.button_filter_workshops).setOnClickListener(this);
     }
 
     @Override

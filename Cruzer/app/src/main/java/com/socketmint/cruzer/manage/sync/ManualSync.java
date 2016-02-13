@@ -18,16 +18,12 @@ import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
 import com.socketmint.cruzer.dataholder.City;
 import com.socketmint.cruzer.dataholder.Country;
-import com.socketmint.cruzer.dataholder.Offering;
 import com.socketmint.cruzer.dataholder.Refuel;
 import com.socketmint.cruzer.dataholder.Service;
 import com.socketmint.cruzer.dataholder.Status;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.Vehicle;
-import com.socketmint.cruzer.dataholder.VehicleSubType;
-import com.socketmint.cruzer.dataholder.VehicleType;
 import com.socketmint.cruzer.dataholder.Workshop;
-import com.socketmint.cruzer.dataholder.WorkshopType;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 
@@ -61,8 +57,6 @@ public class ManualSync {
     private List<Refuel> refuels = new ArrayList<>();
     private List<Service> services = new ArrayList<>();
     private String locality, nation;
-    private int pendingOfferings, pendingVehicleSubTypes, pendingVehicleTypes, pendingWorkshopTypes;
-    private boolean workshopDependSuccess = true;
 
     private Thread syncThread;
 
@@ -195,230 +189,11 @@ public class ManualSync {
         syncThread.start();
     }
 
-    /*private void getVehicleTypes() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.VEHICLE_TYPES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "vehicle types = " + response);
-                pendingVehicleTypes--;
-                checkWorkshopDataUpdate();
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                        if (!success) {
-                            String message = object.getString(Constants.Json.MESSAGE);
-                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                    @Override
-                                    public boolean apply(Request<?> request) {
-                                        return true;
-                                    }
-                                });
-                                authenticate();
-                            }
-                        }
-                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "vehicle types is array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String id = object.getString(DatabaseSchema.VehicleTypes.COLUMN_ID);
-                        String type = object.optString(DatabaseSchema.VehicleTypes.COLUMN_TYPE);
-                        VehicleType vehicleType = databaseHelper.vehicleType(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
-                        if (vehicleType == null)
-                            databaseHelper.addVehicleType(id, type);
-                        else if (!vehicleType.type.equals(type))
-                            databaseHelper.updateVehicleType(id, type);
-                    }
-                } catch (JSONException e) { Log.e(TAG, "vehicle types not in json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                pendingVehicleTypes--;
-                workshopDependSuccess = false;
-                checkWorkshopDataUpdate();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingVehicleTypes++;
-        requestQueue.add(request);
-    }
-
-    private void getVehicleSubTypes() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.VEHICLE_SUB_TYPES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "vehicle sub types = " + response);
-                pendingVehicleSubTypes--;
-                checkWorkshopDataUpdate();
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                        if (!success) {
-                            String message = object.getString(Constants.Json.MESSAGE);
-                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                    @Override
-                                    public boolean apply(Request<?> request) {
-                                        return true;
-                                    }
-                                });
-                                authenticate();
-                            }
-                        }
-                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "cities is array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String id = object.getString(DatabaseSchema.VehicleSubTypes.COLUMN_ID);
-                        String subTypes = object.optString(DatabaseSchema.VehicleSubTypes.COLUMN_SUB_TYPE);
-                        String vehicleTypeId = object.optString(DatabaseSchema.VehicleSubTypes.COLUMN_TYPE_ID);
-                        VehicleSubType vehicleSubType = databaseHelper.vehicleSubType(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
-                        if (vehicleSubType == null)
-                            databaseHelper.addVehicleSubTypes(id, subTypes, vehicleTypeId);
-                        else if (!vehicleSubType.subType.equals(subTypes) || !vehicleSubType.getVehicleTypeId().equals(vehicleTypeId))
-                            databaseHelper.updateVehicleSubTypes(id, subTypes, vehicleTypeId);
-                    }
-                } catch (JSONException e) { Log.e(TAG, "vehicle sub types not in json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingVehicleSubTypes--;
-                workshopDependSuccess = false;
-                checkWorkshopDataUpdate();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingVehicleSubTypes++;
-        requestQueue.add(request);
-    }
-
-    private void getOfferings() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.OFFERINGS, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                pendingOfferings--;
-                checkWorkshopDataUpdate();
-                Log.d(TAG, "offerings = " + response);
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                        if (!success) {
-                            String message = object.getString(Constants.Json.MESSAGE);
-                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                    @Override
-                                    public boolean apply(Request<?> request) {
-                                        return true;
-                                    }
-                                });
-                                authenticate();
-                            }
-                        }
-                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "cities is array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String id = object.getString(DatabaseSchema.Offerings.COLUMN_ID);
-                        String offering = object.optString(DatabaseSchema.Offerings.COLUMN_OFFERING);
-                        Offering item = databaseHelper.offering(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
-                        if (item == null)
-                            databaseHelper.addOffering(id, offering);
-                        else if (!item.offering.equals(offering))
-                            databaseHelper.updateOffering(id, offering);
-                    }
-                } catch (JSONException e) { Log.e(TAG, "offerings not in json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pendingOfferings--;
-                workshopDependSuccess = false;
-                checkWorkshopDataUpdate();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingOfferings++;
-        requestQueue.add(request);
-    }
-
-    private void getWorkshopTypes() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.WORKSHOP_TYPES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "workshop types = " + response);
-                pendingWorkshopTypes--;
-                checkWorkshopDataUpdate();
-                try {
-                    try {
-                        JSONObject object = new JSONObject(response);
-                        boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                        if (!success) {
-                            String message = object.getString(Constants.Json.MESSAGE);
-                            if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                                requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                    @Override
-                                    public boolean apply(Request<?> request) {
-                                        return true;
-                                    }
-                                });
-                                authenticate();
-                            }
-                        }
-                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "workshop type is array"); }
-                    JSONArray array = new JSONArray(response);
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject object = array.getJSONObject(i);
-                        String id = object.getString(DatabaseSchema.COLUMN_ID);
-                        String type = object.optString(DatabaseSchema.WorkshopTypes.COLUMN_TYPE);
-                        WorkshopType workshopType = databaseHelper.workshopType(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
-                        if (workshopType == null)
-                            databaseHelper.addWorkshopType(id, type);
-                        else if (!workshopType.type.equals(type))
-                            databaseHelper.updateWorkshopType(id, type);
-                    }
-                } catch (JSONException e) { Log.e(TAG, "workshop type is not in json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                pendingWorkshopTypes--;
-                workshopDependSuccess = false;
-                checkWorkshopDataUpdate();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-        };
-        pendingWorkshopTypes++;
-        requestQueue.add(request);
-    }*/
-
     private void notifyUserCity(final boolean citySynced, final boolean countrySynced) {
-        if (locality == null || nation == null)
+        if (locality == null || nation == null) {
+            getCountries(false);
             return;
+        }
         final Country country = databaseHelper.country(Collections.singletonList(DatabaseSchema.Countries.COLUMN_COUNTRY), new String[]{nation});
         Log.d(TAG, "country != null : " + (country != null) + " | citySynced : " + citySynced + " | countrySynced : " + countrySynced);
         if (country != null) {
@@ -429,17 +204,26 @@ public class ManualSync {
                 Log.d(TAG, "user.getChildId == null : " + (user.getCityId() == null) + " | !user.getCityId().equals(city.getId()) : " + ((user.getCityId() !=  null) ? !user.getCityId().equals(city.getId()) : "null"));
                 if (user.getCityId() == null || !user.getCityId().equals(city.getId()))
                     databaseHelper.updateUserCity(databaseHelper.user().getId(), city.getId());
+                Intent getCityIntent = new Intent(Constants.IntentFilters.CITY);
+                getCityIntent.putExtra(Constants.IntentFilters.FLAG_CITY_STATUS, true);
+                LocalBroadcastManager.getInstance(activity).sendBroadcast(getCityIntent);
             } else if (!citySynced)
-                getCities(countrySynced);
-            else
-                uploadCity(locality, country.getId(), countrySynced);
+                getCities(countrySynced, true);
+            else {
+                Intent getCityIntent = new Intent(Constants.IntentFilters.CITY);
+                getCityIntent.putExtra(Constants.IntentFilters.FLAG_CITY_STATUS, false);
+                LocalBroadcastManager.getInstance(activity).sendBroadcast(getCityIntent);
+            }
         } else if (!countrySynced)
-            getCountries();
-        else
-            uploadCountry(nation);
+            getCountries(true);
+        else {
+            Intent getCityIntent = new Intent(Constants.IntentFilters.CITY);
+            getCityIntent.putExtra(Constants.IntentFilters.FLAG_CITY_STATUS, false);
+            LocalBroadcastManager.getInstance(activity).sendBroadcast(getCityIntent);
+        }
     }
 
-    public void getCities(final boolean countrySynced) {
+    public void getCities(final boolean countrySynced, final boolean notifyUserCityEnabled) {
         StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.CITIES, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -473,7 +257,13 @@ public class ManualSync {
                         else if (!item.city.equals(city))
                             databaseHelper.updateCity(id, city, countryId);
                     }
-                    notifyUserCity(true, countrySynced);
+                    if (notifyUserCityEnabled)
+                        notifyUserCity(true, countrySynced);
+                    else {
+                        Intent getCityIntent = new Intent(Constants.IntentFilters.CITY);
+                        getCityIntent.putExtra(Constants.IntentFilters.FLAG_CITY_STATUS, true);
+                        LocalBroadcastManager.getInstance(activity).sendBroadcast(getCityIntent);
+                    }
                 } catch (JSONException e) { Log.d(TAG, "cities not in json"); }
             }
         }, new Response.ErrorListener() {
@@ -492,7 +282,7 @@ public class ManualSync {
         requestQueue.add(request);
     }
 
-    public void getCountries() {
+    public void getCountries(final boolean notifyUserCityEnabled) {
         StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.COUNTRIES, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -525,7 +315,10 @@ public class ManualSync {
                         else if (!item.country.equals(country))
                             databaseHelper.updateCountry(id, country);
                     }
-                    notifyUserCity(false, true);
+                    if (notifyUserCityEnabled)
+                        notifyUserCity(false, true);
+                    else
+                        getCities(true, false);
                 } catch (JSONException e) { Log.d(TAG, "countries not in json"); }
             }
         }, new Response.ErrorListener() {
@@ -537,99 +330,6 @@ public class ManualSync {
             @Override
             public Map<String, String> getHeaders() {
                 return headerParams;
-            }
-        };
-        requestQueue.add(request);
-    }
-
-    public void uploadCity(final String city, final String countryId, final boolean countrySynced) {
-        final HashMap<String, String> bodyParams = new HashMap<>();
-        bodyParams.put(DatabaseSchema.Cities.COLUMN_CITY, city);
-        bodyParams.put(DatabaseSchema.Cities.COLUMN_COUNTRY_ID, countryId);
-        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.CITIES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "upload city = " + response);
-                try {
-                    JSONObject object = new JSONObject(response);
-                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                    if (success) {
-                        String id = object.getString(Constants.Json.ID);
-                        databaseHelper.addCity(id, city, countryId);
-                        notifyUserCity(true, countrySynced);
-                    } else {
-                        String message = object.getString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                        }
-                    }
-                } catch (JSONException e) { Log.d(TAG, "upload city not in json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-            @Override
-            public Map<String, String> getParams() {
-                return bodyParams;
-            }
-        };
-        requestQueue.add(request);
-    }
-
-    public void uploadCountry(final String country) {
-        final HashMap<String, String> bodyParams = new HashMap<>();
-        bodyParams.put(DatabaseSchema.Countries.COLUMN_COUNTRY, country);
-        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.COUNTRIES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "upload country = " + response);
-                try {
-                    JSONObject object = new JSONObject(response);
-                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
-                    if (success) {
-                        String id = object.getString(Constants.Json.ID);
-                        databaseHelper.addCountry(id, country);
-                        notifyUserCity(false, true);
-                    } else {
-                        String message = object.getString(Constants.Json.MESSAGE);
-                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
-                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                                @Override
-                                public boolean apply(Request<?> request) {
-                                    return true;
-                                }
-                            });
-                            authenticate();
-                        }
-                    }
-                } catch (JSONException e) { Log.d(TAG, "upload city not in json"); }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                return headerParams;
-            }
-            @Override
-            public Map<String, String> getParams() {
-                return bodyParams;
             }
         };
         requestQueue.add(request);

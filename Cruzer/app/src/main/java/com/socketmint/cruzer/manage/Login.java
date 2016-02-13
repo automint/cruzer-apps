@@ -861,7 +861,7 @@ public class Login {
     public void logout() {
         locData.clearData();
         activity.deleteDatabase(DatabaseHelper.DATABASE_NAME);
-        activity.startActivity(new Intent(activity, Launcher.class));
+        activity.startActivity(new Intent(activity, Launcher.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         activity.finish();
     }
 

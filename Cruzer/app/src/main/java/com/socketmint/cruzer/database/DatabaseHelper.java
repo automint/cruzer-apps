@@ -1385,7 +1385,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 values.put(DatabaseSchema.Workshops.COLUMN_WORKSHOP_TYPE_ID, workshopType);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
-            Log.d("DBHelper", "addWorkshop - " + values.toString());
             getWritableDatabase().insert(DatabaseSchema.Workshops.TABLE_NAME, null, values);
             return true;
         } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
