@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.SpannableString;
@@ -32,6 +33,8 @@ public class Vehicle extends Fragment implements View.OnClickListener {
     private static final String ACTION_ADD_VEHICLE = "Create Vehicle";
     private static final String ACTION_SELECT_COMPANY = "Choose Vehicle Company";
     private static final String ACTION_SELECT_MODEL = "Choose Vehicle Model";
+
+    private AppCompatTextView labelVehicleName;
     private AppCompatEditText editRegistration, editVehicleCompany, editVehicleModel, editVehicleName;
 
     private ChoiceDialog choiceDialog;
@@ -67,11 +70,13 @@ public class Vehicle extends Fragment implements View.OnClickListener {
         editVehicleCompany = (AppCompatEditText) v.findViewById(R.id.edit_vehicle_company);
         editVehicleModel = (AppCompatEditText) v.findViewById(R.id.edit_vehicle_model);
         editVehicleName = (AppCompatEditText) v.findViewById(R.id.edit_vehicle_name);
+        labelVehicleName = (AppCompatTextView) v.findViewById(R.id.label_vehicle_name);
 
         InputFilter[] lengthFilter = { new InputFilter.AllCaps() };
         editRegistration.setFilters(lengthFilter);
 
         editVehicleCompany.addTextChangedListener(companyChange);
+        editVehicleModel.addTextChangedListener(otherModel);
         editVehicleCompany.setOnClickListener(this);
         editVehicleModel.setOnClickListener(this);
         v.findViewById(R.id.button_create_record).setOnClickListener(this);
@@ -89,8 +94,12 @@ public class Vehicle extends Fragment implements View.OnClickListener {
                 break;
             case R.id.edit_vehicle_model:
             case R.id.button_vehicle_model_list:
+                if (editVehicleCompany.getText().toString().isEmpty()) {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.message_select_manu, Snackbar.LENGTH_SHORT).show();
+                    break;
+                }
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(TAG + ACTION_SELECT_MODEL).build());
-                choiceDialog.chooseModel(editVehicleModel);
+                choiceDialog.chooseModel(editVehicleModel, false);
                 break;
             case R.id.button_create_record:
                 add();
@@ -99,7 +108,8 @@ public class Vehicle extends Fragment implements View.OnClickListener {
     }
 
     private void add() {
-        if (editRegistration.getText().toString().isEmpty()) {
+        boolean modelIsOther = editVehicleModel.getText().toString().equals(getString(R.string.label_other_option));
+        if (editRegistration.getText().toString().isEmpty() || (modelIsOther && editVehicleName.getText().toString().isEmpty())) {
             Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.message_fill_details, Snackbar.LENGTH_SHORT).show();
             return;
         }
@@ -110,7 +120,9 @@ public class Vehicle extends Fragment implements View.OnClickListener {
         }
         String registration = editRegistration.getText().toString();
         registration = registration.replaceAll("[^0-9a-zA-Z]","");
-        if (databaseHelper.addVehicle(registration, editVehicleName.getText().toString(), databaseHelper.user().getId(), locData.modelId())) {
+        String vehicleName = (modelIsOther ? editVehicleCompany.getText().toString().concat(" ") : "");
+        vehicleName = vehicleName.concat(editVehicleName.getText().toString());
+        if (databaseHelper.addVehicle(registration, vehicleName, databaseHelper.user().getId(), (editVehicleModel.getText().toString().isEmpty() ? "" : locData.modelId()))) {
             startActivity(new Intent(getActivity(), History.class));
             getActivity().finish();
         }
@@ -126,6 +138,26 @@ public class Vehicle extends Fragment implements View.OnClickListener {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             editVehicleModel.setText("");
             locData.storeModelId("");
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+    TextWatcher otherModel = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            boolean modelIsOther = editVehicleModel.getText().toString().equals(getString(R.string.label_other_option));
+            labelVehicleName.setText((modelIsOther) ? getString(R.string.label_vehicle_model_name) : getString(R.string.label_vehicle_name));
+            if (modelIsOther)
+                editVehicleName.setText("");
         }
 
         @Override

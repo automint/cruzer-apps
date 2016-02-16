@@ -263,6 +263,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
             @Override
             protected Void doInBackground(Void... params) {
                 List<Refuel> refuels = (vehicleId.equals("all")) ? databaseHelper.refuels() : databaseHelper.refuels(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vehicleId});
+                refuels = (refuels == null) ? new ArrayList<Refuel>() : refuels;
                 Collections.sort(refuels, new Comparator<Refuel>() {
                     @Override
                     public int compare(Refuel lhs, Refuel rhs) {
@@ -274,6 +275,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                     holders.add(new Holder(Choices.REFUEL, item, vehicleId.equals("all")));
                 }
                 List<Service> services = (vehicleId.equals("all")) ? databaseHelper.services() : databaseHelper.services(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vehicleId});
+                services = (services == null) ? new ArrayList<Service>() : services;
                 Collections.sort(services, new Comparator<Service>() {
                     @Override
                     public int compare(Service lhs, Service rhs) {

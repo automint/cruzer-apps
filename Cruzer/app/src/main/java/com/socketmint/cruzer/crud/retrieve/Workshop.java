@@ -1,6 +1,13 @@
 package com.socketmint.cruzer.crud.retrieve;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
@@ -18,7 +25,7 @@ import com.socketmint.cruzer.manage.Constants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Workshop extends Fragment {
+public class Workshop extends Fragment implements View.OnClickListener {
     private static final String TAG = "RetrieveWorkshop";
     private AppCompatTextView textWorkshopName, textManager, textMobile, textAddress, textCity, textArea, textOfferings;
 
@@ -53,6 +60,8 @@ public class Workshop extends Fragment {
         textCity = (AppCompatTextView) v.findViewById(R.id.text_workshop_city);
         textArea = (AppCompatTextView) v.findViewById(R.id.text_workshop_area);
         textOfferings = (AppCompatTextView) v.findViewById(R.id.text_workshop_offerings);
+
+        v.findViewById(R.id.button_claim_workshop).setOnClickListener(this);
     }
 
     private void setDetails(View v, String id) {
@@ -65,8 +74,10 @@ public class Workshop extends Fragment {
             String city = object.getString(DatabaseSchema.Workshops.COLUMN_CITY_ID);
             String area = object.getString(DatabaseSchema.Workshops.COLUMN_AREA);
             String offerings = object.getString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
+
             analyticsTracker.setScreenName(Constants.GoogleAnalytics.EVENT_WORKSHOP_DISPLAY + " : " + name);
             analyticsTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
             textWorkshopName.setText(name);
             textManager.setText(manager);
             textMobile.setText(contact);
@@ -83,6 +94,41 @@ public class Workshop extends Fragment {
         } catch (JSONException e) {
             Log.e(TAG, "can not parse workshop json");
             getActivity().onBackPressed();
+        }
+    }
+
+    private void callAdmin() {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:+919427800160"));
+        startActivity(callIntent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_claim_workshop:
+                if (getActivity().checkPermission(Manifest.permission.CALL_PHONE, android.os.Process.myPid(), android.os.Process.myUid()) != PackageManager.PERMISSION_GRANTED) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, Constants.RequestCodes.PERMISSION_CALL_PHONE);
+                        return;
+                    }
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.message_claim_workshop_permission_fail, Snackbar.LENGTH_LONG);
+                    return;
+                }
+                callAdmin();
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Constants.RequestCodes.PERMISSION_CALL_PHONE:
+                if (grantResults.length > 0) {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                        callAdmin();
+                }
+                break;
         }
     }
 }

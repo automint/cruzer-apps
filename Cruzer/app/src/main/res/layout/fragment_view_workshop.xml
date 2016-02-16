@@ -209,6 +209,35 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
+            
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout_workshop_claim"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+                
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.7"
+                    android:text="@string/text_claim_workshop"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/cruzer_blue_accent"
+                    android:textStyle="italic"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.AppCompatButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_claim_workshop"
+                    android:text="@string/label_claim_workshop"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/red_400"/>
+                
+            </android.support.v7.widget.LinearLayoutCompat>
 
         </android.support.v7.widget.LinearLayoutCompat>
 
