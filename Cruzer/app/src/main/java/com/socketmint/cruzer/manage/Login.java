@@ -607,11 +607,13 @@ public class Login {
                         String pCost = problem.optString(DatabaseSchema.Problems.COLUMN_PCOST);
                         String details = problem.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
                         String qty = problem.optString(DatabaseSchema.Problems.COLUMN_QTY);
+                        String rate = problem.optString(DatabaseSchema.Problems.COLUMN_RATE);
+                        String type = problem.optString(DatabaseSchema.Problems.COLUMN_TYPE);
                         Problem item = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                         if (item == null) {
                             Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{serviceId});
                             if (service != null)
-                                databaseHelper.addProblem(sId, service.getId(), details, lCost, pCost, qty);
+                                databaseHelper.addProblem(sId, service.getId(), details, lCost, pCost, qty, rate, type);
                         }
                     }
                 } catch (JSONException | NullPointerException e) { Log.e(TAG, "problems not in json"); }

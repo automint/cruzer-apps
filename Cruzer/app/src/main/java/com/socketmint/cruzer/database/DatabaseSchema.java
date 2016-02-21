@@ -87,6 +87,8 @@ public class DatabaseSchema {
         public static final String COLUMN_DETAILS = "details";
         public static final String COLUMN_LCOST = "lcost";
         public static final String COLUMN_PCOST = "pcost";
+        public static final String COLUMN_RATE = "rate";
+        public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_QTY = "qty";
     }
 

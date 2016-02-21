@@ -100,15 +100,18 @@ public class Service extends Fragment {
             String problems = "";
             for (int i = 0; i < problemList.size(); i++) {
                 Problem item = problemList.get(i);
-                int lCost = 0;
-                int pCost = 0;
+                double lCost = 0;
+                double pCost = 0;
                 try {
-                    lCost = Integer.parseInt(item.lCost);
-                } catch (NumberFormatException e) { Log.d(TAG, "number format"); }
+                    lCost = Double.parseDouble(item.lCost);
+                } catch (NumberFormatException | NullPointerException e) { Log.d(TAG, "number format lCost"); }
                 try {
-                    pCost = Integer.parseInt(item.pCost);
-                } catch (NumberFormatException e) { Log.d(TAG, "number format"); }
-                int total = lCost + pCost;
+                    pCost = Double.parseDouble(item.pCost);
+                } catch (NumberFormatException | NullPointerException e) { Log.d(TAG, "number format pCost"); }
+                double total = lCost + pCost;
+                try {
+                    total += Double.parseDouble(item.rate);
+                } catch (NumberFormatException | NullPointerException e) { Log.d(TAG, "number format rate"); }
                 problems = problems.concat((i + 1) + ". " + item.details + (!item.qty.isEmpty() ? " <small><i>(" + item.qty + ")</i></small>, " : ", ") +  "<small>Rs.</small>" + total + "<br>");
             }
             textProblems.setText(Html.fromHtml(problems));
