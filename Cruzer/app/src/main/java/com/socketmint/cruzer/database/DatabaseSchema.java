@@ -108,4 +108,36 @@ public class DatabaseSchema {
         public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
         public static final String COLUMN_COUNTRY = "country";
     }
+
+    public static abstract class InsuranceCompanies implements BaseColumns {
+        public static final String TABLE_NAME = "insurancecompanies";
+        public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
+        public static final String COLUMN_COMPANY = "company";
+    }
+
+    public static abstract class Insurances implements BaseColumns {
+        public static final String TABLE_NAME = "insurances";
+        public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
+        public static final String COLUMN_SID = DatabaseSchema.COLUMN_SID;
+        public static final String COLUMN_VEHICLE_ID = DatabaseSchema.COLUMN_VEHICLE_ID;
+        public static final String COLUMN_INSURANCE_COMPANY_ID = "insurancecompany_id";
+        public static final String COLUMN_POLICY_NO = "policyno";
+        public static final String COLUMN_START_DATE = "startdate";
+        public static final String COLUMN_END_DATE = "enddate";
+        public static final String COLUMN_PREMIUM = "premium";
+        public static final String COLUMN_DETAILS = "details";
+    }
+
+    public static abstract class PUC implements BaseColumns {
+        public static final String TABLE_NAME = "puc";
+        public static final String COLUMN_ID = DatabaseSchema.COLUMN_ID;
+        public static final String COLUMN_SID = DatabaseSchema.COLUMN_SID;
+        public static final String COLUMN_VEHICLE_ID = DatabaseSchema.COLUMN_VEHICLE_ID;
+        public static final String COLUMN_WORKSHOP_ID = Services.COLUMN_WORKSHOP_ID;
+        public static final String COLUMN_PUC_NO = "pucno";
+        public static final String COLUMN_START_DATE = Insurances.COLUMN_START_DATE;
+        public static final String COLUMN_END_DATE = Insurances.COLUMN_END_DATE;
+        public static final String COLUMN_FEES = "fees";
+        public static final String COLUMN_DETAILS = "details";
+    }
 }

@@ -141,6 +141,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseSchema.Countries.COLUMN_COUNTRY + " text" + ")";
         public static final String WORKSHOP_TYPE = CREATE_TABLE + DatabaseSchema.WorkshopTypes.TABLE_NAME + "(" + DatabaseSchema.WorkshopTypes.COLUMN_ID + " text primary key, "
                 + DatabaseSchema.WorkshopTypes.COLUMN_TYPE + " text" + ")";
+        public static final String INSURANCE_COMPANIES = CREATE_TABLE + DatabaseSchema.InsuranceCompanies.TABLE_NAME + "(" + DatabaseSchema.InsuranceCompanies.COLUMN_ID + " text primary key, "
+                + DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY + " text" + ")";
+        public static final String INSURANCE = CREATE_TABLE + DatabaseSchema.Insurances.TABLE_NAME + "(" + DatabaseSchema.InsuranceCompanies.COLUMN_ID + " text primary key, "
+                + DatabaseSchema.Insurances.COLUMN_SID + " text, "
+                + DatabaseSchema.Insurances.COLUMN_VEHICLE_ID + " text, "
+                + DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID + " text, "
+                + DatabaseSchema.Insurances.COLUMN_POLICY_NO + " text, "
+                + DatabaseSchema.Insurances.COLUMN_START_DATE + " text, "
+                + DatabaseSchema.Insurances.COLUMN_END_DATE + " text, "
+                + DatabaseSchema.Insurances.COLUMN_PREMIUM + " text, "
+                + DatabaseSchema.Insurances.COLUMN_DETAILS + " text, "
+                + FOREIGN_KEY + "(" + DatabaseSchema.Insurances.COLUMN_VEHICLE_ID + ") references " + DatabaseSchema.Vehicles.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ", "
+                + FOREIGN_KEY + "(" + DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID + ") references " + DatabaseSchema.InsuranceCompanies.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
+        public static final String PUC = CREATE_TABLE + DatabaseSchema.PUC.TABLE_NAME + "(" + DatabaseSchema.PUC.COLUMN_ID + " text primary key, "
+                + DatabaseSchema.PUC.COLUMN_SID + " text, "
+                + DatabaseSchema.PUC.COLUMN_VEHICLE_ID + " text, "
+                + DatabaseSchema.PUC.COLUMN_WORKSHOP_ID + " text, "
+                + DatabaseSchema.PUC.COLUMN_PUC_NO + " text, "
+                + DatabaseSchema.PUC.COLUMN_START_DATE + " text, "
+                + DatabaseSchema.PUC.COLUMN_END_DATE + " text, "
+                + DatabaseSchema.PUC.COLUMN_FEES + " text, "
+                + DatabaseSchema.PUC.COLUMN_DETAILS + " text, "
+                + FOREIGN_KEY + "(" + DatabaseSchema.PUC.COLUMN_VEHICLE_ID + ") references " + DatabaseSchema.Vehicles.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ", "
+                + FOREIGN_KEY + "(" + DatabaseSchema.PUC.COLUMN_WORKSHOP_ID + ") references " + DatabaseSchema.Workshops.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
     }
 
     private static abstract class Versions {
@@ -150,10 +174,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         public static final int VC_17 = 4;
         public static final int VC_19 = 5;
         public static final int VC_22 = 6;
+        public static final int VC_25 = 7;
     }
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, Versions.VC_22);
+        super(context, DATABASE_NAME, null, Versions.VC_25);
         this.context = context;
     }
 
@@ -188,6 +213,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try { db.execSQL(CreateStrings.SERVICE_STATUS); } catch (SQLException e) { e.printStackTrace(); }
         try { db.execSQL(CreateStrings.SERVICES); } catch (SQLException e) { e.printStackTrace(); }
         try { db.execSQL(CreateStrings.PROBLEMS); } catch (SQLException e) { e.printStackTrace(); }
+
+        // insurance
+        try { db.execSQL(CreateStrings.INSURANCE_COMPANIES); } catch (SQLException e) { e.printStackTrace(); }
+        try { db.execSQL(CreateStrings.INSURANCE); } catch (SQLException e) { e.printStackTrace(); }
+
+        // puc
+        try { db.execSQL(CreateStrings.PUC); } catch (SQLException e) { e.printStackTrace(); }
     }
 
     @Override
@@ -228,6 +260,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     db.execSQL("UPDATE sqlite_master SET sql='" + CreateStrings.WORKSHOPS + "' WHERE type='table' AND name='" + DatabaseSchema.Workshops.TABLE_NAME + "';");
                     db.execSQL("PRAGMA writable_schema=0");
                 } catch (SQLException e) { e.printStackTrace(); }
+            case Versions.VC_22:
+                try { db.execSQL(CreateStrings.INSURANCE_COMPANIES); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.INSURANCE); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.PUC); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
