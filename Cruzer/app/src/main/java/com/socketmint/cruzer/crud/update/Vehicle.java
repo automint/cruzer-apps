@@ -91,7 +91,11 @@ public class Vehicle extends Fragment implements View.OnClickListener {
                 break;
             case R.id.edit_vehicle_model:
             case R.id.button_vehicle_model_list:
-                choiceDialog.chooseModel(editModel);
+                if (editCompany.getText().toString().isEmpty()) {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.message_select_manu, Snackbar.LENGTH_SHORT).show();
+                    break;
+                }
+                choiceDialog.chooseModel(editModel, true);
                 break;
             case R.id.button_create_record:
                 if (editReg.getText().toString().isEmpty() || (locData.modelId().isEmpty() && !databaseHelper.vehicle(id).getModelId().isEmpty())) {
@@ -104,7 +108,7 @@ public class Vehicle extends Fragment implements View.OnClickListener {
                 }
                 String registration = editReg.getText().toString();
                 registration = registration.replaceAll("[^0-9a-zA-Z]","");
-                if (databaseHelper.updateVehicle(id, registration, editVehicleName.getText().toString(), locData.modelId())) {
+                if (databaseHelper.updateVehicle(id, registration, editVehicleName.getText().toString(), (editModel.getText().toString().isEmpty() ? "" : locData.modelId()))) {
                     getActivity().onBackPressed();
                 }
                 break;

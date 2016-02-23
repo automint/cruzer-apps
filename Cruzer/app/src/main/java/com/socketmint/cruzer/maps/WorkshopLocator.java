@@ -314,6 +314,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                     City city = databaseHelper.city(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{item.getCityId()});
                     try {
                         JSONObject object = new JSONObject();
+                        object.put(DatabaseSchema.COLUMN_ID, item.getId());
                         object.put(DatabaseSchema.Workshops.COLUMN_NAME, item.name);
                         object.put(DatabaseSchema.Workshops.COLUMN_ADDRESS, item.address);
                         object.put(DatabaseSchema.Workshops.COLUMN_MANAGER, item.manager);
@@ -321,6 +322,7 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                         object.put(DatabaseSchema.Workshops.COLUMN_CITY_ID, (city != null) ? city.city : "");
                         object.put(DatabaseSchema.Workshops.COLUMN_AREA, item.area);
                         object.put(DatabaseSchema.Workshops.COLUMN_OFFERINGS, item.offerings);
+                        object.put(Constants.Json.BOOKING_FLAG, item.bookingFlag);
                         startActivity(new Intent(WorkshopLocator.this, Retrieve.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.WORKSHOP).putExtra(Constants.Bundle.ID, object.toString()));
                     } catch (JSONException e) { e.printStackTrace(); }
                     break;
@@ -386,8 +388,9 @@ public class WorkshopLocator extends FragmentActivity implements OnMapReadyCallb
                                 String cityId = object.optString(DatabaseSchema.Workshops.COLUMN_CITY_ID);
                                 String area = object.optString(DatabaseSchema.Workshops.COLUMN_AREA);
                                 String offerings = object.optString(DatabaseSchema.Workshops.COLUMN_OFFERINGS);
+                                String bookingFlag = object.optString(Constants.Json.BOOKING_FLAG);
 
-                                workshops.add(new Workshop(sId, "", name, address, manager, contact, latitude, longitude, cityId, area, offerings, ""));
+                                workshops.add(new Workshop(sId, "", name, address, manager, contact, latitude, longitude, cityId, area, offerings, "", bookingFlag));
                             }
                         } catch (JSONException e) { Log.d(TAG, "can not parse in background"); }
                         return null;

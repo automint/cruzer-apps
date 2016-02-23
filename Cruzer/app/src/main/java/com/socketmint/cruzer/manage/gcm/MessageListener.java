@@ -185,14 +185,16 @@ public class MessageListener extends GcmListenerService {
                             String pCost = item.optString(DatabaseSchema.Problems.COLUMN_PCOST);
                             String problemDetails = item.optString(DatabaseSchema.Problems.COLUMN_DETAILS);
                             String qty = item.optString(DatabaseSchema.Problems.COLUMN_QTY);
+                            String rate = item.optString(DatabaseSchema.Problems.COLUMN_RATE);
+                            String type = item.optString(DatabaseSchema.Problems.COLUMN_TYPE);
 
                             Problem problem = databaseHelper.problem(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{problemId});
                             Log.d(TAG, "problem existing (problem == null) - " + (problem == null));
 
                             if (problem == null)
-                                databaseHelper.addProblem(problemId, serviceId, problemDetails, lCost, pCost, qty);
+                                databaseHelper.addProblem(problemId, serviceId, problemDetails, lCost, pCost, qty, rate ,type);
                             else
-                                databaseHelper.updateProblem(problemId, serviceId, problemDetails, lCost, pCost, qty);
+                                databaseHelper.updateProblem(problemId, serviceId, problemDetails, lCost, pCost, qty, rate ,type);
                         }
                     } catch (JSONException e) { Log.e(TAG, "problems is not json"); }
                     Intent updateIntent = new Intent(Constants.IntentFilters.GCM);

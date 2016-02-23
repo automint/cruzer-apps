@@ -104,7 +104,7 @@ public class ChoiceDialog {
 
     }
 
-    public void chooseModel(final AppCompatEditText result) {
+    public void chooseModel(final AppCompatEditText result, final boolean update) {
         createDialog();
         addListener(result);
         analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_DIALOG).setAction(SCREEN_MODEL).build());
@@ -114,6 +114,8 @@ public class ChoiceDialog {
         for (Model item : models) {
             list.add(item.name);
         }
+        if (!update)
+            list.add(activity.getString(R.string.label_other_option));
         adapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, android.R.id.text1, list);
         choiceList.setAdapter(adapter);
         choiceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -122,7 +124,8 @@ public class ChoiceDialog {
                 TextView textView = (TextView) view.findViewById(android.R.id.text1);
                 returnName = textView.getText().toString();
                 int pos = list.indexOf(returnName);
-                locData.storeModelId(models.get(pos).getId());
+                locData.storeModelId(pos < models.size() ? models.get(pos).getId() : "");
+                Log.d(TAG, "modelId = " + (pos < models.size() ? models.get(pos).getId() : ""));
                 dialog.dismiss();
             }
         });

@@ -13,6 +13,19 @@
     <string name="text_rate"><![CDATA[<b>%1$s</b> \u20B9/ltr]]></string>
     <string name="text_user_name">%1$s %2$s</string>
     <string name="text_workshop_name">\@ %1$s</string>
+    <string name="text_rupee">\u20B9&#160;</string>
+    <string name="text_volume_suffix">&#160;L</string>
+    <string name="text_rate_suffix">&#160;/L</string>
+    <string name="text_odometer_suffix">&#160;km</string>
+    <string name="text_vehicle_type_two_w">2-Wheelers</string>
+    <string name="text_vehicle_type_four_w">4-Wheelers</string>
+    <string name="text_offering_service"><![CDATA[Service & Repair]]></string>
+    <string name="text_offering_tyre">Tyres</string>
+    <string name="text_offering_batteries">Batteries</string>
+    <string name="text_offering_accessories">Accessories</string>
+    <string name="text_offering_beautification">Beautification</string>
+    <string name="text_offering_puncture">Puncture</string>
+    <string name="text_filter_footnote">* select none to see all workshops</string>
 
     <!-- options -->
     <string name="option_lcost">Labour Cost</string>
@@ -38,6 +51,20 @@
     <string name="label_done">Go</string>
     <string name="label_show_password">Show Password</string>
     <string name="label_add">Add</string>
+    <string name="label_date">Date</string>
+    <string name="label_notes">Notes</string>
+    <string name="label_password">Password</string>
+    <string name="label_problems">Problems</string>
+    <string name="label_service_status">Billing Status</string>
+    <string name="label_yes">Yes</string>
+    <string name="label_no">No</string>
+    <string name="label_service_vehicle">Service entry for</string>
+    <string name="label_refuel_vehicle">Refuel entry for</string>
+    <string name="label_locator_filter_vehicle_type">Select your vehicle</string>
+    <string name="label_locator_filter_workshop_offerings">What are you looking for?</string>
+    <string name="label_history">Vehicle List</string>
+    <string name="label_find">Find</string>
+    <string name="label_get_started">Get Started</string>
 
     <!-- edit box hints -->
     <string name="hint_edit_field">Enter Here</string>
@@ -51,6 +78,9 @@
     <string name="hint_search">Search</string>
     <string name="hint_edit_problem_details">Enter Details</string>
     <string name="hint_edit_problem_cost">Enter Cost</string>
+
+    <!-- hint examples -->
+    <string name="example_vehicle_reg">e.g. GJ01AB9999</string>
 
     <!-- messages -->
     <string name="message_fill_details">Please Fill Details</string>
@@ -79,6 +109,8 @@
     <string name="message_locator_workshops">%1$d workshop(s) found!</string>
     <string name="message_gps_ask">Please turn on location services!</string>
     <string name="message_select_vehicle">Please select a vehicle!</string>
+    <string name="message_fill_password">Please Provide Password</string>
+    <string name="message_confirm_delete">Are you sure you want to delete ?</string>
 
     <!-- errors -->
     <string name="error_server_password">Incorrect Password.</string>
@@ -102,34 +134,12 @@
     <string name="title_user">User</string>
 
     <!-- new strings -->
-    <string name="label_date">Date</string>
-    <string name="label_notes">Notes</string>
-    <string name="label_password">Password</string>
-    <string name="message_fill_password">Please Provide Password</string>
-    <string name="label_problems">Problems</string>
-    <string name="label_service_status">Billing Status</string>
-    <string name="message_confirm_delete">Are you sure you want to delete ?</string>
-    <string name="label_yes">Yes</string>
-    <string name="label_no">No</string>
-    <string name="label_service_vehicle">Service entry for</string>
-    <string name="text_rupee">\u20B9&#160;</string>
-    <string name="text_volume_suffix">&#160;L</string>
-    <string name="text_rate_suffix">&#160;/L</string>
-    <string name="text_odometer_suffix">&#160;km</string>
-    <string name="label_refuel_vehicle">Refuel entry for</string>
-    <string name="example_vehicle_reg">e.g. GJ01AB9999</string>
-    <string name="label_locator_filter_vehicle_type">Select your vehicle</string>
-    <string name="text_vehicle_type_two_w">2-Wheelers</string>
-    <string name="text_vehicle_type_four_w">4-Wheelers</string>
-    <string name="label_locator_filter_workshop_offerings">What are you looking for?</string>
-    <string name="text_offering_service"><![CDATA[Service & Repair]]></string>
-    <string name="text_offering_tyre">Tyres</string>
-    <string name="text_offering_batteries">Batteries</string>
-    <string name="text_offering_accessories">Accessories</string>
-    <string name="text_offering_beautification">Beautification</string>
-    <string name="text_offering_puncture">Puncture</string>
-    <string name="label_history">Vehicle List</string>
-    <string name="label_find">Find</string>
-    <string name="label_get_started">Get Started</string>
-    <string name="text_filter_footnote">* select none to see all workshops</string>
+    <string name="label_other_option">Other</string>
+    <string name="label_vehicle_model_name">Vehicle Model Name (Mandatory)</string>
+    <string name="message_select_manu">Please select vehicle company</string>
+    <string name="text_claim_workshop">Do you own this workshop?</string>
+    <string name="label_claim_workshop">Claim</string>
+    <string name="message_claim_workshop_permission_fail">Please call +91 9427800160</string>
+    <string name="label_book_service">Book Service</string>
+    <string name="message_book_service">Service booking request has been sent! %1$s will contact you!</string>
 </resources>

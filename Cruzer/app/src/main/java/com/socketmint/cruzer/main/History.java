@@ -7,6 +7,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -60,6 +62,7 @@ import com.socketmint.cruzer.manage.Login;
 import com.socketmint.cruzer.manage.gcm.RegistrationService;
 import com.socketmint.cruzer.manage.sync.ManualSync;
 import com.socketmint.cruzer.maps.WorkshopFilter;
+import com.socketmint.cruzer.startup.Launcher;
 import com.socketmint.cruzer.ui.UiElement;
 
 import java.io.IOException;
@@ -263,6 +266,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
             @Override
             protected Void doInBackground(Void... params) {
                 List<Refuel> refuels = (vehicleId.equals("all")) ? databaseHelper.refuels() : databaseHelper.refuels(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vehicleId});
+                refuels = (refuels == null) ? new ArrayList<Refuel>() : refuels;
                 Collections.sort(refuels, new Comparator<Refuel>() {
                     @Override
                     public int compare(Refuel lhs, Refuel rhs) {
@@ -274,6 +278,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                     holders.add(new Holder(Choices.REFUEL, item, vehicleId.equals("all")));
                 }
                 List<Service> services = (vehicleId.equals("all")) ? databaseHelper.services() : databaseHelper.services(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vehicleId});
+                services = (services == null) ? new ArrayList<Service>() : services;
                 Collections.sort(services, new Comparator<Service>() {
                     @Override
                     public int compare(Service lhs, Service rhs) {
