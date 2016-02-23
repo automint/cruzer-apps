@@ -140,4 +140,6 @@
     <string name="text_claim_workshop">Do you own this workshop?</string>
     <string name="label_claim_workshop">Claim</string>
     <string name="message_claim_workshop_permission_fail">Please call +91 9427800160</string>
+    <string name="label_book_service">Book Service</string>
+    <string name="message_book_service">Service booking request has been sent! %1$s will contact you!</string>
 </resources>

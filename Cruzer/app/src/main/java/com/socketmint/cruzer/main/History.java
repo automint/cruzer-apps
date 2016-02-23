@@ -7,6 +7,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -60,6 +62,7 @@ import com.socketmint.cruzer.manage.Login;
 import com.socketmint.cruzer.manage.gcm.RegistrationService;
 import com.socketmint.cruzer.manage.sync.ManualSync;
 import com.socketmint.cruzer.maps.WorkshopFilter;
+import com.socketmint.cruzer.startup.Launcher;
 import com.socketmint.cruzer.ui.UiElement;
 
 import java.io.IOException;
