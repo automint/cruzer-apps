@@ -83,7 +83,7 @@ public class Refuel extends Fragment implements View.OnClickListener {
     }
 
     private void setContent() {
-        com.socketmint.cruzer.dataholder.Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        com.socketmint.cruzer.dataholder.expense.Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
         editAmount.setText(refuel.cost);
         editVolume.setText(refuel.volume);
         editRate.setText(refuel.rate);

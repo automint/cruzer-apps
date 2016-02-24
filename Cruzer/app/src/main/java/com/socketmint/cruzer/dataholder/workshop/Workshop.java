@@ -1,4 +1,4 @@
-package com.socketmint.cruzer.dataholder;
+package com.socketmint.cruzer.dataholder.workshop;
 
 public class Workshop {
     private String id, sId, cityId, workshopTypeId;

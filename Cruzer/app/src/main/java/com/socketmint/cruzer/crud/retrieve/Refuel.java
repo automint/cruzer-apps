@@ -17,7 +17,7 @@ import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
-import com.socketmint.cruzer.dataholder.Vehicle;
+import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.ui.UiElement;
 
@@ -78,7 +78,7 @@ public class Refuel extends Fragment {
     }
 
     private void setContent() {
-        com.socketmint.cruzer.dataholder.Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        com.socketmint.cruzer.dataholder.expense.Refuel refuel = databaseHelper.refuel(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
 
         textVehicleName.setText(vehicleName(databaseHelper.vehicle(refuel.getVehicleId())));
         textAmount.setText(Html.fromHtml(getString(R.string.text_amount, refuel.cost)));

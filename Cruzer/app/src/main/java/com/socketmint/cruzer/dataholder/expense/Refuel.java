@@ -1,4 +1,4 @@
-package com.socketmint.cruzer.dataholder;
+package com.socketmint.cruzer.dataholder.expense;
 
 public class Refuel {
     private String id, sId, vehicleId;

@@ -150,7 +150,7 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void servicePermissions() {
-        com.socketmint.cruzer.dataholder.Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        com.socketmint.cruzer.dataholder.expense.service.Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
         boolean allow = service.getUserId().equals(databaseHelper.user().getsId());
         fabEdit.setVisibility((allow) ? View.VISIBLE : View.GONE);
         menu.findItem(R.id.item_delete).setVisible(allow);

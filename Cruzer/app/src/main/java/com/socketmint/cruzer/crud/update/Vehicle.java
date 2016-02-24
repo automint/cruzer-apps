@@ -73,7 +73,7 @@ public class Vehicle extends Fragment implements View.OnClickListener {
     }
 
     private void setContent() {
-        com.socketmint.cruzer.dataholder.Vehicle vehicle = databaseHelper.vehicle(id);
+        com.socketmint.cruzer.dataholder.vehicle.Vehicle vehicle = databaseHelper.vehicle(id);
         editVehicleName.setText(vehicle.name);
         editCompany.setText((vehicle.model != null) ? vehicle.model.manu.name : "");
         editModel.setText((vehicle.model != null) ? vehicle.model.name : "");

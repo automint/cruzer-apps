@@ -1,4 +1,4 @@
-package com.socketmint.cruzer.dataholder;
+package com.socketmint.cruzer.dataholder.location;
 
 public class Country {
     private String id;

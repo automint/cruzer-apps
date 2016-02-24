@@ -18,8 +18,9 @@ import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
-import com.socketmint.cruzer.dataholder.*;
-import com.socketmint.cruzer.dataholder.Vehicle;
+import com.socketmint.cruzer.dataholder.expense.service.Problem;
+import com.socketmint.cruzer.dataholder.expense.service.Status;
+import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.ui.UiElement;
 
@@ -86,10 +87,10 @@ public class Service extends Fragment {
     }
 
     private void setContent() {
-        com.socketmint.cruzer.dataholder.Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        com.socketmint.cruzer.dataholder.expense.service.Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
 
         textVehicleName.setText(vehicleName(databaseHelper.vehicle(service.getVehicleId())));
-        com.socketmint.cruzer.dataholder.Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{service.getWorkshopId()});
+        com.socketmint.cruzer.dataholder.workshop.Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{service.getWorkshopId()});
         String workshopName = (workshop != null) ? getString(R.string.text_workshop_name, workshop.name) : "";
         textWorkshopName.setText(workshopName);
         textAmount.setText(Html.fromHtml(getString(R.string.text_amount, service.cost)));

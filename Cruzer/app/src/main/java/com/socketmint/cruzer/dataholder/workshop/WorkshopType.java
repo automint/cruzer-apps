@@ -1,10 +1,10 @@
-package com.socketmint.cruzer.dataholder;
+package com.socketmint.cruzer.dataholder.workshop;
 
-public class VehicleType {
+public class WorkshopType {
     private String id;
     public String type;
 
-    public VehicleType(String id, String type) {
+    public WorkshopType(String id, String type) {
         this.id = id;
         this.type = type;
     }

@@ -80,7 +80,7 @@ public class Service extends Fragment implements View.OnClickListener {
     }
 
     private void setContent() {
-        com.socketmint.cruzer.dataholder.Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        com.socketmint.cruzer.dataholder.expense.service.Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
         editAmount.setText(service.cost);
         editOdometer.setText(service.odo);
         editDate.setText(uiElement.date(service.date));

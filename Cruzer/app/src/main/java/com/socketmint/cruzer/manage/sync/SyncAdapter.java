@@ -20,6 +20,10 @@ import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
 import com.socketmint.cruzer.dataholder.*;
+import com.socketmint.cruzer.dataholder.expense.Refuel;
+import com.socketmint.cruzer.dataholder.expense.service.Service;
+import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
+import com.socketmint.cruzer.dataholder.workshop.Workshop;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
 

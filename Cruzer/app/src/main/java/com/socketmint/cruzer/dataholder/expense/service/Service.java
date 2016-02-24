@@ -1,4 +1,4 @@
-package com.socketmint.cruzer.dataholder;
+package com.socketmint.cruzer.dataholder.expense.service;
 
 public class Service {
     private String id, sId, vehicleId, workshopId, userId, roleId;

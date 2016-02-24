@@ -1,4 +1,4 @@
-package com.socketmint.cruzer.dataholder;
+package com.socketmint.cruzer.dataholder.vehicle;
 
 public class Model {
     private String id, sId, manuId;

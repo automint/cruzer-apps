@@ -65,7 +65,7 @@ public class Vehicle extends Fragment {
     }
 
     private void setContent() {
-        com.socketmint.cruzer.dataholder.Vehicle vehicle = databaseHelper.vehicle(id);
+        com.socketmint.cruzer.dataholder.vehicle.Vehicle vehicle = databaseHelper.vehicle(id);
 
         textReg.setText(vehicle.reg);
         textVehicleName.setText(vehicle.name);
