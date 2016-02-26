@@ -95,7 +95,7 @@ public class Service extends Fragment {
         textWorkshopName.setText(workshopName);
         textAmount.setText(Html.fromHtml(getString(R.string.text_amount, service.cost)));
         textOdometer.setText(Html.fromHtml(getString(R.string.text_odometer, service.odo)));
-        textDate.setText(Html.fromHtml(uiElement.date(service.date)));
+        textDate.setText(Html.fromHtml(uiElement.retrieveDate(service.date)));
         List<Problem> problemList = databaseHelper.problems(Collections.singletonList(DatabaseSchema.Problems.COLUMN_SERVICE_ID), new String[]{service.getId()});
         if (problemList != null) {
             String problems = "";

@@ -70,6 +70,18 @@
         <item name="colorAccent">@color/red_600</item>
     </style>
 
+    <style name="AppTheme.Insurance" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+    </style>
+
+    <style name="AppTheme.PUC" parent="AppTheme">
+        <item name="colorPrimary">@color/cruzer_blue_primary</item>
+        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_accent</item>
+    </style>
+
     <style name="WhiteDrawerToggle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="color">@android:color/white</item>
     </style>

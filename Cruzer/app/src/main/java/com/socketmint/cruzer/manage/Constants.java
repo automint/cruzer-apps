@@ -3,7 +3,7 @@ package com.socketmint.cruzer.manage;
 import com.socketmint.cruzer.database.DatabaseSchema;
 
 public class Constants {
-    private static final String URL_SERVER = "http://10.70.0.50:8080";
+    private static final String URL_SERVER = "http://10.70.0.118:8080";
     private static final String URL_API_VERSION = "0.2";
     private static final String URL_API_DIR = "api";
     private static final String URL_API = URL_API_DIR + "/" + URL_API_VERSION;
@@ -103,5 +103,17 @@ public class Constants {
         public static final String CITY = "getCityIntentFilter";
 
         public static final String FLAG_CITY_STATUS = "getCityStatus";
+    }
+
+    public static abstract class AnimationStartOffset {
+        public static final long REFUEL_ENTRY = 50;
+        public static final long SERVICE_ENTRY = 100;
+        public static final long INSURANCE_ENTRY = 150;
+        public static final long PUC_ENTRY = 200;
+
+        public static final long REFUEL_EXIT = 200;
+        public static final long SERVICE_EXIT = 150;
+        public static final long INSURANCE_EXIT = 100;
+        public static final long PUC_EXIT = 50;
     }
 }

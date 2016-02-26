@@ -142,4 +142,17 @@
     <string name="message_claim_workshop_permission_fail">Please call +91 9427800160</string>
     <string name="label_book_service">Book Service</string>
     <string name="message_book_service">Service booking request has been sent! %1$s will contact you!</string>
+    <string name="label_policy_number">Policy Number</string>
+    <string name="label_insurance_company">Insurance Company</string>
+    <string name="label_start_date">Start Date</string>
+    <string name="label_end_date">End Date</string>
+    <string name="label_premium">Premium</string>
+    <string name="label_details">Details</string>
+    <string name="label_insurance_vehicle">Insurance for</string>
+    <string name="text_to">to</string>
+    <string name="title_insurance">Insurance</string>
+    <string name="label_puc_vehicle">PUC For</string>
+    <string name="label_puc_number">PUC Number</string>
+    <string name="label_fees">Fees</string>
+    <string name="title_puc">PUC</string>
 </resources>

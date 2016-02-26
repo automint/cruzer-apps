@@ -12,6 +12,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
@@ -74,11 +76,15 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
     private static final String ACTION_ADD_FAB = "Add Fab";
     private static final String ACTION_ADD_REFUEL = "Add Refuel";
     private static final String ACTION_ADD_SERVICE = "Add Service";
+    private static final String ACTION_ADD_PUC = "Add PUC";
+    private static final String ACTION_ADD_INSURANCE = "Add Insurance";
     private static final String ACTION_VEHICLE_LIST = "Vehicle List";
 
-    private FloatingActionButton fabAdd, fabRefuel, fabService;
-    private Animation animZoomIn, animZoomOut, animRotateForward, animRotateBackward, animSlideFromRight, animSlideToRight, animFadeOut, animFadeIn;
-    private CardView cardAddService, cardAddRefuel;
+    private FloatingActionButton fabAdd, fabRefuel, fabService, fabInsurance, fabPUC;
+    private Animation animRotateForward, animRotateBackward, animFadeOut, animFadeIn;
+    private Animation animRefuelOut, animServiceOut, animInsuranceOut, animPUCOut, animRefuelIn, animServiceIn, animInsuranceIn, animPUCIn;
+    private Animation animCardRefuelOut, animCardServiceOut, animCardInsuranceOut, animCardPUCOut, animCardRefuelIn, animCardServiceIn, animCardInsuranceIn, animCardPUCIn;
+    private CardView cardAddService, cardAddRefuel, cardAddInsurance, cardAddPUC;
     private AppCompatTextView toolbarTitle;
     private LinearLayoutCompat layoutAddActive;
     private DrawerFragment drawerFragment;
@@ -219,9 +225,13 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
         fabAdd = (FloatingActionButton) findViewById(R.id.fab_add);
         fabRefuel = (FloatingActionButton) findViewById(R.id.fab_add_refuel);
         fabService = (FloatingActionButton) findViewById(R.id.fab_add_service);
+        fabInsurance = (FloatingActionButton) findViewById(R.id.fab_add_insurance);
+        fabPUC = (FloatingActionButton) findViewById(R.id.fab_add_puc);
         toolbarTitle = (AppCompatTextView) findViewById(R.id.toolbar_title);
         cardAddRefuel = (CardView) findViewById(R.id.card_add_refuel);
         cardAddService = (CardView) findViewById(R.id.card_add_service);
+        cardAddInsurance = (CardView) findViewById(R.id.card_add_insurance);
+        cardAddPUC = (CardView) findViewById(R.id.card_add_puc);
         layoutAddActive = (LinearLayoutCompat) findViewById(R.id.layout_add_active);
 
         adapter = new Adapter();
@@ -230,19 +240,53 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
         fabAdd.setOnClickListener(this);
         fabRefuel.setOnClickListener(this);
         fabService.setOnClickListener(this);
+        fabInsurance.setOnClickListener(this);
+        fabPUC.setOnClickListener(this);
         toolbarTitle.setOnClickListener(this);
     }
 
     private void initializeAssets() {
         isFabOpen = false;
-        animZoomIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
-        animZoomOut = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
         animRotateForward = AnimationUtils.loadAnimation(this, R.anim.rotate_forward);
         animRotateBackward = AnimationUtils.loadAnimation(this, R.anim.rotate_backward);
-        animSlideFromRight = AnimationUtils.loadAnimation(this, R.anim.slide_from_right);
-        animSlideToRight = AnimationUtils.loadAnimation(this, R.anim.slide_to_right);
         animFadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         animFadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+
+        animCardRefuelOut = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+        animCardServiceOut = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+        animCardInsuranceOut = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+        animCardPUCOut = AnimationUtils.loadAnimation(this, R.anim.zoom_out);
+        animCardRefuelOut.setStartOffset(Constants.AnimationStartOffset.REFUEL_EXIT);
+        animCardServiceOut.setStartOffset(Constants.AnimationStartOffset.SERVICE_EXIT);
+        animCardInsuranceOut.setStartOffset(Constants.AnimationStartOffset.INSURANCE_EXIT);
+        animCardPUCOut.setStartOffset(Constants.AnimationStartOffset.PUC_EXIT);
+
+        animCardRefuelIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
+        animCardServiceIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
+        animCardInsuranceIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
+        animCardPUCIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
+        animCardRefuelIn.setStartOffset(Constants.AnimationStartOffset.REFUEL_ENTRY);
+        animCardServiceIn.setStartOffset(Constants.AnimationStartOffset.SERVICE_ENTRY);
+        animCardInsuranceIn.setStartOffset(Constants.AnimationStartOffset.INSURANCE_ENTRY);
+        animCardPUCIn.setStartOffset(Constants.AnimationStartOffset.PUC_ENTRY);
+
+        animRefuelIn = AnimationUtils.loadAnimation(this, R.anim.slide_from_right);
+        animServiceIn = AnimationUtils.loadAnimation(this, R.anim.slide_from_right);
+        animInsuranceIn = AnimationUtils.loadAnimation(this, R.anim.slide_from_right);
+        animPUCIn = AnimationUtils.loadAnimation(this, R.anim.slide_from_right);
+        animRefuelIn.setStartOffset(Constants.AnimationStartOffset.REFUEL_ENTRY);
+        animServiceIn.setStartOffset(Constants.AnimationStartOffset.SERVICE_ENTRY);
+        animInsuranceIn.setStartOffset(Constants.AnimationStartOffset.INSURANCE_ENTRY);
+        animPUCIn.setStartOffset(Constants.AnimationStartOffset.PUC_ENTRY);
+
+        animRefuelOut = AnimationUtils.loadAnimation(this, R.anim.slide_to_right);
+        animServiceOut = AnimationUtils.loadAnimation(this, R.anim.slide_to_right);
+        animInsuranceOut = AnimationUtils.loadAnimation(this, R.anim.slide_to_right);
+        animPUCOut = AnimationUtils.loadAnimation(this, R.anim.slide_to_right);
+        animRefuelOut.setStartOffset(Constants.AnimationStartOffset.REFUEL_EXIT);
+        animServiceOut.setStartOffset(Constants.AnimationStartOffset.SERVICE_EXIT);
+        animInsuranceOut.setStartOffset(Constants.AnimationStartOffset.INSURANCE_EXIT);
+        animPUCOut.setStartOffset(Constants.AnimationStartOffset.PUC_EXIT);
     }
 
     private void addData() {
@@ -338,6 +382,16 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_ADD_SERVICE).build());
                 startActivity(new Intent(History.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.SERVICE).putExtra(Constants.Bundle.VEHICLE_ID, vehicleId));
                 break;
+            case R.id.fab_add_insurance:
+                animateFab();
+                analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_ADD_INSURANCE).build());
+                startActivity(new Intent(History.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.INSURANCE).putExtra(Constants.Bundle.VEHICLE_ID, vehicleId));
+                break;
+            case R.id.fab_add_puc:
+                animateFab();
+                analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_ADD_PUC).build());
+                startActivity(new Intent(History.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.PUC).putExtra(Constants.Bundle.VEHICLE_ID, vehicleId));
+                break;
             case R.id.toolbar_title:
                 if (!vehicleId.equals("all"))
                     startActivity(new Intent(History.this, Retrieve.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE).putExtra(Constants.Bundle.ID, vehicleId));
@@ -348,23 +402,27 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
     private void animateFab() {
         if(isFabOpen) {
             layoutAddActive.startAnimation(animFadeOut);
-            fabService.startAnimation(animSlideToRight);
-            fabRefuel.startAnimation(animSlideToRight);
-            cardAddService.startAnimation(animZoomOut);
-            cardAddRefuel.startAnimation(animZoomOut);
+            fabService.startAnimation(animServiceOut);
+            fabRefuel.startAnimation(animRefuelOut);
+            fabInsurance.startAnimation(animInsuranceOut);
+            fabPUC.startAnimation(animPUCOut);
+            cardAddService.startAnimation(animCardServiceOut);
+            cardAddRefuel.startAnimation(animCardRefuelOut);
+            cardAddInsurance.startAnimation(animCardInsuranceOut);
+            cardAddPUC.startAnimation(animCardPUCOut);
             fabAdd.startAnimation(animRotateBackward);
-            fabRefuel.setClickable(false);
-            fabService.setClickable(false);
             isFabOpen = false;
         } else {
             layoutAddActive.startAnimation(animFadeIn);
-            fabService.startAnimation(animSlideFromRight);
-            fabRefuel.startAnimation(animSlideFromRight);
-            cardAddService.startAnimation(animZoomIn);
-            cardAddRefuel.startAnimation(animZoomIn);
+            fabService.startAnimation(animServiceIn);
+            fabRefuel.startAnimation(animRefuelIn);
+            fabInsurance.startAnimation(animInsuranceIn);
+            fabPUC.startAnimation(animPUCIn);
+            cardAddService.startAnimation(animCardServiceIn);
+            cardAddRefuel.startAnimation(animCardRefuelIn);
+            cardAddInsurance.startAnimation(animCardInsuranceIn);
+            cardAddPUC.startAnimation(animCardPUCIn);
             fabAdd.startAnimation(animRotateForward);
-            fabRefuel.setClickable(true);
-            fabService.setClickable(true);
             isFabOpen = true;
         }
     }
@@ -457,45 +515,65 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
         public View getView(int position, View convertView, ViewGroup parent) {
             Holder holder = holderList.get(position);
             View view = (convertView == null) ? ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_history, parent, false) : convertView;
-            String date, amount, odo;
+
+            String title, date, amount, odo;
             int icon;
             Vehicle currentVehicle;
+
             switch (holder.type) {
                 case Choices.REFUEL:
                     Refuel refuel = (Refuel) holder.object;
-                    date = refuel.date;
-                    odo = refuel.odo;
-                    amount = refuel.cost;
+                    date = uiElement.cardDate(refuel.date);
+                    odo = refuel.odo.isEmpty() ? "" : getString(R.string.text_odometer, refuel.odo);
+                    title = getString(R.string.title_refuel);
+                    amount = refuel.cost.isEmpty() ? "" : getString(R.string.text_amount, refuel.cost);
                     icon = R.drawable.ic_refuel_card;
                     currentVehicle = databaseHelper.vehicle(refuel.getVehicleId());
                     break;
                 case Choices.SERVICE:
                     Service service = (Service) holder.object;
-                    date = service.date;
-                    odo = service.odo;
-                    amount = service.cost;
+                    date = uiElement.cardDate(service.date);
+                    odo = service.odo.isEmpty() ? "" : getString(R.string.text_odometer, service.odo);
+                    title = getString(R.string.title_service);
+                    amount = service.cost.isEmpty() ? "" : getString(R.string.text_amount, service.cost);
                     icon = R.drawable.ic_service_card;
                     currentVehicle = databaseHelper.vehicle(service.getVehicleId());
                     break;
                 default:
                     return view;
             }
-            SpannableString vName = (odo.isEmpty() || holder.all) ? vehicleName(currentVehicle) : new SpannableString(Html.fromHtml(getString(R.string.text_odometer, odo)));
+
             AppCompatImageView road = (AppCompatImageView) view.findViewById(R.id.icon_history_road);
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) road.getLayoutParams();
             final float scale = getApplicationContext().getResources().getDisplayMetrics().density;
             if (position == 0)
-                layoutParams.setMargins(0, (int) (20f * scale + 0.5f), 0, 0);
-            else if (position == holderList.size()-1)
-                layoutParams.setMargins(0, 0, 0, (int) (20f * scale + 0.5f));
-            else
+
+                layoutParams.setMargins(0, (int) (24f * scale + 0.5f), 0, 0);
+            else if (position == holderList.size()-1) {
+                layoutParams.setMargins(0, 0, 0, (int) (24f * scale + 0.5f));
+                view.findViewById(R.id.view_separator).setVisibility(View.GONE);
+            } else
                 layoutParams.setMargins(0, 0, 0, 0);
             road.setVisibility((holderList.size() == 1) ? View.GONE : View.VISIBLE);
             road.setLayoutParams(layoutParams);
+
+            AppCompatTextView textDate = (AppCompatTextView) view.findViewById(R.id.text_date);
+            AppCompatTextView textVehicleName = (AppCompatTextView) view.findViewById(R.id.text_vehicle_name);
+            AppCompatTextView textAmount = (AppCompatTextView) view.findViewById(R.id.text_amount);
+            AppCompatTextView textOdo = (AppCompatTextView) view.findViewById(R.id.text_odo);
+            AppCompatTextView textTitle = (AppCompatTextView) view.findViewById(R.id.text_title);
+
             ((AppCompatImageView) view.findViewById(R.id.icon_history_type)).setImageResource(icon);
-            ((AppCompatTextView) view.findViewById(R.id.text_date)).setText(uiElement.date(date));
-            ((AppCompatTextView) view.findViewById(R.id.text_vehicle_name)).setText(vName);
-            ((AppCompatTextView) view.findViewById(R.id.text_amount)).setText(getString(R.string.text_amount, amount));
+            textDate.setText(date);
+            textVehicleName.setText(vehicleName(currentVehicle));
+            textAmount.setText(amount);
+            textOdo.setText(Html.fromHtml(odo));
+            textTitle.setText(title);
+
+            textDate.setVisibility((date == null || date.isEmpty()) ? View.GONE : View.VISIBLE);
+            textAmount.setVisibility(amount.isEmpty() ? View.GONE : View.VISIBLE);
+            textOdo.setVisibility(odo.isEmpty() ? View.GONE : View.VISIBLE);
+            textTitle.setVisibility(title.isEmpty() ? View.GONE : View.VISIBLE);
 
             view.setTag(holder);
             view.setOnClickListener(this);

@@ -18,14 +18,16 @@ import java.util.Date;
 public class UiElement {
     private Activity activity;
 
-    private SimpleDateFormat displayDateFormat, displayTimeFormat, convertDateFormat, serverFormat;
+    private SimpleDateFormat createDateFormat, createTimeFormat, convertDateFormat, serverFormat, cardDateFormat, retrieveDateFormat;
 
 
     public UiElement(Activity activity) {
         this.activity = activity;
-        displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", activity.getResources().getConfiguration().locale);
+        createDateFormat = new SimpleDateFormat("dd/MM/yyyy", activity.getResources().getConfiguration().locale);
+        cardDateFormat = new SimpleDateFormat("dd MMM", activity.getResources().getConfiguration().locale);
+        retrieveDateFormat = new SimpleDateFormat("dd MMM yyyy", activity.getResources().getConfiguration().locale);
         convertDateFormat = new SimpleDateFormat("yyyy-MM-dd", activity.getResources().getConfiguration().locale);
-        displayTimeFormat = new SimpleDateFormat("hh:mm:ss", activity.getResources().getConfiguration().locale);
+        createTimeFormat = new SimpleDateFormat("hh:mm:ss", activity.getResources().getConfiguration().locale);
         serverFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
     }
 
@@ -43,7 +45,7 @@ public class UiElement {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar date = Calendar.getInstance();
                 date.set(year, monthOfYear, dayOfMonth);
-                result.setText(displayDateFormat.format(date.getTime()));
+                result.setText(createDateFormat.format(date.getTime()));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         dialog.getDatePicker().setMaxDate(new Date().getTime());
@@ -63,28 +65,40 @@ public class UiElement {
     }
 
     public String currentDate() {
-        return (displayDateFormat.format(Calendar.getInstance().getTime()));
+        return (createDateFormat.format(Calendar.getInstance().getTime()));
     }
 
     public String currentTime() {
-        return (displayTimeFormat.format(Calendar.getInstance().getTime()));
+        return (createTimeFormat.format(Calendar.getInstance().getTime()));
     }
 
     public String date(String longDate) {
         try {
-            return displayDateFormat.format(serverFormat.parse(longDate));
+            return createDateFormat.format(serverFormat.parse(longDate));
+        } catch (ParseException e) { return longDate; }
+    }
+
+    public String cardDate(String longDate) {
+        try {
+            return cardDateFormat.format(serverFormat.parse(longDate));
+        } catch (ParseException e) { return longDate; }
+    }
+
+    public String retrieveDate(String longDate) {
+        try {
+            return retrieveDateFormat.format(serverFormat.parse(longDate));
         } catch (ParseException e) { return longDate; }
     }
 
     public String time(String longDate) {
         try {
-            return displayTimeFormat.format(serverFormat.parse(longDate));
+            return createTimeFormat.format(serverFormat.parse(longDate));
         } catch (ParseException e) { return longDate; }
     }
 
     public String date(String date, String time) {
         try {
-            String intermediate = convertDateFormat.format(displayDateFormat.parseObject(date));
+            String intermediate = convertDateFormat.format(createDateFormat.parseObject(date));
             return intermediate.concat(" " + time);
         } catch (ParseException e) { return null; }
     }

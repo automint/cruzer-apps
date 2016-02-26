@@ -83,7 +83,7 @@ public class Refuel extends Fragment {
         textVehicleName.setText(vehicleName(databaseHelper.vehicle(refuel.getVehicleId())));
         textAmount.setText(Html.fromHtml(getString(R.string.text_amount, refuel.cost)));
         textOdometer.setText(Html.fromHtml(getString(R.string.text_odometer, refuel.odo)));
-        textDate.setText(Html.fromHtml(uiElement.date(refuel.date)));
+        textDate.setText(Html.fromHtml(uiElement.retrieveDate(refuel.date)));
         textVolume.setText(Html.fromHtml(getString(R.string.text_volume, refuel.volume)));
         textRate.setText(Html.fromHtml(getString(R.string.text_rate, refuel.rate)));
 

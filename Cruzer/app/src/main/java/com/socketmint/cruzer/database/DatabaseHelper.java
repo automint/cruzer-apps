@@ -10,6 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.socketmint.cruzer.dataholder.PUC;
+import com.socketmint.cruzer.dataholder.insurance.Insurance;
+import com.socketmint.cruzer.dataholder.insurance.InsuranceCompany;
 import com.socketmint.cruzer.dataholder.location.City;
 import com.socketmint.cruzer.dataholder.location.Country;
 import com.socketmint.cruzer.dataholder.vehicle.Manu;
@@ -153,6 +156,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseSchema.Insurances.COLUMN_END_DATE + " text, "
                 + DatabaseSchema.Insurances.COLUMN_PREMIUM + " text, "
                 + DatabaseSchema.Insurances.COLUMN_DETAILS + " text, "
+                + DatabaseSchema.SYNC_STATUS + " text, "
                 + FOREIGN_KEY + "(" + DatabaseSchema.Insurances.COLUMN_VEHICLE_ID + ") references " + DatabaseSchema.Vehicles.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ", "
                 + FOREIGN_KEY + "(" + DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID + ") references " + DatabaseSchema.InsuranceCompanies.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
         public static final String PUC = CREATE_TABLE + DatabaseSchema.PUC.TABLE_NAME + "(" + DatabaseSchema.PUC.COLUMN_ID + " text primary key, "
@@ -164,6 +168,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseSchema.PUC.COLUMN_END_DATE + " text, "
                 + DatabaseSchema.PUC.COLUMN_FEES + " text, "
                 + DatabaseSchema.PUC.COLUMN_DETAILS + " text, "
+                + DatabaseSchema.SYNC_STATUS + " text, "
                 + FOREIGN_KEY + "(" + DatabaseSchema.PUC.COLUMN_VEHICLE_ID + ") references " + DatabaseSchema.Vehicles.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ", "
                 + FOREIGN_KEY + "(" + DatabaseSchema.PUC.COLUMN_WORKSHOP_ID + ") references " + DatabaseSchema.Workshops.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
     }
@@ -176,10 +181,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         public static final int VC_19 = 5;
         public static final int VC_22 = 6;
         public static final int VC_25 = 7;
+        public static final int VC_26 = 8;
     }
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, Versions.VC_25);
+        super(context, DATABASE_NAME, null, Versions.VC_26);
         this.context = context;
     }
 
@@ -267,6 +273,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 try { db.execSQL(CreateStrings.PUC); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Problems.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Problems.COLUMN_RATE + " text"); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Problems.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Problems.COLUMN_TYPE + " text"); } catch (SQLException e) { e.printStackTrace(); }
+            case Versions.VC_25:
+                try { db.execSQL(DROP_TABLE + DatabaseSchema.Insurances.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(DROP_TABLE + DatabaseSchema.PUC.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.INSURANCE); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(CreateStrings.PUC); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
@@ -1757,6 +1768,335 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 WorkshopType object = new WorkshopType(cursor.getString(cursor.getColumnIndex(DatabaseSchema.WorkshopTypes.COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.WorkshopTypes.COLUMN_TYPE)));
                 list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public boolean addInsuranceCompany(String id, String company) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.InsuranceCompanies.COLUMN_ID, id);
+            values.put(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY, company);
+
+            getWritableDatabase().insert(DatabaseSchema.InsuranceCompanies.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean updateInsuranceCompany(String id, String company) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY, company);
+
+            getWritableDatabase().update(DatabaseSchema.InsuranceCompanies.TABLE_NAME, values, DatabaseSchema.InsuranceCompanies.COLUMN_ID + "=?", new String[]{id});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public InsuranceCompany insuranceCompany(List<String> constraints, String[] values) {
+        try {
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.InsuranceCompanies.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            InsuranceCompany object = new InsuranceCompany(cursor.getString(cursor.getColumnIndex(DatabaseSchema.InsuranceCompanies.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY)));
+
+            cursor.close();
+            return object;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<InsuranceCompany> insuranceCompanies() {
+        try {
+            List<InsuranceCompany> list = new ArrayList<>();
+
+            Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.InsuranceCompanies.TABLE_NAME, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                InsuranceCompany object = new InsuranceCompany(cursor.getString(cursor.getColumnIndex(DatabaseSchema.InsuranceCompanies.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public boolean addInsurance(String sId, String vehicleId, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            String id = generateId(DatabaseSchema.Insurances.TABLE_NAME);
+            values.put(DatabaseSchema.Insurances.COLUMN_ID, id);
+            values.put(DatabaseSchema.Insurances.COLUMN_SID, sId);
+            values.put(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID, vehicleId);
+            values.put(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID, companyId);
+            values.put(DatabaseSchema.Insurances.COLUMN_POLICY_NO, policyNo);
+            values.put(DatabaseSchema.Insurances.COLUMN_START_DATE, startDate);
+            values.put(DatabaseSchema.Insurances.COLUMN_END_DATE, endDate);
+            values.put(DatabaseSchema.Insurances.COLUMN_PREMIUM, premium);
+            values.put(DatabaseSchema.Insurances.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
+
+            getWritableDatabase().insert(DatabaseSchema.Insurances.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean updateInsurance(String sId, String vehicleId, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID, vehicleId);
+            values.put(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID, companyId);
+            values.put(DatabaseSchema.Insurances.COLUMN_POLICY_NO, policyNo);
+            values.put(DatabaseSchema.Insurances.COLUMN_START_DATE, startDate);
+            values.put(DatabaseSchema.Insurances.COLUMN_END_DATE, endDate);
+            values.put(DatabaseSchema.Insurances.COLUMN_PREMIUM, premium);
+            values.put(DatabaseSchema.Insurances.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
+
+            getWritableDatabase().update(DatabaseSchema.Insurances.TABLE_NAME, values, DatabaseSchema.COLUMN_SID + "=?", new String[]{sId});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public Insurance insurance(List<String> constraints, String[] values) {
+        try {
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.Insurances.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            Insurance object = new Insurance(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_POLICY_NO)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_START_DATE)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_END_DATE)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_PREMIUM)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_DETAILS)));
+
+            cursor.close();
+            return object;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<Insurance> insurances(List<String> constraints, String[] values) {
+        try {
+            List<Insurance> list = new ArrayList<>();
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.Insurances.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                if (cursor.getString(cursor.getColumnIndex(DatabaseSchema.SYNC_STATUS)).equals(SyncStatus.DELETE) ||
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.SYNC_STATUS)).equals(SyncStatus.HIDE)) {
+                    cursor.moveToNext();
+                    continue;
+                }
+                Insurance object = new Insurance(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_POLICY_NO)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_START_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_END_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_PREMIUM)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_DETAILS)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<Insurance> insurances() {
+        try {
+            List<Insurance> list = new ArrayList<>();
+
+            Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.Insurances.TABLE_NAME, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                if (cursor.getString(cursor.getColumnIndex(DatabaseSchema.SYNC_STATUS)).equals(SyncStatus.DELETE) ||
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.SYNC_STATUS)).equals(SyncStatus.HIDE)) {
+                    cursor.moveToNext();
+                    continue;
+                }
+                Insurance object = new Insurance(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_POLICY_NO)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_START_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_END_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_PREMIUM)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_DETAILS)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public boolean addPUC(String sId, String vehicleId, String workshopId, String pucNo, String startDate, String endDate, String fees, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            String id = generateId(DatabaseSchema.PUC.TABLE_NAME);
+            values.put(DatabaseSchema.PUC.COLUMN_ID, id);
+            values.put(DatabaseSchema.PUC.COLUMN_SID, sId);
+            values.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, vehicleId);
+            values.put(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID, workshopId);
+            values.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNo);
+            values.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
+            values.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
+            values.put(DatabaseSchema.PUC.COLUMN_FEES, fees);
+            values.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
+
+            getWritableDatabase().insert(DatabaseSchema.PUC.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean updatePUC(String sId, String vehicleId, String workshopId, String pucNo, String startDate, String endDate, String fees, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, vehicleId);
+            values.put(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID, workshopId);
+            values.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNo);
+            values.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
+            values.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
+            values.put(DatabaseSchema.PUC.COLUMN_FEES, fees);
+            values.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
+
+            getWritableDatabase().update(DatabaseSchema.PUC.TABLE_NAME, values, DatabaseSchema.COLUMN_SID, new String[]{sId});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public PUC puc(List<String> constraints, String[] values) {
+        try {
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.PUC.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            PUC puc = new PUC(cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_SID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_VEHICLE_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_PUC_NO)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_START_DATE)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_END_DATE)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_FEES)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_DETAILS)));
+
+            cursor.close();
+            return puc;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<PUC> pucList(List<String> constraints, String[] values) {
+        try {
+            List<PUC> list = new ArrayList<>();
+            String conString = constraints.get(0) + "=?";
+            if (constraints.size() > 1) {
+                for (int i = 1; i < constraints.size(); i++) {
+                    conString = conString.concat(" and " + constraints.get(i) + "=?");
+                }
+            }
+
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.PUC.TABLE_NAME, new String[]{"*"}, conString, values, null, null, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                if (cursor.getString(cursor.getColumnIndex(DatabaseSchema.SYNC_STATUS)).equals(SyncStatus.DELETE) ||
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.SYNC_STATUS)).equals(SyncStatus.HIDE)) {
+                    cursor.moveToNext();
+                    continue;
+                }
+                PUC puc = new PUC(cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_SID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_PUC_NO)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_START_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_END_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_FEES)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_DETAILS)));
+                list.add(puc);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (IllegalArgumentException | IllegalStateException | CursorIndexOutOfBoundsException e) { return null; }
+    }
+
+    public List<PUC> pucList() {
+        try {
+            List<PUC> list = new ArrayList<>();
+
+            Cursor cursor = getReadableDatabase().rawQuery(SELECT_ALL + DatabaseSchema.PUC.TABLE_NAME, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                if (cursor.getString(cursor.getColumnIndex(DatabaseSchema.SYNC_STATUS)).equals(SyncStatus.DELETE) ||
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.SYNC_STATUS)).equals(SyncStatus.HIDE)) {
+                    cursor.moveToNext();
+                    continue;
+                }
+                PUC puc = new PUC(cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_SID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_PUC_NO)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_START_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_END_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_FEES)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_DETAILS)));
+                list.add(puc);
                 cursor.moveToNext();
             }
 
