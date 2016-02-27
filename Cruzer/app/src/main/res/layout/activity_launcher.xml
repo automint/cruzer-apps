@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.ContentFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -36,6 +36,7 @@
             android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
             android:layout_weight="0.5"
+            android:gravity="center"
             android:background="@android:color/white">
 
             <android.support.v7.widget.CardView
@@ -43,7 +44,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:id="@+id/card_launcher_bottom"
-                android:layout_marginTop="60dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="30dp"
@@ -79,14 +79,9 @@
                 </android.support.v7.widget.LinearLayoutCompat>
 
             </android.support.v7.widget.CardView>
+
         </android.support.v7.widget.LinearLayoutCompat>
+
     </android.support.v7.widget.LinearLayoutCompat>
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:fabSize="normal"
-        android:id="@+id/fab_login_phone"
-        android:src="@drawable/ic_login_phone_button"
-        android:layout_gravity="center" />
-</android.support.v7.widget.ContentFrameLayout>
+</android.support.design.widget.CoordinatorLayout>

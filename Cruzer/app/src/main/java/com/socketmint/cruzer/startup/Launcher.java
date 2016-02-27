@@ -29,12 +29,10 @@ import com.socketmint.cruzer.manage.Login;
 
 public class Launcher extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final String TAG = "Launcher";
-    private static final String ACTION_LOGIN_PHONE = "Login Phone";
     private static final String ACTION_LOGIN_GOOGLE = "Login Google";
 
     private ProgressDialog progressDialog;
 
-    private LoginDialog loginDialog = LoginDialog.getInstance();
     private Login login = Login.getInstance();
     private DatabaseHelper databaseHelper;
 
@@ -48,7 +46,6 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
 
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 
-        loginDialog.initInstance(this);
         login.initInstance(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         preLogin();
@@ -84,7 +81,6 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
 
     private void initializeViews() {
         findViewById(R.id.button_login_google).setOnClickListener(this);
-        findViewById(R.id.fab_login_phone).setOnClickListener(this);
     }
 
     private boolean exit = false;
@@ -125,10 +121,6 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.fab_login_phone:
-                analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_LOGIN_PHONE).build());
-                loginDialog.show(true);
-                break;
             case R.id.button_login_google:
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_LOGIN_GOOGLE).build());
                 startActivityForResult(Auth.GoogleSignInApi.getSignInIntent(googleApiClient), 2);

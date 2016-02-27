@@ -51,8 +51,11 @@ import com.socketmint.cruzer.crud.create.Create;
 import com.socketmint.cruzer.crud.retrieve.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.expense.Refuel;
 import com.socketmint.cruzer.dataholder.expense.service.Service;
+import com.socketmint.cruzer.dataholder.location.City;
+import com.socketmint.cruzer.dataholder.location.Country;
 import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.drawer.DrawerFragment;
 import com.socketmint.cruzer.manage.Choices;
@@ -150,7 +153,10 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
 
         addData();
 
-        // get location
+        getGeoLocation();
+    }
+
+    private void getGeoLocation() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -167,12 +173,21 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                     nation = addresses.get(0).getCountryName();
                     Log.d(TAG, "Geo Address : " + addresses.get(0).toString());
                     Log.d(TAG, "Locality = " + locality + " | Sub Locality = " + subLocality + " | countryName = " + nation);
-                } catch (SecurityException | IOException | NullPointerException e) { e.printStackTrace(); }
+                } catch (SecurityException | IOException | NullPointerException e) { Log.e(TAG, "can not get location"); }
                 return null;
             }
             @Override
             public void onPostExecute(Void result) {
                 Bundle syncBundle = new Bundle();
+                User user = databaseHelper.user();
+                City city = databaseHelper.city(Collections.singletonList(DatabaseSchema.Cities.COLUMN_ID), new String[]{user.getCityId()});
+                if (city != null) {
+                    Country country = databaseHelper.country(Collections.singletonList(DatabaseSchema.Countries.COLUMN_ID), new String[]{city.getCountryId()});
+                    if (country != null) {
+                        locality = city.city;
+                        nation = country.country;
+                    }
+                }
                 syncBundle.putString(Constants.Bundle.CITY, locality);
                 syncBundle.putString(Constants.Bundle.COUNTRY, nation);
                 if (login.login() > Login.LoginType.TRIAL)

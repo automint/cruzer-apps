@@ -3,7 +3,7 @@ package com.socketmint.cruzer.manage;
 import com.socketmint.cruzer.database.DatabaseSchema;
 
 public class Constants {
-    private static final String URL_SERVER = "http://10.70.0.118:8080";
+    private static final String URL_SERVER = "http://10.70.0.119:8080";
     private static final String URL_API_VERSION = "0.2";
     private static final String URL_API_DIR = "api";
     private static final String URL_API = URL_API_DIR + "/" + URL_API_VERSION;
@@ -34,6 +34,9 @@ public class Constants {
         public static String WORKSHOP_CITY_OFFERING(String cityId, String offeringId) { return WORKSHOP_CITY(cityId) + "/offerings/" + offeringId; }
         public static String WORKSHOP_CITY_VEHICLE_TYPE_OFFERING(String cityId, String vehicleTypeId, String offeringId) { return WORKSHOP_CITY_VEHICLE_TYPE(cityId, vehicleTypeId) + "/offerings/" + offeringId; }
         public static final String BOOK_SERVICE = URL_SERVER + "/" + URL_API + "/" + "servicebookings";
+        public static final String INSURANCE_COMPANIES = URL_SERVER + "/" + URL_API + "/" + "insurancecompanies";
+        public static final String INSURANCE = URL_SERVER + "/" + URL_API + "/" + "insurances";
+        public static final String PUC = URL_SERVER + "/" + URL_API + "/" + "puc";
     }
 
     public static abstract class VolleyRequest {
