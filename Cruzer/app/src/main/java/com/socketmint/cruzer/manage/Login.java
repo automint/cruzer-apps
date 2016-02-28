@@ -64,8 +64,8 @@ public class Login {
     public static Login instance;
     private static final String TAG = "Login";
     private int currentLoginType = 0;
-    private int pendingManus, pendingModels, pendingVehicles, pendingRefuels, pendingPUCs, pendingCountries, pendingCities, pendingInsuranceCompanies, pendingInsurances, pendingWorkshopTypes, pendingServiceStatuses, pendingWorkshops, pendingServices, pendingProblems;
-    private boolean vehicleRequested, insuranceCompanyRequested, workshopRequested, serviceStatusRequested;
+    private int pendingManus, pendingModels, pendingVehicles, pendingRefuels, pendingPUCs, pendingCountries, pendingCities, pendingInsurances, pendingWorkshopTypes, pendingServiceStatuses, pendingWorkshops, pendingServices, pendingProblems;
+    private boolean vehicleRequested, workshopTypeRequested, workshopRequested, serviceStatusRequested, cityRequested;
 
     private Activity activity;
 
@@ -170,9 +170,9 @@ public class Login {
 
     private void moveForward() {
         showPendingReqLogs();
-        int total = pendingManus + pendingModels + pendingVehicles + pendingRefuels + pendingPUCs + pendingCountries + pendingCities + pendingInsuranceCompanies + pendingInsurances + pendingWorkshopTypes + pendingServiceStatuses + pendingWorkshops + pendingServices + pendingProblems;
-        Log.d(TAG, "pendingTotal = " + total);
-        if (total > 0)
+        int total = pendingManus + pendingModels + pendingVehicles + pendingRefuels + pendingPUCs + pendingCountries + pendingCities + pendingInsurances + pendingWorkshopTypes + pendingServiceStatuses + pendingWorkshops + pendingServices + pendingProblems;
+        Log.d(TAG, "pendingTotal = " + total + " | gotWhatIsRequested = " + gotWhatIsRequested());
+        if (total > 0 || !gotWhatIsRequested())
             return;
 
         if (progressDialog != null)
@@ -198,8 +198,6 @@ public class Login {
             Log.d(TAG, "pendingCountries : " + pendingCountries);
         if (pendingCities > 0)
             Log.d(TAG, "pendingCities : " + pendingCities);
-        if (pendingInsuranceCompanies > 0)
-            Log.d(TAG, "pendingInsuranceCompanies : " + pendingInsuranceCompanies);
         if (pendingInsurances > 0)
             Log.d(TAG, "pendingInsurances : " + pendingInsurances);
         if (pendingWorkshopTypes > 0)
@@ -212,6 +210,16 @@ public class Login {
             Log.d(TAG, "pendingServices : " + pendingServices);
         if (pendingProblems > 0)
             Log.d(TAG, "pendingProblems : " + pendingProblems);
+        if (!vehicleRequested)
+            Log.d(TAG, "vehicle is not requested");
+        if (!workshopRequested)
+            Log.d(TAG, "workshop is not requested");
+        if (!serviceStatusRequested)
+            Log.d(TAG, "serviceStatus is not requested");
+        if (!cityRequested)
+            Log.d(TAG, "city is not requested");
+        if (!workshopTypeRequested)
+            Log.d(TAG, "workshopType is not requested");
     }
 
     private void initializePendingCount() {
@@ -222,7 +230,6 @@ public class Login {
         pendingPUCs = 0;
         pendingCountries = 0;
         pendingCities = 0;
-        pendingInsuranceCompanies = 0;
         pendingInsurances = 0;
         pendingWorkshopTypes = 0;
         pendingServiceStatuses = 0;
@@ -231,9 +238,14 @@ public class Login {
         pendingProblems = 0;
 
         vehicleRequested = false;
-        insuranceCompanyRequested = false;
         workshopRequested = false;
         serviceStatusRequested = false;
+        cityRequested = false;
+        workshopTypeRequested = false;
+    }
+
+    private boolean gotWhatIsRequested() {
+        return (vehicleRequested && workshopRequested && serviceStatusRequested && cityRequested);
     }
 
     private void login(final String email, final String firstName, final String lastName, final String mobile) {
@@ -285,7 +297,6 @@ public class Login {
                         initializePendingCount();
                         getManus();
                         getCountries();
-                        getInsuranceCompanies();
                         getWorkshopTypes();
                         getServiceStatuses();
 
@@ -552,8 +563,7 @@ public class Login {
                                 initFail();
                             else {
                                 getRefuels();
-                                if (pendingInsuranceCompanies == 0 && insuranceCompanyRequested)
-                                    getInsurances();
+                                getInsurances();
                                 if (pendingWorkshops == 0 && workshopRequested) {
                                     getPUC();
                                     if (pendingServiceStatuses == 0 && serviceStatusRequested)
@@ -661,7 +671,7 @@ public class Login {
                                     String details = object.optString(DatabaseSchema.PUC.COLUMN_DETAILS);
 
                                     Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
-                                    Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{workshopId});
+                                    Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
                                     if (vehicle == null || workshop == null)
                                         continue;
 
@@ -773,16 +783,18 @@ public class Login {
                                     else if (!item.city.equals(city))
                                         databaseHelper.updateCity(id, city, countryId);
                                 }
-                            } catch (JSONException e) { Log.e(TAG, "trouble in cities loop"); }
+                            } catch (JSONException e) { cancel(true); Log.e(TAG, "trouble in cities loop"); }
                             return null;
                         }
                         @Override
                         public void onPostExecute(Void result) {
+                            cityRequested = true;
                             pendingCities--;
-                            moveForward();
+                            if (!isCancelled() && (pendingWorkshopTypes == 0 && workshopTypeRequested))
+                                getWorkshops();
                         }
                     }.execute();
-                } catch (JSONException e) { pendingCities--; Log.d(TAG, "cities not in json"); }
+                } catch (JSONException e) { pendingCities--; cityRequested = true; Log.d(TAG, "cities not in json"); moveForward(); }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -799,64 +811,6 @@ public class Login {
             }
         };
         pendingCities++;
-        requestQueue.add(request);
-    }
-
-    private void getInsuranceCompanies() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.INSURANCE_COMPANIES, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "Insurance Companies = " + response);
-                try {
-                    final JSONArray array = new JSONArray(response);
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            try {
-                                for (int i = 0; i < array.length(); i++) {
-                                    JSONObject object = array.getJSONObject(i);
-                                    String id = object.getString(DatabaseSchema.InsuranceCompanies.COLUMN_ID);
-                                    String company = object.optString(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY);
-
-                                    InsuranceCompany item = databaseHelper.insuranceCompany(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
-                                    if (item == null)
-                                        databaseHelper.addInsuranceCompany(id, company);
-                                    else
-                                        databaseHelper.updateInsuranceCompany(id, company);
-                                }
-                            } catch (JSONException e) { cancel(true); Log.e(TAG, "trouble in insurance companies loop"); initFail(); }
-                            return null;
-                        }
-                        @Override
-                        public void onPostExecute(Void result) {
-                            insuranceCompanyRequested = true;
-                            pendingInsuranceCompanies--;
-                            if (!isCancelled() && (pendingVehicles == 0) && vehicleRequested)
-                                getInsurances();
-                        }
-                    }.execute();
-                } catch (JSONException e) {
-                    insuranceCompanyRequested = true;
-                    pendingInsuranceCompanies--;
-                    Log.e(TAG, "Insurance Companies not in json");
-                    moveForward();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                volleyFail();
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() {
-                HashMap<String, String> headerParams = new HashMap<>();
-                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
-                return headerParams;
-            }
-        };
-        pendingInsuranceCompanies++;
         requestQueue.add(request);
     }
 
@@ -882,7 +836,15 @@ public class Login {
                                     String premium = object.optString(DatabaseSchema.Insurances.COLUMN_PREMIUM);
                                     String details = object.optString(DatabaseSchema.Insurances.COLUMN_DETAILS);
 
+                                    String company = object.optString(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY);
+
                                     Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
+                                    InsuranceCompany insuranceCompany = databaseHelper.insuranceCompany(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{companyId});
+
+                                    if (insuranceCompany == null)
+                                        databaseHelper.addInsuranceCompany(companyId, company);
+                                    else
+                                        databaseHelper.updateInsuranceCompany(companyId, company);
 
                                     if (vehicle == null)
                                         continue;
@@ -948,12 +910,13 @@ public class Login {
                         }
                         @Override
                         public void onPostExecute(Void result) {
+                            workshopTypeRequested = true;
                             pendingWorkshopTypes--;
-                            if (!isCancelled())
+                            if (!isCancelled() && (cityRequested && pendingCities == 0))
                                 getWorkshops();
                         }
                     }.execute();
-                } catch (JSONException e) { pendingWorkshopTypes--; Log.e(TAG, "workshop type is not in json"); moveForward(); }
+                } catch (JSONException e) { workshopRequested = true; pendingWorkshopTypes--; Log.e(TAG, "workshop type is not in json"); moveForward(); }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -1123,9 +1086,7 @@ public class Login {
                                         Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                                         if (service == null) {
                                             Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
-                                            String wId = "";
-                                            if (workshop != null)
-                                                wId = workshop.getId();
+                                            String wId = (workshop == null) ? "" : workshop.getId();
                                             databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId);
                                         }
                                         serviceIdTrackerList.add(sId);

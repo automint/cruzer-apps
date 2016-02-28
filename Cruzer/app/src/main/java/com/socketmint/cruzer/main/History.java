@@ -51,12 +51,16 @@ import com.socketmint.cruzer.crud.create.Create;
 import com.socketmint.cruzer.crud.retrieve.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.PUC;
 import com.socketmint.cruzer.dataholder.User;
 import com.socketmint.cruzer.dataholder.expense.Refuel;
 import com.socketmint.cruzer.dataholder.expense.service.Service;
+import com.socketmint.cruzer.dataholder.insurance.Insurance;
+import com.socketmint.cruzer.dataholder.insurance.InsuranceCompany;
 import com.socketmint.cruzer.dataholder.location.City;
 import com.socketmint.cruzer.dataholder.location.Country;
 import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
+import com.socketmint.cruzer.dataholder.workshop.Workshop;
 import com.socketmint.cruzer.drawer.DrawerFragment;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
@@ -331,7 +335,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                 });
                 holders.clear();
                 for (Refuel item : refuels) {
-                    holders.add(new Holder(Choices.REFUEL, item, vehicleId.equals("all")));
+                    holders.add(new Holder(Choices.REFUEL, item));
                 }
                 List<Service> services = (vehicleId.equals("all")) ? databaseHelper.services() : databaseHelper.services(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vehicleId});
                 services = (services == null) ? new ArrayList<Service>() : services;
@@ -342,8 +346,31 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                     }
                 });
                 for (Service item : services) {
-                    holders.add(new Holder(Choices.SERVICE, item, vehicleId.equals("all")));
+                    holders.add(new Holder(Choices.SERVICE, item));
                 }
+                List<Insurance> insurances = (vehicleId.equals("all")) ? databaseHelper.insurances() : databaseHelper.insurances(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vehicleId});
+                insurances = (insurances == null) ? new ArrayList<Insurance>() : insurances;
+                Collections.sort(insurances, new Comparator<Insurance>() {
+                    @Override
+                    public int compare(Insurance lhs, Insurance rhs) {
+                        return rhs.startDate.compareTo(lhs.startDate);
+                    }
+                });
+                for (Insurance item : insurances) {
+                    holders.add(new Holder(Choices.INSURANCE, item));
+                }
+                List<PUC> pucList = (vehicleId.equals("all")) ? databaseHelper.pucList() : databaseHelper.pucList(Collections.singletonList(DatabaseSchema.COLUMN_VEHICLE_ID), new String[]{vehicleId});
+                pucList = (pucList == null) ? new ArrayList<PUC>() : pucList;
+                Collections.sort(pucList, new Comparator<PUC>() {
+                    @Override
+                    public int compare(PUC lhs, PUC rhs) {
+                        return rhs.startDate.compareTo(lhs.startDate);
+                    }
+                });
+                for (PUC item : pucList) {
+                    holders.add(new Holder(Choices.PUC, item));
+                }
+                Log.d(TAG, "pucList.size : " + pucList.size() + " | holders.size : " + holders.size());
                 Collections.sort(holders, new Comparator<Holder>() {
                     @Override
                     public int compare(Holder lhs, Holder rhs) {
@@ -355,6 +382,12 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                             case Choices.SERVICE:
                                 lhsDate = ((Service) lhs.object).date;
                                 break;
+                            case Choices.INSURANCE:
+                                lhsDate = ((Insurance) lhs.object).startDate;
+                                break;
+                            case Choices.PUC:
+                                lhsDate = ((PUC) lhs.object).startDate;
+                                break;
                             default:
                                 return 0;
                         }
@@ -364,6 +397,12 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                                 break;
                             case Choices.SERVICE:
                                 rhsDate = ((Service) rhs.object).date;
+                                break;
+                            case Choices.INSURANCE:
+                                rhsDate = ((Insurance) rhs.object).startDate;
+                                break;
+                            case Choices.PUC:
+                                rhsDate = ((PUC) rhs.object).startDate;
                                 break;
                             default:
                                 return 0;
@@ -554,6 +593,26 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                     icon = R.drawable.ic_service_card;
                     currentVehicle = databaseHelper.vehicle(service.getVehicleId());
                     break;
+                case Choices.INSURANCE:
+                    Insurance insurance = (Insurance) holder.object;
+                    date = uiElement.cardDate(insurance.startDate);
+                    InsuranceCompany company = databaseHelper.insuranceCompany(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{insurance.getCompanyId()});
+                    odo = (company == null) ? "" : company.company;
+                    title = getString(R.string.title_insurance);
+                    amount = insurance.premium.isEmpty() ? "" : getString(R.string.text_amount, insurance.premium);
+                    icon = R.drawable.ic_service_card;
+                    currentVehicle = databaseHelper.vehicle(insurance.getVehicleId());
+                    break;
+                case Choices.PUC:
+                    PUC puc = (PUC) holder.object;
+                    date = uiElement.cardDate(puc.startDate);
+                    Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{puc.getWorkshopId()});
+                    odo = (workshop == null) ? "" : workshop.name;
+                    title = getString(R.string.title_puc);
+                    amount = puc.fees.isEmpty() ? "" : getString(R.string.text_amount, puc.fees);
+                    icon = R.drawable.ic_service_card;
+                    currentVehicle = databaseHelper.vehicle(puc.getVehicleId());
+                    break;
                 default:
                     return view;
             }
@@ -640,12 +699,10 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
     private class Holder {
         private int type;
         public Object object;
-        public boolean all;
 
-        public Holder(int type, Object object, boolean all) {
+        public Holder(int type, Object object) {
             this.type = type;
             this.object = object;
-            this.all = all;
         }
     }
 

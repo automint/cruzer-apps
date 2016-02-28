@@ -7,7 +7,6 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.socketmint.cruzer.dataholder.PUC;
@@ -26,10 +25,6 @@ import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.dataholder.workshop.Workshop;
 import com.socketmint.cruzer.dataholder.workshop.WorkshopType;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,10 +37,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CONFLICT = " on conflict abort";
     public static final String DROP_TABLE = "drop table if exists ";
     public static final String SELECT_ALL = "select * from ";
-    public static final String DELETE = "delete from ";
     public static final String[] ALTER_TABLE = {"alter table ", " add column "};
 
-    private Context context;
 
     public static abstract class SyncStatus {
         public static final String NEW = "new";
@@ -186,7 +179,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, Versions.VC_26);
-        this.context = context;
     }
 
     @Override
@@ -279,24 +271,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 try { db.execSQL(CreateStrings.INSURANCE); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(CreateStrings.PUC); } catch (SQLException e) { e.printStackTrace(); }
         }
-    }
-
-    public int insertFromFile(int resourceId) throws IOException {
-        int result = 0;
-        SQLiteDatabase database = getWritableDatabase();
-
-        InputStream insertsStream = context.getResources().openRawResource(resourceId);
-        BufferedReader insertReader = new BufferedReader(new InputStreamReader(insertsStream));
-
-        while (insertReader.ready()) {
-            String insertStmt = insertReader.readLine();
-            try {
-                database.execSQL(insertStmt);
-            } catch (SQLiteException e) { continue; }
-            result++;
-        }
-        insertReader.close();
-        return result;
     }
 
     public String generateId(String tableName) {
@@ -1445,7 +1419,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             getWritableDatabase().insert(DatabaseSchema.Workshops.TABLE_NAME, null, values);
             return true;
-        } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
+        } catch (SQLiteConstraintException e) {  return false;  }
     }
 
     public boolean updateWorkshop(String id, String name, String address, String manager, String contact, String latitude, String longitude, String cityId, String area, String offerings, String workshopTypeId) {
@@ -1891,7 +1865,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Insurance object = new Insurance(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
-                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_POLICY_NO)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_START_DATE)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_END_DATE)),
@@ -1925,7 +1899,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Insurance object = new Insurance(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_POLICY_NO)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_START_DATE)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_END_DATE)),
@@ -1956,7 +1930,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Insurance object = new Insurance(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_POLICY_NO)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_START_DATE)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_END_DATE)),
@@ -2136,23 +2110,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             getWritableDatabase().delete(tableName, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
             return true;
         } catch (SQLiteConstraintException e) { return false; }
-    }
-
-    public boolean logout() {
-        try {
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Users.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Manus.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Models.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Workshops.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Vehicles.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Services.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Refuels.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Problems.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.ServiceStatus.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Cities.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            try { getWritableDatabase().execSQL(DELETE + DatabaseSchema.Countries.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
-            return true;
-        } catch (SQLiteConstraintException e) { e.printStackTrace(); return false; }
     }
 
     public boolean syncRecord(String id, String sId, String tableName) {
