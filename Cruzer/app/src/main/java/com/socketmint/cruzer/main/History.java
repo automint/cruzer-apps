@@ -665,6 +665,12 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                 case Choices.SERVICE:
                     targetId = ((Service) holder.object).getId();
                     break;
+                case Choices.INSURANCE:
+                    targetId = ((Insurance) holder.object).getId();
+                    break;
+                case Choices.PUC:
+                    targetId = ((PUC) holder.object).getId();
+                    break;
                 default:
                     targetId = "";
                     break;

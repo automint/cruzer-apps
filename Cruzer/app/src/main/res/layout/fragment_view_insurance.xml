@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white">
+
+    <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="20dp">
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:background="@android:color/white">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_amount"
+                android:text="@string/hint_amount"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_vehicle_name"
+                android:layout_marginTop="6dp"
+                android:text="@string/app_name"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_insurance_company"
+                android:layout_marginTop="6dp"
+                android:text="@string/app_name"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:divider="@drawable/divider_vertical_layout"
+            app:showDividers="beginning|end|middle">
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:divider="@drawable/divider_horizontal_layout"
+                app:showDividers="middle">
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/layout_start_date"
+                    android:layout_weight="0.5"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/label_start_date"
+                        android:text="@string/label_start_date"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="italic"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_start_date"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/layout_end_date"
+                    android:layout_weight="0.5"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/label_end_date"
+                        android:text="@string/label_end_date"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="italic"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_end_date"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout_policy_number"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/label_policy_number"
+                    android:text="@string/label_policy_number"
+                    android:fontFamily="sans-serif-light"
+                    android:textStyle="italic"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_policy_number"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout_notes"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/label_notes"
+                    android:text="@string/label_notes"
+                    android:fontFamily="sans-serif-light"
+                    android:textStyle="italic"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_notes"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+</ScrollView>

@@ -107,6 +107,16 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
                 target = User.newInstance();
                 userPermissions();
                 break;
+            case Choices.INSURANCE:
+                title = R.string.title_insurance;
+                target = Insurance.newInstance(id);
+                insurancePermissions();
+                break;
+            case Choices.PUC:
+                title = R.string.title_puc;
+                target = PUC.newInstance(id);
+                pucPermissions();
+                break;
             default:
                 title = R.string.app_name;
                 target = null;
@@ -157,6 +167,18 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
         menu.findItem(R.id.item_logout).setVisible(false);
     }
 
+    private void pucPermissions() {
+        fabEdit.setVisibility(View.GONE);
+        menu.findItem(R.id.item_delete).setVisible(false);
+        menu.findItem(R.id.item_logout).setVisible(false);
+    }
+
+    private void insurancePermissions() {
+        fabEdit.setVisibility(View.GONE);
+        menu.findItem(R.id.item_delete).setVisible(false);
+        menu.findItem(R.id.item_logout).setVisible(false);
+    }
+
     private void chooseTheme() {
         int theme;
         switch (choice) {
@@ -168,6 +190,12 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
                 break;
             case Choices.SERVICE:
                 theme = R.style.AppTheme_Service;
+                break;
+            case Choices.INSURANCE:
+                theme = R.style.AppTheme_Insurance;
+                break;
+            case Choices.PUC:
+                theme = R.style.AppTheme_PUC;
                 break;
             default:
                 theme = R.style.AppTheme_Retrieve;
