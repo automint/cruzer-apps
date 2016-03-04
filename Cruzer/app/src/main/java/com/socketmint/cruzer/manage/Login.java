@@ -1081,13 +1081,15 @@ public class Login {
                                     String status = object.optString(DatabaseSchema.Services.COLUMN_STATUS);
                                     String userId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
                                     String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
+                                    String vat = object.optString(DatabaseSchema.Services.COLUMN_VAT);
+
                                     Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                                     if (vehicle != null) {
                                         Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                                         if (service == null) {
                                             Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
                                             String wId = (workshop == null) ? "" : workshop.getId();
-                                            databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId);
+                                            databaseHelper.addService(sId, vehicle.getId(), date, wId, cost, odo, details, status, userId, roleId, vat);
                                         }
                                         serviceIdTrackerList.add(sId);
                                     }
@@ -1209,7 +1211,7 @@ public class Login {
 
     public static abstract class LoginType {
         public static final int TRIAL = 1;
-        public static final int PHONE = 2;
+//        public static final int PHONE = 2;
         public static final int GOOGLE = 3;
     }
 }

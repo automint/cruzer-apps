@@ -155,4 +155,5 @@
     <string name="label_puc_number">PUC Number</string>
     <string name="label_fees">Fees</string>
     <string name="title_puc">PUC</string>
+    <string name="label_vat">VAT</string>
 </resources>

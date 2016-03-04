@@ -12,7 +12,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -34,7 +33,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
@@ -370,7 +368,6 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                 for (PUC item : pucList) {
                     holders.add(new Holder(Choices.PUC, item));
                 }
-                Log.d(TAG, "pucList.size : " + pucList.size() + " | holders.size : " + holders.size());
                 Collections.sort(holders, new Comparator<Holder>() {
                     @Override
                     public int compare(Holder lhs, Holder rhs) {

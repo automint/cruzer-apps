@@ -15,11 +15,26 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * Singleton class to define and access different parameters for manipulation of user interface
+ * @author ndkcha
+ * @since 18
+ * @version 26
+ */
+
 public class UiElement {
+    //  keeping track of calling activity
     private Activity activity;
 
+    //  different date format objects for different purposes
     private SimpleDateFormat createDateFormat, createTimeFormat, convertDateFormat, serverFormat, cardDateFormat, retrieveDateFormat;
 
+    /**
+     * Default constructor to initialize class object
+     * It initializes different date formats based on current locale
+     * It sets current calling activity to operate on current context
+     * @param activity as calling activity
+     */
 
     public UiElement(Activity activity) {
         this.activity = activity;
@@ -31,12 +46,24 @@ public class UiElement {
         serverFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
     }
 
+    /**
+     * Method to validate email address
+     * @param email to be validated
+     * @return boolean that confirms validation of email.
+     */
+
     public boolean validateEmail(String email) {
         try {
             String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
             return email.matches(emailPattern);
         } catch (Exception e) { e.printStackTrace(); return false; }
     }
+
+    /**
+     * Method to initialize and display date picker dialog
+     * It sets date to Edit Box supplied via parameter that will be displayed in form
+     * @param result as edit box in which result date will be displayed
+     */
 
     public void datePickerDialog(final AppCompatEditText result) {
         Calendar calendar = Calendar.getInstance();
@@ -52,6 +79,12 @@ public class UiElement {
         dialog.show();
     }
 
+    /**
+     * Method to initialize and display time picker dialog
+     * It sets time to Edit Box supplied via parameter that will be displayed in form
+     * @param result as edit box in which result time will be displayed
+     */
+
     public void timePickerDialog(final AppCompatEditText result) {
         Calendar calendar = Calendar.getInstance();
         TimePickerDialog dialog = new TimePickerDialog(activity, new TimePickerDialog.OnTimeSetListener() {
@@ -64,13 +97,26 @@ public class UiElement {
         dialog.show();
     }
 
+    /**
+     * @return current date to be displayed in form
+     */
+
     public String currentDate() {
         return (createDateFormat.format(Calendar.getInstance().getTime()));
     }
 
+    /**
+     * @return current time to be displayed in form
+     */
     public String currentTime() {
         return (createTimeFormat.format(Calendar.getInstance().getTime()));
     }
+
+    /**
+     * Converts date in server format to form readable date
+     * @param longDate as server timestamp
+     * @return date that can be edited in form
+     */
 
     public String date(String longDate) {
         try {
@@ -78,11 +124,23 @@ public class UiElement {
         } catch (ParseException e) { return longDate; }
     }
 
+    /**
+     * Converts date in server format to a format to be displayed in card
+     * @param longDate as server date
+     * @return date that will be displayed in cards
+     */
+
     public String cardDate(String longDate) {
         try {
             return cardDateFormat.format(serverFormat.parse(longDate));
         } catch (ParseException e) { return longDate; }
     }
+
+    /**
+     * Converts date in server format to a format to be displayed in "More Details" or "Retrieve" section
+     * @param longDate as server date
+     * @return human readable date
+     */
 
     public String retrieveDate(String longDate) {
         try {
@@ -90,11 +148,25 @@ public class UiElement {
         } catch (ParseException e) { return longDate; }
     }
 
+    /**
+     * Converts date in server format to form readable time
+     * @param longDate as server timestamp
+     * @return time that can be edited in form
+     */
+
     public String time(String longDate) {
         try {
             return createTimeFormat.format(serverFormat.parse(longDate));
         } catch (ParseException e) { return longDate; }
     }
+
+    /**
+     * Merges date and time into single timestamp
+     * It can be used to store timestamp in database as well as server
+     * @param date as form date
+     * @param time as form time
+     * @return timestamp to be stored in database
+     */
 
     public String date(String date, String time) {
         try {
@@ -102,6 +174,11 @@ public class UiElement {
             return intermediate.concat(" " + time);
         } catch (ParseException e) { return null; }
     }
+
+    /**
+     * Method to hide keyboard from a particular view
+     * @param view as currently focused view
+     */
 
     public void hideKeyboard(View view) {
         InputMethodManager keyboardManager = (InputMethodManager) activity.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);

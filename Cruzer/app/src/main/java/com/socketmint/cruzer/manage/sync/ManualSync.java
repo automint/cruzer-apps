@@ -2,6 +2,7 @@ package com.socketmint.cruzer.manage.sync;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
@@ -16,6 +17,9 @@ import com.android.volley.toolbox.Volley;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.PUC;
+import com.socketmint.cruzer.dataholder.insurance.Insurance;
+import com.socketmint.cruzer.dataholder.insurance.InsuranceCompany;
 import com.socketmint.cruzer.dataholder.location.City;
 import com.socketmint.cruzer.dataholder.location.Country;
 import com.socketmint.cruzer.dataholder.expense.Refuel;
@@ -183,10 +187,132 @@ public class ManualSync {
                     locality = syncBundle.getString(Constants.Bundle.CITY);
                     nation = syncBundle.getString(Constants.Bundle.COUNTRY);
                     notifyUserCity(false, false);
+
+                    //  when activity starts
+                    getInsurances();
+                    getPUC();
                 } catch (Exception e) { e.printStackTrace(); }
             }
         });
         syncThread.start();
+    }
+
+    private void getInsurances() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.INSURANCE, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Insurances = " + response);
+                try {
+                    final JSONArray array = new JSONArray(response);
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            try {
+                                for (int i = 0; i < array.length(); i++) {
+                                    JSONObject object = array.getJSONObject(i);
+                                    String sId = object.getString(DatabaseSchema.Insurances.COLUMN_ID);
+                                    String vehicleId = object.getString(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID);
+                                    String companyId = object.getString(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID);
+                                    String policyNo = object.optString(DatabaseSchema.Insurances.COLUMN_POLICY_NO);
+                                    String startDate = object.optString(DatabaseSchema.Insurances.COLUMN_START_DATE);
+                                    String endDate = object.optString(DatabaseSchema.Insurances.COLUMN_END_DATE);
+                                    String premium = object.optString(DatabaseSchema.Insurances.COLUMN_PREMIUM);
+                                    String details = object.optString(DatabaseSchema.Insurances.COLUMN_DETAILS);
+
+                                    String company = object.optString(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY);
+
+                                    Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
+                                    InsuranceCompany insuranceCompany = databaseHelper.insuranceCompany(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{companyId});
+
+                                    if (insuranceCompany == null)
+                                        databaseHelper.addInsuranceCompany(companyId, company);
+                                    else
+                                        databaseHelper.updateInsuranceCompany(companyId, company);
+
+                                    if (vehicle == null)
+                                        continue;
+
+                                    Insurance item = databaseHelper.insurance(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                                    if (item == null)
+                                        databaseHelper.addInsurance(sId, vehicle.getId(), companyId, policyNo, startDate, endDate, premium, details);
+                                    else
+                                        databaseHelper.updateInsurance(sId, vehicle.getId(), companyId, policyNo, startDate, endDate, premium, details);
+                                }
+                            } catch (JSONException e) { Log.e(TAG, "trouble in insurance loop"); }
+                            return null;
+                        }
+                    }.execute();
+                } catch (JSONException e) { Log.e(TAG, "Insurances not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> headerParams = new HashMap<>();
+                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void getPUC() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.PUC, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "PUC = " + response);
+                try {
+                    final JSONArray array = new JSONArray(response);
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            try {
+                                for (int i = 0; i < array.length(); i++) {
+                                    JSONObject object = array.getJSONObject(i);
+                                    String sId = object.getString(DatabaseSchema.PUC.COLUMN_ID);
+                                    String vehicleId = object.getString(DatabaseSchema.PUC.COLUMN_VEHICLE_ID);
+                                    String workshopId = object.getString(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID);
+                                    String pucNo = object.optString(DatabaseSchema.PUC.COLUMN_PUC_NO);
+                                    String startDate = object.optString(DatabaseSchema.PUC.COLUMN_START_DATE);
+                                    String endDate = object.optString(DatabaseSchema.PUC.COLUMN_END_DATE);
+                                    String fees = object.optString(DatabaseSchema.PUC.COLUMN_FEES);
+                                    String details = object.optString(DatabaseSchema.PUC.COLUMN_DETAILS);
+
+                                    Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
+                                    Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
+                                    if (vehicle == null || workshop == null)
+                                        continue;
+
+                                    PUC item = databaseHelper.puc(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
+                                    if (item == null)
+                                        databaseHelper.addPUC(sId, vehicle.getId(), workshop.getId(), pucNo, startDate, endDate, fees, details);
+                                    else
+                                        databaseHelper.updatePUC(sId, vehicle.getId(), workshop.getId(), pucNo, startDate, endDate, fees, details);
+                                }
+                            } catch (JSONException e) { Log.e(TAG, "trouble in PUC loop"); }
+                            return null;
+                        }
+                    }.execute();
+                } catch (JSONException e) { Log.e(TAG, "PUC not in json"); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> headerParams = new HashMap<>();
+                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
     }
 
     private void notifyUserCity(final boolean citySynced, final boolean countrySynced) {

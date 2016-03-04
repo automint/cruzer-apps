@@ -1,16 +1,16 @@
 package com.socketmint.cruzer;
 
-/**
- * Application class to define certain parameters at global level
- * @see android.app.Application to get more details about Application classes
- */
-
 import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+
+/**
+ * Application class to define certain parameters at global level
+ * @see Application to get more details about Application classes
+ */
 
 public class CruzerApp extends Application {
     //  Tracker for Google Analytics that will be passed through entire application

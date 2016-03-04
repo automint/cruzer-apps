@@ -104,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + DatabaseSchema.Services.COLUMN_STATUS + " text, "
                 + DatabaseSchema.Services.COLUMN_USER_ID + " text, "
                 + DatabaseSchema.Services.COLUMN_ROLE_ID + " text, "
+                + DatabaseSchema.Services.COLUMN_VAT + " text, "
                 + DatabaseSchema.SYNC_STATUS + " text,"
                 + FOREIGN_KEY + "(" + DatabaseSchema.COLUMN_VEHICLE_ID + ") references " + DatabaseSchema.Vehicles.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ","
                 + FOREIGN_KEY + "(" + DatabaseSchema.Services.COLUMN_WORKSHOP_ID + ") references " + DatabaseSchema.Workshops.TABLE_NAME + "(" + DatabaseSchema.COLUMN_ID + ")" + DELETE_CASCADE + ")";
@@ -270,6 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 try { db.execSQL(DROP_TABLE + DatabaseSchema.PUC.TABLE_NAME); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(CreateStrings.INSURANCE); } catch (SQLException e) { e.printStackTrace(); }
                 try { db.execSQL(CreateStrings.PUC); } catch (SQLException e) { e.printStackTrace(); }
+                try { db.execSQL(ALTER_TABLE[0] + DatabaseSchema.Services.TABLE_NAME + ALTER_TABLE[1] + DatabaseSchema.Services.COLUMN_VAT + " text"); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
@@ -1076,7 +1078,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
-    public String addService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status, String userId, String roleId) {
+    public String addService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status, String userId, String roleId, String vat) {
         try {
             ContentValues values = new ContentValues();
 
@@ -1094,6 +1096,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.Services.COLUMN_DETAILS, (details.equalsIgnoreCase("null")) ? "" : details);
             values.put(DatabaseSchema.Services.COLUMN_USER_ID, userId);
             values.put(DatabaseSchema.Services.COLUMN_ROLE_ID, roleId);
+            values.put(DatabaseSchema.Services.COLUMN_VAT, (vat.equalsIgnoreCase("null")) ? "" : vat);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().insert(DatabaseSchema.Services.TABLE_NAME, null, values);
@@ -1138,7 +1141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
-    public boolean updateService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status, String userId, String roleId) {
+    public boolean updateService(String sId, String vehicleId, String date, String workshopId, String cost, String odo, String details, String status, String userId, String roleId, String vat) {
         try {
             ContentValues values = new ContentValues();
 
@@ -1153,6 +1156,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.Services.COLUMN_STATUS, status);
             values.put(DatabaseSchema.Services.COLUMN_USER_ID, userId);
             values.put(DatabaseSchema.Services.COLUMN_ROLE_ID, roleId);
+            values.put(DatabaseSchema.Services.COLUMN_VAT, (vat.equalsIgnoreCase("null")) ? "" : vat);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().update(DatabaseSchema.Services.TABLE_NAME, values, DatabaseSchema.COLUMN_SID + "=?", new String[]{sId});
@@ -1182,7 +1186,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_DETAILS)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_USER_ID)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_VAT)));
                 list.add(object);
                 cursor.moveToNext();
             }
@@ -1209,7 +1214,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_DETAILS)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_USER_ID)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_VAT)));
                 list.add(object);
                 cursor.moveToNext();
             }
@@ -1247,7 +1253,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_DETAILS)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)),
                         cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_USER_ID)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_VAT)));
                 list.add(object);
                 cursor.moveToNext();
             }
@@ -1283,7 +1290,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_DETAILS)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_STATUS)),
                     cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_USER_ID)),
-                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)));
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_ROLE_ID)),
+                    cursor.getString(cursor.getColumnIndex(DatabaseSchema.Services.COLUMN_VAT)));
             cursor.close();
             return object;
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }

@@ -31,8 +31,8 @@ import java.util.List;
 public class Service extends Fragment {
     private static final String TAG = "RetrieveService";
 
-    private AppCompatTextView textVehicleName, textWorkshopName, textAmount, textOdometer, textDate, textProblems, textStatus, textNotes;
-    private LinearLayoutCompat layoutOdometer, layoutDate, layoutProblems, layoutStatus, layoutNotes;
+    private AppCompatTextView textVehicleName, textWorkshopName, textAmount, textOdometer, textDate, textProblems, textStatus, textNotes, textVat;
+    private LinearLayoutCompat layoutOdometer, layoutDate, layoutProblems, layoutStatus, layoutNotes, layoutVat;
 
     private DatabaseHelper databaseHelper;
     private UiElement uiElement;
@@ -78,12 +78,14 @@ public class Service extends Fragment {
         textNotes = (AppCompatTextView) v.findViewById(R.id.text_notes);
         textProblems = (AppCompatTextView) v.findViewById(R.id.text_problems);
         textStatus = (AppCompatTextView) v.findViewById(R.id.text_status);
+        textVat = (AppCompatTextView) v.findViewById(R.id.text_vat);
 
         layoutOdometer = (LinearLayoutCompat) v.findViewById(R.id.layout_odometer);
         layoutDate = (LinearLayoutCompat) v.findViewById(R.id.layout_date);
         layoutProblems = (LinearLayoutCompat) v.findViewById(R.id.layout_problems);
         layoutStatus = (LinearLayoutCompat) v.findViewById(R.id.layout_service_status);
         layoutNotes = (LinearLayoutCompat) v.findViewById(R.id.layout_notes);
+        layoutVat = (LinearLayoutCompat) v.findViewById(R.id.layout_vat);
     }
 
     private void setContent() {
@@ -128,12 +130,15 @@ public class Service extends Fragment {
             status = "";
         textStatus.setText(status);
         textNotes.setText(service.details);
+        String vat = (service.vat == null) ? "0" : service.vat;
+        textVat.setText(vat);
 
         layoutOdometer.setVisibility((service.odo.isEmpty()) ? View.GONE : View.VISIBLE);
         layoutDate.setVisibility((service.date.isEmpty()) ? View.GONE : View.VISIBLE);
         layoutNotes.setVisibility((service.details.isEmpty()) ? View.GONE : View.VISIBLE);
         layoutProblems.setVisibility((problemList.isEmpty()) ? View.GONE : View.VISIBLE);
         layoutStatus.setVisibility((status.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutVat.setVisibility((vat.equals("0") || vat.isEmpty()) ? View.GONE : View.VISIBLE);
         textWorkshopName.setVisibility((workshopName.isEmpty()) ? View.GONE : View.VISIBLE);
     }
 
