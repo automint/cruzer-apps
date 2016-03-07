@@ -156,4 +156,10 @@
     <string name="label_fees">Fees</string>
     <string name="title_puc">PUC</string>
     <string name="label_vat">VAT</string>
+    <string name="label_upload_photo">Upload Photo</string>
+    <string name="text_insurance_upload">Insurance data will be uploaded and reflected in your vehicle history.\nIt may take some time</string>
+    <string name="text_puc_upload">PUC data will be uploaded and reflected in your vehicle history.\nIt may take some time</string>
+    <string name="message_storage_access_fail">Please check your storage permissions</string>
+    <string name="directory_cruzer">cruzer</string>
+    <string name="message_upload_confirm">Receipt is uploaded! It will be added soon!</string>
 </resources>

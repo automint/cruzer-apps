@@ -66,14 +66,14 @@
     </style>
 
     <style name="AppTheme.Insurance" parent="AppTheme">
-        <item name="colorPrimary">@color/cruzer_blue_primary</item>
-        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorPrimary">@color/insurance_primary</item>
+        <item name="colorPrimaryDark">@color/insurance_primary_dark</item>
         <item name="colorAccent">@color/cruzer_blue_accent</item>
     </style>
 
     <style name="AppTheme.PUC" parent="AppTheme">
-        <item name="colorPrimary">@color/cruzer_blue_primary</item>
-        <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
+        <item name="colorPrimary">@color/puc_primary</item>
+        <item name="colorPrimaryDark">@color/puc_primary_dark</item>
         <item name="colorAccent">@color/cruzer_blue_accent</item>
     </style>
 

@@ -597,7 +597,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                     odo = (company == null) ? "" : company.company;
                     title = getString(R.string.title_insurance);
                     amount = insurance.premium.isEmpty() ? "" : getString(R.string.text_amount, insurance.premium);
-                    icon = R.drawable.ic_service_card;
+                    icon = R.drawable.ic_insurance_card;
                     currentVehicle = databaseHelper.vehicle(insurance.getVehicleId());
                     break;
                 case Choices.PUC:
@@ -607,7 +607,7 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
                     odo = (workshop == null) ? "" : workshop.name;
                     title = getString(R.string.title_puc);
                     amount = puc.fees.isEmpty() ? "" : getString(R.string.text_amount, puc.fees);
-                    icon = R.drawable.ic_service_card;
+                    icon = R.drawable.ic_puc_card;
                     currentVehicle = databaseHelper.vehicle(puc.getVehicleId());
                     break;
                 default:

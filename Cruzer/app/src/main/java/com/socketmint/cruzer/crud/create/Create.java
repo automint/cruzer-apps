@@ -73,12 +73,12 @@ public class Create extends AppCompatActivity {
             case Choices.INSURANCE:
                 title = getString(R.string.title_insurance);
                 target = Insurance.newInstance(vehicleId);
-                createIcon = R.mipmap.ic_launcher;
+                createIcon = R.drawable.ic_insurance;
                 break;
             case Choices.PUC:
                 title = getString(R.string.title_puc);
                 target = PUC.newInstance(vehicleId);
-                createIcon = R.mipmap.ic_launcher;
+                createIcon = R.drawable.ic_puc;
                 break;
             default:
                 title = getString(R.string.app_name);

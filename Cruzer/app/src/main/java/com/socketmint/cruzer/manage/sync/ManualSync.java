@@ -284,14 +284,16 @@ public class ManualSync {
 
                                     Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
                                     Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
-                                    if (vehicle == null || workshop == null)
+                                    if (vehicle == null)
                                         continue;
+
+                                    String wId = (workshop == null) ? "" : workshop.getId();
 
                                     PUC item = databaseHelper.puc(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
                                     if (item == null)
-                                        databaseHelper.addPUC(sId, vehicle.getId(), workshop.getId(), pucNo, startDate, endDate, fees, details);
+                                        databaseHelper.addPUC(sId, vehicle.getId(), wId, pucNo, startDate, endDate, fees, details);
                                     else
-                                        databaseHelper.updatePUC(sId, vehicle.getId(), workshop.getId(), pucNo, startDate, endDate, fees, details);
+                                        databaseHelper.updatePUC(sId, vehicle.getId(), wId, pucNo, startDate, endDate, fees, details);
                                 }
                             } catch (JSONException e) { Log.e(TAG, "trouble in PUC loop"); }
                             return null;

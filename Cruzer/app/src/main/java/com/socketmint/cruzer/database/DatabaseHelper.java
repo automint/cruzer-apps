@@ -1957,11 +1957,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
 
+            workshopId = workshopId.equalsIgnoreCase("null") ? "" : workshopId;
+
             String id = generateId(DatabaseSchema.PUC.TABLE_NAME);
             values.put(DatabaseSchema.PUC.COLUMN_ID, id);
             values.put(DatabaseSchema.PUC.COLUMN_SID, sId);
             values.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, vehicleId);
-            values.put(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID, workshopId);
+            if (!workshopId.isEmpty())
+                values.put(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID, workshopId);
             values.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNo);
             values.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
             values.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
@@ -1978,8 +1981,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
 
+            workshopId = workshopId.equalsIgnoreCase("null") ? "" : workshopId;
+
             values.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, vehicleId);
-            values.put(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID, workshopId);
+            if (!workshopId.isEmpty())
+                values.put(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID, workshopId);
             values.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNo);
             values.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
             values.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
@@ -1987,7 +1993,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
-            getWritableDatabase().update(DatabaseSchema.PUC.TABLE_NAME, values, DatabaseSchema.COLUMN_SID, new String[]{sId});
+            getWritableDatabase().update(DatabaseSchema.PUC.TABLE_NAME, values, DatabaseSchema.COLUMN_SID + "=?", new String[]{sId});
             return true;
         } catch (SQLiteConstraintException e) { return false; }
     }
