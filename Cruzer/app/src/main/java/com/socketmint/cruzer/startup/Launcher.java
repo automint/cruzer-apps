@@ -25,6 +25,7 @@ import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
+import com.socketmint.cruzer.manage.LocData;
 import com.socketmint.cruzer.manage.Login;
 
 public class Launcher extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
@@ -73,6 +74,9 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
                 startActivity(new Intent(Launcher.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE));
                 finish();
             } else {
+                LocData locData = new LocData();
+                locData.cruzerInstance(Launcher.this);
+                setSeen(locData.payTmLike());
                 startActivity(new Intent(Launcher.this, History.class));
                 finish();
             }
@@ -107,13 +111,29 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
 
     }
 
+    @Override
+    public void onDestroy() {
+        System.runFinalization();
+        Runtime.getRuntime().gc();
+        System.gc();
+        super.onDestroy();
+    }
+
+    private void setSeen(boolean payTmLike) {
+        LocData locData = new LocData();
+        locData.cruzerInstance(Launcher.this);
+        locData.storeHelpScreenSeen(true);
+        locData.storePayTmLike(payTmLike);
+    }
+
     private void handleGoogleSignIn(GoogleSignInResult result) {
         Log.d(TAG, "Google Sign In - " + result.isSuccess());
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             if (account != null) {
+                setSeen(true);
                 Log.d(TAG, "Google | email - " + account.getEmail() + " : display name - " + account.getDisplayName());
-                login.cruzerLogin(account);
+                login.cruzerLogin(account, "");
             }
         }
     }

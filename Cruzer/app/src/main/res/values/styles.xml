@@ -11,6 +11,11 @@
         <item name="colorAccent">@color/cruzer_blue_accent</item>
     </style>
 
+    <style name="AppTheme.HelpScreen" parent="AppTheme">
+        <item name="colorAccent">@color/grey_900</item>
+        <item name="colorButtonNormal">@color/grey_800</item>
+    </style>
+
     <style name="AppTheme.History" parent="AppTheme">
         <item name="colorPrimary">@color/cruzer_blue_primary</item>
         <item name="colorPrimaryDark">@color/cruzer_blue_primary_dark</item>
@@ -75,6 +80,22 @@
         <item name="colorPrimary">@color/puc_primary</item>
         <item name="colorPrimaryDark">@color/puc_primary_dark</item>
         <item name="colorAccent">@color/cruzer_blue_accent</item>
+    </style>
+
+    <style name="AppTheme.PayTm" parent="AppTheme">
+        <item name="colorPrimary">@color/paytm_primary</item>
+        <item name="colorPrimaryDark">@color/paytm_primary_dark</item>
+        <item name="colorAccent">@color/cruzer_blue_primary</item>
+    </style>
+
+    <style name="AppTheme.PayTm.Dialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowAnimationStyle">@style/AppTheme.PayTmDialogAnimation</item>
+        <item name="colorButtonNormal">@color/facebook</item>
+    </style>
+
+    <style name="AppTheme.PayTmDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_from_top</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
     </style>
 
     <style name="WhiteDrawerToggle" parent="Widget.AppCompat.DrawerArrowToggle">

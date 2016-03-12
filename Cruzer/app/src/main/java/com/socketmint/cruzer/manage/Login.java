@@ -107,10 +107,6 @@ public class Login {
     private void setUIElements() {
         editMobile = (AppCompatEditText) dialog.findViewById(R.id.edit_mobile);
         dialog.findViewById(R.id.text_message).setVisibility(View.GONE);
-        dialog.findViewById(R.id.edit_password).setVisibility(View.GONE);
-        dialog.findViewById(R.id.checkbox_show_password).setVisibility(View.GONE);
-        dialog.findViewById(R.id.layout_name).setVisibility(View.GONE);
-        dialog.findViewById(R.id.layout_email).setVisibility(View.GONE);
         btnDone = (AppCompatButton) dialog.findViewById(R.id.button_login_phone);
     }
 
@@ -131,13 +127,13 @@ public class Login {
         dialog.show();
     }
 
-    public void cruzerLogin(final GoogleSignInAccount account) {
+    public void cruzerLogin(final GoogleSignInAccount account, final String mobile) {
         String name = account.getDisplayName();
         int lastSpace = (name != null) ? name.lastIndexOf(" ") : -1;
         String firstName = (lastSpace > 0) ? name.substring(0, lastSpace) : ((name != null) ? name : "");
         String lastName = (lastSpace > 0) ? name.substring(lastSpace + 1) : "";
         Log.d(TAG, "firstName = " + firstName + " | lastName = " + lastName);
-        login(account.getEmail(), firstName, lastName, "");
+        login(account.getEmail(), firstName, lastName, mobile);
     }
 
     private void initFail() {

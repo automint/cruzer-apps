@@ -2,13 +2,23 @@ package com.socketmint.cruzer.ui;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.support.v7.widget.AppCompatEditText;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
+import android.widget.FrameLayout;
 import android.widget.TimePicker;
+
+import com.socketmint.cruzer.R;
+import com.socketmint.cruzer.manage.LocData;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,12 +32,17 @@ import java.util.Date;
  * @version 26
  */
 
-public class UiElement {
+public class UiElement implements View.OnClickListener, DialogInterface.OnDismissListener {
+    private static final String TAG = "UiElement";
+
     //  keeping track of calling activity
     private Activity activity;
 
     //  different date format objects for different purposes
     private SimpleDateFormat createDateFormat, createTimeFormat, convertDateFormat, serverFormat, cardDateFormat, retrieveDateFormat;
+
+    //  dialog boxes
+    private Dialog payTmDialog;
 
     /**
      * Default constructor to initialize class object
@@ -186,6 +201,64 @@ public class UiElement {
             keyboardManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         } catch (NullPointerException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method to display Confirmation Dialog box for PayTm Offer
+     */
+
+    public void payTmConfirmationDialog() {
+        //  Initialize payTmDialog box with custom theme
+        payTmDialog = new Dialog(activity, R.style.AppTheme_PayTm_Dialog);
+        payTmDialog.setContentView(R.layout.dialog_paytm);
+
+        //  Set event listeners
+        payTmDialog.findViewById(R.id.button_paytm_like).setOnClickListener(this);
+        payTmDialog.setOnDismissListener(this);
+        payTmDialog.setCancelable(false);
+
+        //  Assign custom layout params
+        payTmDialog.getWindow().setLayout(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        payTmDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        payTmDialog.show();
+    }
+
+    /**
+     * Listen to click events on view
+     * @param v as view that is been clicked
+     */
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button_paytm_like:
+                Intent httpIntent = new Intent(Intent.ACTION_VIEW);
+                try {
+                    activity.getPackageManager().getPackageInfo("com.facebook.katana", 0);
+                    httpIntent.setData(Uri.parse("fb://page/470510013124932"));
+                } catch (Exception e) {
+                    httpIntent.setData(Uri.parse("https://facebook.com/CruzerApp"));
+                }
+                try {
+                    payTmDialog.dismiss();
+                } catch (Exception e) { Log.d(TAG, "problem in closing payTm Dialog box"); }
+                activity.startActivity(httpIntent);
+                break;
+        }
+    }
+
+    /**
+     * Listen to dismiss events of dialog box
+     * @param dialog that is being dismissed
+     */
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        if (payTmDialog != null && dialog == payTmDialog) {
+            LocData locData = new LocData();
+            locData.cruzerInstance(activity);
+            locData.storePayTmLike(true);
         }
     }
 }

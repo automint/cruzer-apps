@@ -12,11 +12,13 @@ import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
 
 import com.socketmint.cruzer.R;
+import com.socketmint.cruzer.manage.Constants;
 
-public class LauncherHelp extends AppCompatActivity {
-    private static final String TAG = "LauncherHelp";
+public class HelpScreen extends AppCompatActivity {
+//    private static final String TAG = "HelpScreen";
 
     private AppCompatImageView imageHelp1, imageHelp2, imageHelp3, imageHelp4, imageHelp5;
+    private String mobile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,9 @@ public class LauncherHelp extends AppCompatActivity {
         imageHelp4 = (AppCompatImageView) findViewById(R.id.image_help_item_4);
         imageHelp5 = (AppCompatImageView) findViewById(R.id.image_help_item_5);
 
+        mobile = getIntent().getStringExtra(Constants.Bundle.MOBILE);
+        mobile = (mobile == null) ? "" : mobile;
+
         ViewPager pager = (ViewPager) findViewById(R.id.pager_help);
         Adapter adapter = new Adapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
@@ -36,7 +41,6 @@ public class LauncherHelp extends AppCompatActivity {
     }
 
     private void setIndicators(int position) {
-        Log.d(TAG, "indicator position = " + position);
         switch (position) {
             case 0:
                 imageHelp1.setImageResource(R.drawable.ic_indicator_selected);
@@ -83,7 +87,7 @@ public class LauncherHelp extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return HelpFragment.newInstance(position);
+            return HelpFragment.newInstance(position, mobile);
         }
 
         @Override
@@ -100,7 +104,6 @@ public class LauncherHelp extends AppCompatActivity {
 
         @Override
         public void onPageSelected(int position) {
-            Log.d(TAG, "position = " + position);
             setIndicators(position);
         }
 
@@ -110,6 +113,14 @@ public class LauncherHelp extends AppCompatActivity {
         }
     };
 
+    @Override
+    public void onDestroy() {
+        System.runFinalization();
+        Runtime.getRuntime().gc();
+        System.gc();
+        super.onDestroy();
+    }
+
     private boolean exit = false;
 
     @Override
@@ -117,7 +128,7 @@ public class LauncherHelp extends AppCompatActivity {
         if (exit) {
             android.os.Process.killProcess(android.os.Process.myPid());
         } else {
-            Snackbar.make(LauncherHelp.this.findViewById(android.R.id.content), getString(R.string.message_back_exit), Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(HelpScreen.this.findViewById(android.R.id.content), getString(R.string.message_back_exit), Snackbar.LENGTH_SHORT).show();
             exit = true;
             new Handler().postDelayed(new Runnable() {
                 @Override

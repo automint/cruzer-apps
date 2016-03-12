@@ -145,6 +145,8 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
 
         initializeViews();
         initializeAssets();
+
+        handlePayTmDialog();
     }
 
     @Override
@@ -156,6 +158,19 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
         addData();
 
         getGeoLocation();
+    }
+
+    private void handlePayTmDialog() {
+        LocData locData = new LocData();
+        locData.cruzerInstance(History.this);
+        if (!locData.payTmLike()) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    uiElement.payTmConfirmationDialog();
+                }
+            }, 400);
+        }
     }
 
     private void getGeoLocation() {
@@ -745,6 +760,13 @@ public class History extends AppCompatActivity implements View.OnClickListener, 
         return true;
     }
 
+    @Override
+    public void onDestroy() {
+        System.runFinalization();
+        Runtime.getRuntime().gc();
+        System.gc();
+        super.onDestroy();
+    }
 
     private boolean exit = false;
     @Override

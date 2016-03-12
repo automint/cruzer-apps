@@ -5,8 +5,16 @@
     android:layout_width="match_parent"
     android:id="@+id/coordinator_help"
     android:layout_height="match_parent"
-    android:background="@drawable/help_7"
+    android:background="@color/splash_background"
     android:animateLayoutChanges="true">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:id="@+id/image_help"
+        android:scaleType="fitEnd"
+        android:src="@drawable/help_7"/>
 
     <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
         android:layout_width="match_parent"
@@ -17,12 +25,12 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:animateLayoutChanges="true"
-            android:layout_weight="0.7" />
+            android:layout_weight="0.8" />
 
         <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.4"
+            android:layout_weight="0.2"
             android:animateLayoutChanges="true"
             android:gravity="center_horizontal">
 
@@ -36,10 +44,11 @@
                 android:paddingRight="30dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/label_get_started"
+                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-condensed"
                 android:textStyle="bold"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:visibility="visible"
-                app:backgroundTint="@android:color/white"
                 app:borderWidth="0dp"/>
 
         </android.support.v7.widget.LinearLayoutCompat>

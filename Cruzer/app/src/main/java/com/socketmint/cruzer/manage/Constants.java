@@ -3,14 +3,13 @@ package com.socketmint.cruzer.manage;
 import com.socketmint.cruzer.database.DatabaseSchema;
 
 public class Constants {
-    private static final String URL_SERVER = "http://10.1.1.108:8080";
+    private static final String URL_SERVER = "http://10.70.0.50:8080";
     private static final String URL_API_VERSION = "0.2";
     private static final String URL_API_DIR = "api";
     private static final String URL_API = URL_API_DIR + "/" + URL_API_VERSION;
 
     public static abstract class Url {
         public static final String OAUTH = URL_SERVER + "/" + URL_API + "/" + "oauth";
-        public static final String AUTH = URL_SERVER + "/" + URL_API + "/" + "authenticate";
         public static final String USER = URL_SERVER + "/" + URL_API + "/" + "users";
         public static final String MANU = URL_SERVER + "/" + URL_API + "/" + "manufacturers";
         public static final String MODEL = URL_SERVER + "/" + URL_API + "/" + "models";
@@ -34,7 +33,6 @@ public class Constants {
         public static String WORKSHOP_CITY_OFFERING(String cityId, String offeringId) { return WORKSHOP_CITY(cityId) + "/offerings/" + offeringId; }
         public static String WORKSHOP_CITY_VEHICLE_TYPE_OFFERING(String cityId, String vehicleTypeId, String offeringId) { return WORKSHOP_CITY_VEHICLE_TYPE(cityId, vehicleTypeId) + "/offerings/" + offeringId; }
         public static final String BOOK_SERVICE = URL_SERVER + "/" + URL_API + "/" + "servicebookings";
-        public static final String INSURANCE_COMPANIES = URL_SERVER + "/" + URL_API + "/" + "insurancecompanies";
         public static final String INSURANCE = URL_SERVER + "/" + URL_API + "/" + "insurances";
         public static final String PUC = URL_SERVER + "/" + URL_API + "/" + "puc";
     }
@@ -77,6 +75,7 @@ public class Constants {
         public static final String ID = DatabaseSchema.COLUMN_ID;
         public static final String OFFERING_FILTER = "offeringFilter";
         public static final String VEHICLE_TYPE_FILTER = "vehicleTypeFilter";
+        public static final String MOBILE = DatabaseSchema.Users.COLUMN_MOBILE;
 
         public static final String CITY = "city";
         public static final String COUNTRY = "country";
