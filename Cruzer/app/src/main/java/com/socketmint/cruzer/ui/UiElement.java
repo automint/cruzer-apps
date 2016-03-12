@@ -216,7 +216,7 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
         //  Set event listeners
         payTmDialog.findViewById(R.id.button_paytm_like).setOnClickListener(this);
         payTmDialog.setOnDismissListener(this);
-        payTmDialog.setCancelable(false);
+        payTmDialog.setCancelable(true);
 
         //  Assign custom layout params
         payTmDialog.getWindow().setLayout(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);

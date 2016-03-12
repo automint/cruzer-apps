@@ -162,6 +162,6 @@
     <string name="message_storage_access_fail">Please check your storage permissions</string>
     <string name="directory_cruzer">cruzer</string>
     <string name="message_upload_confirm">Receipt is uploaded! It will be added soon!</string>
-    <string name="message_paytm">Follow us on Facebook to know the Paytm cashback results!</string>
+    <string name="message_paytm">Follow us on Facebook to get cool updates!</string>
     <string name="paytm_like_us">Like us</string>
 </resources>

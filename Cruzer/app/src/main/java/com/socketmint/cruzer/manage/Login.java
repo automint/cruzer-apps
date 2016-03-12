@@ -97,7 +97,7 @@ public class Login {
     }
 
     private void create() {
-        dialog = new Dialog(activity);
+        dialog = new Dialog(activity, R.style.AppTheme_LoginDialog);
         dialog.setContentView(R.layout.dialog_login);
         setUIElements();
         dialog.getWindow().setLayout(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
