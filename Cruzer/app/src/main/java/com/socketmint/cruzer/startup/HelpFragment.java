@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,16 +26,20 @@ import com.socketmint.cruzer.manage.Login;
 
 public class HelpFragment extends Fragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "HelpFragment";
+
     private Login login = Login.getInstance();
     private int choice;
-    private CoordinatorLayout coordinatorHelp;
+    private String mobile;
+
+    private AppCompatImageView imageHelp;
 
     private ProgressDialog progressDialog;
 
-    public static HelpFragment newInstance(int position) {
+    public static HelpFragment newInstance(int position, String mobile) {
         HelpFragment fragment = new HelpFragment();
         Bundle args = new Bundle();
         args.putInt(Constants.Bundle.PAGE_CHOICE, position);
+        args.putString(Constants.Bundle.MOBILE, mobile);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,7 +49,10 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
         View view = layoutInflater.inflate(R.layout.fragment_help_screen, container, false);
 
         choice = getArguments().getInt(Constants.Bundle.PAGE_CHOICE);
-        coordinatorHelp = (CoordinatorLayout) view.findViewById(R.id.coordinator_help);
+        mobile = getArguments().getString(Constants.Bundle.MOBILE, "");
+        mobile = (mobile == null) ? "" : mobile;
+
+        imageHelp = (AppCompatImageView) view.findViewById(R.id.image_help);
         AppCompatButton buttonGetStarted = (AppCompatButton) view.findViewById(R.id.button_get_started);
         buttonGetStarted.setOnClickListener(this);
 
@@ -60,19 +68,19 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
     private void selectHelpScreen() {
         switch (choice) {
             case 0:
-                coordinatorHelp.setBackgroundResource(R.drawable.help_1);
+                imageHelp.setImageResource(R.drawable.help_1);
                 break;
             case 1:
-                coordinatorHelp.setBackgroundResource(R.drawable.help_2);
+                imageHelp.setImageResource(R.drawable.help_2);
                 break;
             case 2:
-                coordinatorHelp.setBackgroundResource(R.drawable.help_3);
+                imageHelp.setImageResource(R.drawable.help_3);
                 break;
             case 3:
-                coordinatorHelp.setBackgroundResource(R.drawable.help_5);
+                imageHelp.setImageResource(R.drawable.help_5);
                 break;
             case 4:
-                coordinatorHelp.setBackgroundResource(R.drawable.help_7);
+                imageHelp.setImageResource(R.drawable.help_7);
                 break;
         }
     }
@@ -115,7 +123,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
             if (account != null) {
                 Log.d(TAG, "Google | email - " + account.getEmail() + " : display name - " + account.getDisplayName());
                 setSeen();
-                login.cruzerLogin(account);
+                login.cruzerLogin(account, mobile);
             }
         }
     }

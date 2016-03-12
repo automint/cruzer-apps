@@ -18,8 +18,9 @@ import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
-import com.socketmint.cruzer.dataholder.*;
-import com.socketmint.cruzer.dataholder.Vehicle;
+import com.socketmint.cruzer.dataholder.expense.service.Problem;
+import com.socketmint.cruzer.dataholder.expense.service.Status;
+import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.ui.UiElement;
 
@@ -30,8 +31,8 @@ import java.util.List;
 public class Service extends Fragment {
     private static final String TAG = "RetrieveService";
 
-    private AppCompatTextView textVehicleName, textWorkshopName, textAmount, textOdometer, textDate, textProblems, textStatus, textNotes;
-    private LinearLayoutCompat layoutOdometer, layoutDate, layoutProblems, layoutStatus, layoutNotes;
+    private AppCompatTextView textVehicleName, textWorkshopName, textAmount, textOdometer, textDate, textProblems, textStatus, textNotes, textVat;
+    private LinearLayoutCompat layoutOdometer, layoutDate, layoutProblems, layoutStatus, layoutNotes, layoutVat;
 
     private DatabaseHelper databaseHelper;
     private UiElement uiElement;
@@ -77,24 +78,26 @@ public class Service extends Fragment {
         textNotes = (AppCompatTextView) v.findViewById(R.id.text_notes);
         textProblems = (AppCompatTextView) v.findViewById(R.id.text_problems);
         textStatus = (AppCompatTextView) v.findViewById(R.id.text_status);
+        textVat = (AppCompatTextView) v.findViewById(R.id.text_vat);
 
         layoutOdometer = (LinearLayoutCompat) v.findViewById(R.id.layout_odometer);
         layoutDate = (LinearLayoutCompat) v.findViewById(R.id.layout_date);
         layoutProblems = (LinearLayoutCompat) v.findViewById(R.id.layout_problems);
         layoutStatus = (LinearLayoutCompat) v.findViewById(R.id.layout_service_status);
         layoutNotes = (LinearLayoutCompat) v.findViewById(R.id.layout_notes);
+        layoutVat = (LinearLayoutCompat) v.findViewById(R.id.layout_vat);
     }
 
     private void setContent() {
-        com.socketmint.cruzer.dataholder.Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        com.socketmint.cruzer.dataholder.expense.service.Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
 
         textVehicleName.setText(vehicleName(databaseHelper.vehicle(service.getVehicleId())));
-        com.socketmint.cruzer.dataholder.Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{service.getWorkshopId()});
+        com.socketmint.cruzer.dataholder.workshop.Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{service.getWorkshopId()});
         String workshopName = (workshop != null) ? getString(R.string.text_workshop_name, workshop.name) : "";
         textWorkshopName.setText(workshopName);
         textAmount.setText(Html.fromHtml(getString(R.string.text_amount, service.cost)));
         textOdometer.setText(Html.fromHtml(getString(R.string.text_odometer, service.odo)));
-        textDate.setText(Html.fromHtml(uiElement.date(service.date)));
+        textDate.setText(Html.fromHtml(uiElement.retrieveDate(service.date)));
         List<Problem> problemList = databaseHelper.problems(Collections.singletonList(DatabaseSchema.Problems.COLUMN_SERVICE_ID), new String[]{service.getId()});
         if (problemList != null) {
             String problems = "";
@@ -127,12 +130,15 @@ public class Service extends Fragment {
             status = "";
         textStatus.setText(status);
         textNotes.setText(service.details);
+        String vat = (service.vat == null) ? "0" : service.vat;
+        textVat.setText(vat);
 
         layoutOdometer.setVisibility((service.odo.isEmpty()) ? View.GONE : View.VISIBLE);
         layoutDate.setVisibility((service.date.isEmpty()) ? View.GONE : View.VISIBLE);
         layoutNotes.setVisibility((service.details.isEmpty()) ? View.GONE : View.VISIBLE);
         layoutProblems.setVisibility((problemList.isEmpty()) ? View.GONE : View.VISIBLE);
         layoutStatus.setVisibility((status.isEmpty()) ? View.GONE : View.VISIBLE);
+        layoutVat.setVisibility((vat.equals("0") || vat.isEmpty()) ? View.GONE : View.VISIBLE);
         textWorkshopName.setVisibility((workshopName.isEmpty()) ? View.GONE : View.VISIBLE);
     }
 

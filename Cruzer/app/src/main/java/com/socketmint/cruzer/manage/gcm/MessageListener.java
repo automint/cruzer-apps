@@ -22,13 +22,13 @@ import com.google.android.gms.gcm.GcmListenerService;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.database.DatabaseSchema;
-import com.socketmint.cruzer.dataholder.Manu;
-import com.socketmint.cruzer.dataholder.Model;
-import com.socketmint.cruzer.dataholder.Problem;
-import com.socketmint.cruzer.dataholder.Service;
+import com.socketmint.cruzer.dataholder.vehicle.Manu;
+import com.socketmint.cruzer.dataholder.vehicle.Model;
+import com.socketmint.cruzer.dataholder.expense.service.Problem;
+import com.socketmint.cruzer.dataholder.expense.service.Service;
 import com.socketmint.cruzer.dataholder.User;
-import com.socketmint.cruzer.dataholder.Vehicle;
-import com.socketmint.cruzer.dataholder.Workshop;
+import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
+import com.socketmint.cruzer.dataholder.workshop.Workshop;
 import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
@@ -107,7 +107,7 @@ public class MessageListener extends GcmListenerService {
 
                     Model model = databaseHelper.model(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{modelId});
                     Log.d(TAG, "(model == null) : " + (model == null));
-                    if (model == null) {
+                    if (model == null && !(modelId.isEmpty() || modelId.equalsIgnoreCase("null"))) {
                         gcmOperation.interrupt();
                         networkOperation = new Thread(new Runnable() {
                             @Override
@@ -147,6 +147,7 @@ public class MessageListener extends GcmListenerService {
                     final String workshopId = object.optString(DatabaseSchema.Services.COLUMN_WORKSHOP_ID);
                     String uId = object.optString(DatabaseSchema.Services.COLUMN_USER_ID);
                     String roleId = object.optString(DatabaseSchema.Services.COLUMN_ROLE_ID);
+                    String vat = object.optString(DatabaseSchema.Services.COLUMN_VAT);
 
                     Service service = databaseHelper.service(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{id});
                     Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
@@ -166,14 +167,14 @@ public class MessageListener extends GcmListenerService {
                     String serviceId;
 
                     if (service == null) {
-                        Log.d(TAG, "no service. adding");
-                        serviceId = databaseHelper.addService(id, vId, date, (workshop != null) ? workshop.getId() : "", cost, odo, details, status, uId, roleId);
+                        Log.d(TAG, "no service. adding " + id);
+                        serviceId = databaseHelper.addService(id, vId, date, (workshop != null) ? workshop.getId() : "", cost, odo, details, status, uId, roleId, vat);
                     } else {
                         serviceId = service.getId();
-                        if (databaseHelper.updateService(id, vId, date, (workshop != null) ? workshop.getId() : service.getWorkshopId(), cost, odo, details, status, uId, roleId)) {
-                            Log.d(TAG, "service updated");
+                        if (databaseHelper.updateService(id, vId, date, (workshop != null) ? workshop.getId() : service.getWorkshopId(), cost, odo, details, status, uId, roleId, vat)) {
+                            Log.d(TAG, "service updated " + id);
                         } else
-                            Log.d(TAG, "could not update service");
+                            Log.d(TAG, "could not update service " + id);
                     }
 
                     try {
@@ -228,7 +229,7 @@ public class MessageListener extends GcmListenerService {
                                 authenticate();
                             }
                         }
-                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "model is array"); }
+                    } catch (JSONException | NullPointerException e) { Log.e(TAG, "workshop is array"); }
                     JSONArray array = new JSONArray(response);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject object = array.getJSONObject(i);

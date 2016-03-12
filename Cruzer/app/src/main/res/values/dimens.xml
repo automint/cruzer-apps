@@ -2,8 +2,16 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="drawer_width">300dp</dimen>
     <dimen name="transparent_button_radius">4dp</dimen>
-    <dimen name="fab_bottom_corner_margin">30dp</dimen>
+    <dimen name="fab_bottom_corner_end_margin">16dp</dimen>
+    <dimen name="fab_bottom_corner_bottom_margin">6dp</dimen>
+    <dimen name="fab_bottom_corner_top_margin">-24dp</dimen>
+    <dimen name="layout_options_end">36dp</dimen>
+    <dimen name="fab_options_top">-24dp</dimen>
+    <dimen name="fab_options_end">-14dp</dimen>
+    <dimen name="fab_options_bottom">-16dp</dimen>
     <dimen name="card_add_radius">6dp</dimen>
+    <dimen name="card_options_end">0dp</dimen>
+    <dimen name="card_options_bottom">4dp</dimen>
     <dimen name="card_add_text_padding_vertical_sides">6dp</dimen>
     <dimen name="card_add_text_padding_horizontal_sides">1dp</dimen>
 </resources>

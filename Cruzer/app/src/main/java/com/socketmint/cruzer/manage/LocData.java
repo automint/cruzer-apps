@@ -16,6 +16,7 @@ public class LocData {
         public static final String MODEL_ID = "model-id";
         public static final String LOGIN_TYPE = "login_type";
         public static final String GCM = "gcm";
+        public static final String PAYTM_LIKE = "paytm_like";
     }
 
     public void cruzerInstance(Context context) {
@@ -24,6 +25,14 @@ public class LocData {
 
     public void formInstance(Context context) {
         sharedPreferences = context.getSharedPreferences(Constants.FORM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+    }
+
+    public void storePayTmLike(boolean seen) {
+        sharedPreferences.edit().putBoolean(Constants.PAYTM_LIKE, seen).apply();
+    }
+
+    public boolean payTmLike() {
+        return sharedPreferences.getBoolean(Constants.PAYTM_LIKE, false);
     }
 
     public void storeHelpScreenSeen(boolean seen) {

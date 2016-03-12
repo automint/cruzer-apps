@@ -142,4 +142,26 @@
     <string name="message_claim_workshop_permission_fail">Please call +91 9427800160</string>
     <string name="label_book_service">Book Service</string>
     <string name="message_book_service">Service booking request has been sent! %1$s will contact you!</string>
+    <string name="label_policy_number">Policy Number</string>
+    <string name="label_insurance_company">Insurance Company</string>
+    <string name="label_start_date">Start Date</string>
+    <string name="label_end_date">End Date</string>
+    <string name="label_premium">Premium</string>
+    <string name="label_details">Details</string>
+    <string name="label_insurance_vehicle">Insurance for</string>
+    <string name="text_to">to</string>
+    <string name="title_insurance">Insurance</string>
+    <string name="label_puc_vehicle">PUC For</string>
+    <string name="label_puc_number">PUC Number</string>
+    <string name="label_fees">Fees</string>
+    <string name="title_puc">PUC</string>
+    <string name="label_vat">VAT</string>
+    <string name="label_upload_photo">Upload Photo</string>
+    <string name="text_insurance_upload">Insurance data will be uploaded and reflected in your vehicle history.\nIt may take some time</string>
+    <string name="text_puc_upload">PUC data will be uploaded and reflected in your vehicle history.\nIt may take some time</string>
+    <string name="message_storage_access_fail">Please check your storage permissions</string>
+    <string name="directory_cruzer">cruzer</string>
+    <string name="message_upload_confirm">Receipt is uploaded! It will be added soon!</string>
+    <string name="message_paytm">Follow us on Facebook to know the Paytm cashback results!</string>
+    <string name="paytm_like_us">Like us</string>
 </resources>

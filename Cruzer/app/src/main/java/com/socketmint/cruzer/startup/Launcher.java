@@ -25,16 +25,15 @@ import com.socketmint.cruzer.database.DatabaseHelper;
 import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
+import com.socketmint.cruzer.manage.LocData;
 import com.socketmint.cruzer.manage.Login;
 
 public class Launcher extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
     private static final String TAG = "Launcher";
-    private static final String ACTION_LOGIN_PHONE = "Login Phone";
     private static final String ACTION_LOGIN_GOOGLE = "Login Google";
 
     private ProgressDialog progressDialog;
 
-    private LoginDialog loginDialog = LoginDialog.getInstance();
     private Login login = Login.getInstance();
     private DatabaseHelper databaseHelper;
 
@@ -48,7 +47,6 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
 
         analyticsTracker = ((CruzerApp) getApplication()).getAnalyticsTracker();
 
-        loginDialog.initInstance(this);
         login.initInstance(this);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         preLogin();
@@ -76,6 +74,9 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
                 startActivity(new Intent(Launcher.this, Create.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.VEHICLE));
                 finish();
             } else {
+                LocData locData = new LocData();
+                locData.cruzerInstance(Launcher.this);
+                setSeen(locData.payTmLike());
                 startActivity(new Intent(Launcher.this, History.class));
                 finish();
             }
@@ -84,7 +85,6 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
 
     private void initializeViews() {
         findViewById(R.id.button_login_google).setOnClickListener(this);
-        findViewById(R.id.fab_login_phone).setOnClickListener(this);
     }
 
     private boolean exit = false;
@@ -111,13 +111,29 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
 
     }
 
+    @Override
+    public void onDestroy() {
+        System.runFinalization();
+        Runtime.getRuntime().gc();
+        System.gc();
+        super.onDestroy();
+    }
+
+    private void setSeen(boolean payTmLike) {
+        LocData locData = new LocData();
+        locData.cruzerInstance(Launcher.this);
+        locData.storeHelpScreenSeen(true);
+        locData.storePayTmLike(payTmLike);
+    }
+
     private void handleGoogleSignIn(GoogleSignInResult result) {
         Log.d(TAG, "Google Sign In - " + result.isSuccess());
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             if (account != null) {
+                setSeen(true);
                 Log.d(TAG, "Google | email - " + account.getEmail() + " : display name - " + account.getDisplayName());
-                login.cruzerLogin(account);
+                login.cruzerLogin(account, "");
             }
         }
     }
@@ -125,10 +141,6 @@ public class Launcher extends AppCompatActivity implements GoogleApiClient.OnCon
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.fab_login_phone:
-                analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_LOGIN_PHONE).build());
-                loginDialog.show(true);
-                break;
             case R.id.button_login_google:
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_LOGIN_GOOGLE).build());
                 startActivityForResult(Auth.GoogleSignInApi.getSignInIntent(googleApiClient), 2);

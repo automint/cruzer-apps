@@ -108,15 +108,19 @@ public class Workshop extends Fragment implements View.OnClickListener {
             textWorkshopName.setText(name);
             textManager.setText(manager);
             textMobile.setText(contact);
-            textAddress.setText(address);
+            textAddress.setText(address.replaceAll(", ", ",\n"));
             textCity.setText(city);
-            textOfferings.setText(offerings);
+            textOfferings.setSingleLine(false);
+            textOfferings.setText(offerings.replaceAll(", ", "\n"));
             v.findViewById(R.id.layout_workshop_manager).setVisibility((manager.isEmpty() || manager.equalsIgnoreCase("null")) ? View.GONE : View.VISIBLE);
             v.findViewById(R.id.layout_workshop_contact).setVisibility((contact.isEmpty() || contact.equalsIgnoreCase("null")) ? View.GONE : View.VISIBLE);
             v.findViewById(R.id.layout_workshop_address).setVisibility((address.isEmpty() || address.equalsIgnoreCase("null")) ? View.GONE : View.VISIBLE);
             v.findViewById(R.id.layout_workshop_city).setVisibility((city.isEmpty() || city.equalsIgnoreCase("null")) ? View.GONE : View.VISIBLE);
             v.findViewById(R.id.layout_workshop_offerings).setVisibility((offerings.isEmpty() || offerings.equalsIgnoreCase("null")) ? View.GONE : View.VISIBLE);
-            buttonBookService.setVisibility((bookingFlag.equals("1")) ? View.VISIBLE : View.GONE);
+
+            boolean isBookingAvailable = bookingFlag.equals("1");
+            buttonBookService.setVisibility(isBookingAvailable ? View.VISIBLE : View.GONE);
+            v.findViewById(R.id.layout_workshop_claim).setVisibility(isBookingAvailable ? View.GONE : View.VISIBLE);
         } catch (JSONException e) {
             Log.e(TAG, "can not parse workshop json");
             getActivity().onBackPressed();

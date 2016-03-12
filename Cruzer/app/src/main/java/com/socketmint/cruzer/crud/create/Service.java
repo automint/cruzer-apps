@@ -18,7 +18,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
-import com.socketmint.cruzer.dataholder.Vehicle;
+import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.ui.UiElement;
 

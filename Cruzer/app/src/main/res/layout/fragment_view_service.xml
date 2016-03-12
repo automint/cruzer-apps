@@ -140,29 +140,65 @@
 
             </android.support.v7.widget.LinearLayoutCompat>
 
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/layout_service_status"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp">
+                app:divider="@drawable/divider_horizontal_layout"
+                app:showDividers="middle">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/label_status"
-                    android:text="@string/label_service_status"
-                    android:fontFamily="sans-serif-light"
-                    android:textStyle="italic"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+                    android:layout_weight="0.5"
+                    android:id="@+id/layout_service_status"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/label_status"
+                        android:text="@string/label_service_status"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="italic"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_status"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/text_status"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/app_name"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:layout_weight="0.5"
+                    android:id="@+id/layout_vat"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/label_vat"
+                        android:text="@string/label_vat"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="italic"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/text_vat"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </android.support.v7.widget.LinearLayoutCompat>
 
             </android.support.v7.widget.LinearLayoutCompat>
 

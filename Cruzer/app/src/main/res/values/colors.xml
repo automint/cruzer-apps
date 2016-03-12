@@ -10,8 +10,19 @@
     <color name="service_primary">@color/blue_600</color>
     <color name="service_primary_dark">@color/blue_800</color>
 
-    <color name="splash_background">#0090E9</color>
+    <color name="insurance_primary">@color/grey_800</color>
+    <color name="insurance_primary_dark">@color/grey_900</color>
 
+    <color name="puc_primary">@color/teal_400</color>
+    <color name="puc_primary_dark">@color/teal_500</color>
+
+    <color name="paytm_primary">@android:color/white</color>
+    <color name="paytm_primary_dark">@color/grey_500</color>
+
+    <color name="splash_background">#0090E9</color>
+    <color name="facebook">#3b5998</color>
+
+    <color name="grey_900">#212121</color>
     <color name="grey_800">#424242</color>
     <color name="grey_500">#9E9E9E</color>
     <color name="grey_400">#BDBDBD</color>
@@ -28,6 +39,9 @@
 
     <color name="blue_600">#1E88E5</color>
     <color name="blue_800">#1565C0</color>
+
+    <color name="teal_400">#26A69A</color>
+    <color name="teal_500">#009688</color>
 
     <color name="volley_error_message">#DD2F3C</color>
 </resources>

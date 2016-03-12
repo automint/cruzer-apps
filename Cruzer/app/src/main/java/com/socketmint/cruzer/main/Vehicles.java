@@ -1,11 +1,9 @@
 package com.socketmint.cruzer.main;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.*;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatTextView;
@@ -26,7 +24,7 @@ import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.crud.create.Create;
 import com.socketmint.cruzer.crud.retrieve.Retrieve;
 import com.socketmint.cruzer.database.DatabaseHelper;
-import com.socketmint.cruzer.dataholder.Vehicle;
+import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.drawer.DrawerFragment;
 import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;

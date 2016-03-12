@@ -34,8 +34,6 @@ import com.socketmint.cruzer.manage.Choices;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.Login;
 import com.socketmint.cruzer.maps.WorkshopFilter;
-import com.socketmint.cruzer.maps.WorkshopLocator;
-import com.socketmint.cruzer.startup.LoginDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +52,6 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
     private ListViewCompat mainList, settingsList;
     private View fragmentContainerView;
     private AppCompatTextView userName;
-    private LoginDialog loginDialog = LoginDialog.getInstance();
 
     private int currentSelectPosition = 0;
     protected Login login = Login.getInstance();
@@ -77,7 +74,6 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
             currentSelectPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
 
         login.initInstance(getActivity());
-        loginDialog.initInstance(getActivity());
         databaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
 
         drawerDataList = new ArrayList<>(Choices.DRAWER_ITEMS.values().length);
@@ -141,10 +137,9 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.drawer_profile_box:
-                if (login.login() == Login.LoginType.TRIAL) {
-                    loginDialog.initInstance(getActivity());
-                    loginDialog.show(true);
-                } else {
+                if (login.login() == Login.LoginType.TRIAL)
+                    login.logout();
+                else {
                     analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(ACTION_USER_DETAILS).build());
                     startActivity(new Intent(getActivity(), Retrieve.class).putExtra(Constants.Bundle.PAGE_CHOICE, Choices.USER));
                 }

@@ -18,7 +18,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.socketmint.cruzer.CruzerApp;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
-import com.socketmint.cruzer.dataholder.Vehicle;
+import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.ui.UiElement;
 
@@ -35,7 +35,7 @@ public class Refuel extends Fragment implements View.OnClickListener {
     private UiElement uiElement;
     private DatabaseHelper databaseHelper;
     private List<String> list = new ArrayList<>();
-    private List<com.socketmint.cruzer.dataholder.Vehicle> vehicles;
+    private List<Vehicle> vehicles;
 
     private String vehicleId;
     private Tracker analyticsTracker;
@@ -78,7 +78,7 @@ public class Refuel extends Fragment implements View.OnClickListener {
     }
 
     private void adjustVehicleId() {
-        com.socketmint.cruzer.dataholder.Vehicle vehicle = databaseHelper.vehicle(vehicleId);
+        Vehicle vehicle = databaseHelper.vehicle(vehicleId);
         vehicle = (vehicle != null) ? vehicle : databaseHelper.firstVehicle();
         vehicleId = vehicle.getId();
     }

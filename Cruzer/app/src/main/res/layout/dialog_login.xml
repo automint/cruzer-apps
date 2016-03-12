@@ -37,7 +37,7 @@
                     android:layout_marginRight="10dp"
                     android:text="@string/label_phone_number"
                     android:fontFamily="sans-serif-light"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
 
                 <android.support.v7.widget.AppCompatEditText
                     android:layout_width="match_parent"
@@ -53,121 +53,6 @@
                     android:fontFamily="sans-serif-thin"
                     android:hint="@string/hint_edit_field"
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.AppCompatEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/edit_password"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:paddingBottom="18dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:inputType="textPassword"
-                android:fontFamily="sans-serif-light"
-                android:hint="@string/hint_edit_password"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-            <android.support.v7.widget.AppCompatCheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/checkbox_show_password"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:text="@string/label_show_password"
-                android:fontFamily="sans-serif-thin"
-                android:textStyle="italic"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/layout_name"
-                android:layout_margin="20dp"
-                android:animateLayoutChanges="true">
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/text_name"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/label_name"
-                    android:fontFamily="sans-serif-light"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-                <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:animateLayoutChanges="true">
-
-                    <android.support.v7.widget.AppCompatEditText
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:id="@+id/edit_first_name"
-                        android:layout_weight="0.5"
-                        android:inputType="textCapWords"
-                        android:minEms="8"
-                        android:paddingBottom="18dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:hint="@string/hint_edit_first_name"
-                        android:fontFamily="sans-serif-thin"
-                        android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-                    <android.support.v7.widget.AppCompatEditText
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:id="@+id/edit_last_name"
-                        android:layout_weight="0.5"
-                        android:inputType="textCapWords"
-                        android:minEms="8"
-                        android:paddingBottom="18dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:hint="@string/hint_edit_last_name"
-                        android:fontFamily="sans-serif-thin"
-                        android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-                </android.support.v7.widget.LinearLayoutCompat>
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-            <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/layout_email"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"
-                android:animateLayoutChanges="true">
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/text_email"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/label_email"
-                    android:fontFamily="sans-serif-light"
-                    android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-                <android.support.v7.widget.AppCompatEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/edit_email"
-                    android:inputType="textEmailAddress"
-                    android:layout_marginTop="6dp"
-                    android:paddingBottom="18dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:hint="@string/hint_edit_field"
-                    android:fontFamily="sans-serif-thin"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
-
             </android.support.v7.widget.LinearLayoutCompat>
 
             <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"

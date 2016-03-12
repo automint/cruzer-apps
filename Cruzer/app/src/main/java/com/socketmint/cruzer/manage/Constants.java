@@ -10,7 +10,6 @@ public class Constants {
 
     public static abstract class Url {
         public static final String OAUTH = URL_SERVER + "/" + URL_API + "/" + "oauth";
-        public static final String AUTH = URL_SERVER + "/" + URL_API + "/" + "authenticate";
         public static final String USER = URL_SERVER + "/" + URL_API + "/" + "users";
         public static final String MANU = URL_SERVER + "/" + URL_API + "/" + "manufacturers";
         public static final String MODEL = URL_SERVER + "/" + URL_API + "/" + "models";
@@ -34,6 +33,8 @@ public class Constants {
         public static String WORKSHOP_CITY_OFFERING(String cityId, String offeringId) { return WORKSHOP_CITY(cityId) + "/offerings/" + offeringId; }
         public static String WORKSHOP_CITY_VEHICLE_TYPE_OFFERING(String cityId, String vehicleTypeId, String offeringId) { return WORKSHOP_CITY_VEHICLE_TYPE(cityId, vehicleTypeId) + "/offerings/" + offeringId; }
         public static final String BOOK_SERVICE = URL_SERVER + "/" + URL_API + "/" + "servicebookings";
+        public static final String INSURANCE = URL_SERVER + "/" + URL_API + "/" + "insurances";
+        public static final String PUC = URL_SERVER + "/" + URL_API + "/" + "puc";
     }
 
     public static abstract class VolleyRequest {
@@ -74,6 +75,7 @@ public class Constants {
         public static final String ID = DatabaseSchema.COLUMN_ID;
         public static final String OFFERING_FILTER = "offeringFilter";
         public static final String VEHICLE_TYPE_FILTER = "vehicleTypeFilter";
+        public static final String MOBILE = DatabaseSchema.Users.COLUMN_MOBILE;
 
         public static final String CITY = "city";
         public static final String COUNTRY = "country";
@@ -88,8 +90,11 @@ public class Constants {
     }
 
     public static abstract class RequestCodes {
+        public static final int PERMISSION_CAMERA = 19;
         public static final int PERMISSION_MAPS_CURRENT_LOCATION = 2;
         public static final int PERMISSION_CALL_PHONE = 3;
+        public static final int CAMERA_REQUEST_PHOTO = 24;
+        public static final int GALLERY_REQUEST_PHOTO = 34;
     }
 
     public static abstract class GoogleAnalytics {
@@ -103,5 +108,17 @@ public class Constants {
         public static final String CITY = "getCityIntentFilter";
 
         public static final String FLAG_CITY_STATUS = "getCityStatus";
+    }
+
+    public static abstract class AnimationStartOffset {
+        public static final long REFUEL_ENTRY = 50;
+        public static final long SERVICE_ENTRY = 100;
+        public static final long INSURANCE_ENTRY = 150;
+        public static final long PUC_ENTRY = 200;
+
+        public static final long REFUEL_EXIT = 200;
+        public static final long SERVICE_EXIT = 150;
+        public static final long INSURANCE_EXIT = 100;
+        public static final long PUC_EXIT = 50;
     }
 }

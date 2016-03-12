@@ -70,6 +70,7 @@ public class DatabaseSchema {
         public static final String COLUMN_STATUS = "status_id";
         public static final String COLUMN_USER_ID = DatabaseSchema.COLUMN_USER_ID;
         public static final String COLUMN_ROLE_ID = "role_id";
+        public static final String COLUMN_VAT = "vat";
     }
 
     public static abstract class Refuels implements BaseColumns {
