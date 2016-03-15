@@ -105,6 +105,11 @@
         <item name="colorButtonNormal">@color/facebook</item>
     </style>
 
+    <style name="AppTheme.LoginDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowAnimationStyle">@style/AppTheme.PayTmDialogAnimation</item>
+        <item name="colorButtonNormal">@color/cruzer_blue_primary</item>
+    </style>
+
     <style name="AppTheme.PayTmDialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_from_top</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>

@@ -36,6 +36,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/label_phone_number"
+                    android:textColor="@color/grey_800"
                     android:fontFamily="sans-serif-light"
                     android:textAppearance="?android:attr/textAppearanceSmall"/>
 
@@ -51,6 +52,7 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:fontFamily="sans-serif-thin"
+                    android:textColor="@color/grey_900"
                     android:hint="@string/hint_edit_field"
                     android:textAppearance="?android:attr/textAppearanceLarge"/>
             </android.support.v7.widget.LinearLayoutCompat>
