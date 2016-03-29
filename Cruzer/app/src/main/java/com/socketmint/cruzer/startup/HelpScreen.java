@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
+import android.view.View;
 
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.manage.Constants;
@@ -30,6 +31,7 @@ public class HelpScreen extends AppCompatActivity {
         imageHelp3 = (AppCompatImageView) findViewById(R.id.image_help_item_3);
         imageHelp4 = (AppCompatImageView) findViewById(R.id.image_help_item_4);
         imageHelp5 = (AppCompatImageView) findViewById(R.id.image_help_item_5);
+        imageHelp5.setVisibility(View.GONE);
 
         mobile = getIntent().getStringExtra(Constants.Bundle.MOBILE);
         mobile = (mobile == null) ? "" : mobile;
@@ -47,28 +49,28 @@ public class HelpScreen extends AppCompatActivity {
                 imageHelp2.setImageResource(R.drawable.ic_indicator);
                 imageHelp3.setImageResource(R.drawable.ic_indicator);
                 imageHelp4.setImageResource(R.drawable.ic_indicator);
-                imageHelp5.setImageResource(R.drawable.ic_indicator);
+//                imageHelp5.setImageResource(R.drawable.ic_indicator);
                 break;
             case 1:
                 imageHelp1.setImageResource(R.drawable.ic_indicator);
                 imageHelp2.setImageResource(R.drawable.ic_indicator_selected);
                 imageHelp3.setImageResource(R.drawable.ic_indicator);
                 imageHelp4.setImageResource(R.drawable.ic_indicator);
-                imageHelp5.setImageResource(R.drawable.ic_indicator);
+//                imageHelp5.setImageResource(R.drawable.ic_indicator);
                 break;
             case 2:
                 imageHelp1.setImageResource(R.drawable.ic_indicator);
                 imageHelp2.setImageResource(R.drawable.ic_indicator);
                 imageHelp3.setImageResource(R.drawable.ic_indicator_selected);
                 imageHelp4.setImageResource(R.drawable.ic_indicator);
-                imageHelp5.setImageResource(R.drawable.ic_indicator);
+//                imageHelp5.setImageResource(R.drawable.ic_indicator);
                 break;
             case 3:
                 imageHelp1.setImageResource(R.drawable.ic_indicator);
                 imageHelp2.setImageResource(R.drawable.ic_indicator);
                 imageHelp3.setImageResource(R.drawable.ic_indicator);
                 imageHelp4.setImageResource(R.drawable.ic_indicator_selected);
-                imageHelp5.setImageResource(R.drawable.ic_indicator);
+//                imageHelp5.setImageResource(R.drawable.ic_indicator);
                 break;
             case 4:
                 imageHelp1.setImageResource(R.drawable.ic_indicator);
@@ -92,7 +94,7 @@ public class HelpScreen extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 5;
+            return 4;
         }
     }
 
