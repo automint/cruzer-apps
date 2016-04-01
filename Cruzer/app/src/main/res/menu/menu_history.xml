@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/item_locate"
+    <!--<item android:id="@+id/item_locate"
         android:icon="@drawable/ic_workshop_locator_white"
         android:title="@string/drawer_item_locator"
         android:orderInCategory="1"
         android:menuCategory="system"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />-->
     <item android:id="@+id/item_history"
         android:icon="@drawable/ic_arrow_drop_down_circle_white_24dp"
         android:title="@string/label_history"
