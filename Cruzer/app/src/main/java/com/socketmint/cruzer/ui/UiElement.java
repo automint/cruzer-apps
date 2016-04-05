@@ -37,6 +37,7 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
 
     //  keeping track of calling activity
     private Activity activity;
+    private Context context;
 
     //  different date format objects for different purposes
     private SimpleDateFormat createDateFormat, createTimeFormat, convertDateFormat, serverFormat, cardDateFormat, retrieveDateFormat;
@@ -59,6 +60,16 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
         convertDateFormat = new SimpleDateFormat("yyyy-MM-dd", activity.getResources().getConfiguration().locale);
         createTimeFormat = new SimpleDateFormat("hh:mm:ss", activity.getResources().getConfiguration().locale);
         serverFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
+    }
+
+    public UiElement(Context context) {
+        this.context = context;
+        createDateFormat = new SimpleDateFormat("dd/MM/yyyy", context.getResources().getConfiguration().locale);
+        cardDateFormat = new SimpleDateFormat("dd MMM", context.getResources().getConfiguration().locale);
+        retrieveDateFormat = new SimpleDateFormat("dd MMM yyyy", context.getResources().getConfiguration().locale);
+        convertDateFormat = new SimpleDateFormat("yyyy-MM-dd", context.getResources().getConfiguration().locale);
+        createTimeFormat = new SimpleDateFormat("hh:mm:ss", context.getResources().getConfiguration().locale);
+        serverFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", context.getResources().getConfiguration().locale);
     }
 
     /**

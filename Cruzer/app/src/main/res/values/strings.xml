@@ -164,4 +164,12 @@
     <string name="message_upload_confirm">Receipt is uploaded! It will be added soon!</string>
     <string name="message_paytm">Follow us on Facebook to get cool updates!</string>
     <string name="paytm_like_us">Like us</string>
+    <string name="hint_puc_no">PUC Number</string>
+    <string name="hint_puc_fees">Amount</string>
+    <string name="message_fill_puc_no">Please Fill PUC No</string>
+    <string name="hint_policy_no">Policy Number</string>
+    <string name="hint_insurance_premium">Premium</string>
+    <string name="message_fill_premium">Please Fill Premium Amount</string>
+    <string name="message_fill_date">Please Fill Date</string>
+    <string name="message_fill_insurance_company">Please Select Insurance Company</string>
 </resources>

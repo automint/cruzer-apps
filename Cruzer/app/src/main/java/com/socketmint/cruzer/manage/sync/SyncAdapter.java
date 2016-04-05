@@ -1,12 +1,18 @@
 package com.socketmint.cruzer.manage.sync;
 
 import android.accounts.Account;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Base64;
 import android.util.Log;
 
@@ -23,16 +29,20 @@ import com.socketmint.cruzer.dataholder.*;
 import com.socketmint.cruzer.dataholder.expense.Refuel;
 import com.socketmint.cruzer.dataholder.expense.service.Service;
 import com.socketmint.cruzer.dataholder.expense.service.Status;
+import com.socketmint.cruzer.dataholder.insurance.Insurance;
 import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
 import com.socketmint.cruzer.dataholder.workshop.Workshop;
+import com.socketmint.cruzer.main.History;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.manage.LocData;
+import com.socketmint.cruzer.ui.UiElement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,7 +56,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     private Context syncContext;
-
     private RequestQueue requestQueue;
     private HashMap<String, String> headerParams = new HashMap<>();
 
@@ -55,6 +64,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Refuel> refuels = new ArrayList<>();
     private List<Service> services = new ArrayList<>();
+    private List<Insurance> insurances = new ArrayList<>();
+    private List<PUC> pucs = new ArrayList<>();
 
     private ContentResolver contentResolver;
     private Account account;
@@ -98,6 +109,33 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             List<String> idConstraint = new ArrayList<>();
             idConstraint.add(DatabaseSchema.COLUMN_ID);
 
+            UiElement uiElement = new UiElement(syncContext);
+            String date = uiElement.date(uiElement.currentDate(), uiElement.currentTime());
+
+            int checkDate = locData.insurancePucDateCheck();
+            checkDate++;
+            if (checkDate > 24) {
+                insurances.clear();
+                insurances = databaseHelper.insurances();
+                if (insurances != null) {
+                    for (Insurance insurance : insurances) {
+                        if (insurance.endDate.equals(date))
+                            showNotification("Your Insurance will expire today");
+                    }
+                }
+
+                pucs.clear();
+                pucs = databaseHelper.pucList();
+                if (pucs != null) {
+                    for (PUC puc : pucs) {
+                        if (puc.endDate.equals(date))
+                            showNotification("Your PUC will expire today");
+                    }
+                }
+                checkDate = 0;
+            }
+            locData.storeInsurancePucDateCheck(checkDate);
+
             try {
                 vehicles.clear();
                 vehicles = databaseHelper.vehicles(DatabaseHelper.SyncStatus.NEW);
@@ -125,6 +163,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     Workshop workshop = databaseHelper.workshop(idConstraint, new String[]{service.getWorkshopId()});
                     String workshopId = (workshop != null) ? workshop.getsId() : "";
                     uploadService(service.getId(), databaseHelper.vehicle(service.getVehicleId()).getsId(), service.date, workshopId, service.cost, service.odo, service.details);
+                }
+            }
+
+            pucs.clear();
+            pucs = databaseHelper.pucList(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.NEW});
+            if(pucs != null){
+                for(PUC puc : pucs){
+                    uploadPUC(puc.getId(), puc.getVehicleId(), puc.pucNom, puc.startDate, puc.endDate, puc.fees, puc.details);
+                }
+            }
+
+            insurances.clear();
+            insurances = databaseHelper.insurances(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.NEW});
+            if(insurances != null){
+                for(Insurance insurance : insurances){
+                    uploadInsurance(insurance.getId(), insurance.getVehicleId(), insurance.policyNo, insurance.startDate, insurance.endDate, insurance.premium, insurance.details);
                 }
             }
 
@@ -157,6 +211,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     updateService(service.getsId(), service.getId(), service.date, workshopId, service.cost, service.odo, service.details);
                 }
             }
+            pucs.clear();
+            pucs = databaseHelper.pucList(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.UPDATE});
+            if(pucs != null){
+                for(PUC puc : pucs){
+                    updatePUC(puc.getId(), puc.getsId(), puc.pucNom, puc.startDate, puc.endDate, puc.fees, puc.details);
+                }
+            }
+            insurances.clear();
+            insurances = databaseHelper.insurances(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.UPDATE});
+            if(insurances != null){
+                for(Insurance insurance : insurances){
+                    updateInsurance(insurance.getId(), insurance.getsId(), insurance.getCompanyId(), insurance.policyNo, insurance.startDate, insurance.endDate, insurance.premium, insurance.details);
+                }
+            }
 
             refuels.clear();
             refuels = databaseHelper.deletedRefuels();
@@ -179,11 +247,232 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     deleteVehicle(vehicle.getsId(), vehicle.getId());
                 }
             }
-
+            pucs.clear();
+            pucs = databaseHelper.deletedPUC();
+            if(pucs != null){
+                for(PUC puc : pucs){
+                    deletePUC(puc.getsId(), puc.getId());
+                }
+            }
+            insurances.clear();
+            insurances = databaseHelper.deletedInsurance();
+            if(insurances != null){
+                for(Insurance insurance : insurances){
+                    deleteInsurance(insurance.getsId(), insurance.getId());
+                }
+            }
             List<Status> statusList = databaseHelper.statusList();
             if (((statusList != null) ? statusList.size() : 0) == 0)
                 getStatusTable();
         } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void deletePUC(final String sId, final String id) {
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.PUC(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.delete(DatabaseSchema.PUC.TABLE_NAME, id);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void deleteInsurance(final String sId, final String id) {
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.INSURANCE(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.delete(DatabaseSchema.Insurances.TABLE_NAME, id);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void uploadInsurance(final String id, String vehicleId, String policyNo, String startDate, String endDate, String premium, String details) {
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        if(!vehicleId.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, databaseHelper.vehicle(vehicleId).getsId());
+        if (!policyNo.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_POLICY_NO, policyNo);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID, "1");
+        if (!startDate.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_START_DATE, startDate);
+        if (!endDate.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_END_DATE, endDate);
+        if (!premium.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_PREMIUM, premium);
+        if (!details.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_DETAILS, details);
+        Log.d("insurance post", bodyParams.toString());
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.INSURANCE, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("insurance post", response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success) {
+                        String sId = object.getString(Constants.Json.ID);
+                        databaseHelper.syncRecord(id, sId, DatabaseSchema.Insurances.TABLE_NAME);
+                    } else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                return bodyParams;
+            }
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void uploadPUC(final String id, String vehicleId, String pucNom, String startDate, String endDate, String fees, String details) {
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        if(!vehicleId.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, databaseHelper.vehicle(vehicleId).getsId());
+        if (!pucNom.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNom);
+        if (!startDate.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
+        if (!endDate.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
+        if (!fees.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_FEES, fees);
+        if (!details.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
+        Log.d("puc post", bodyParams.toString());
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.PUC, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("puc post", response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success) {
+                        String sId = object.getString(Constants.Json.ID);
+                        databaseHelper.syncRecord(id, sId, DatabaseSchema.PUC.TABLE_NAME);
+                    } else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                return bodyParams;
+            }
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void showNotification(String message) {
+        Intent intent = new Intent(syncContext, History.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(syncContext, 0 /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(syncContext)
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentTitle(syncContext.getString(R.string.app_name))
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager = (NotificationManager) syncContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 
     public void getStatusTable() {
@@ -350,6 +639,53 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         requestQueue.add(request);
     }
 
+    private void updatePUC(final String id, final String sId, String pucNom, String startDate, String endDate, String fees, String details){
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNom);
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_FEES, fees);
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.PUC(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.syncRecord(id, DatabaseSchema.PUC.TABLE_NAME);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() {
+                return bodyParams;
+            }
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
     private void updateService(final String sId, final String id, final String date, final String workshopId, final String cost, final String odo, final String details) {
         final HashMap<String, String> bodyParams = new HashMap<>();
         bodyParams.put(DatabaseSchema.Services.COLUMN_DATE, date);
@@ -387,6 +723,55 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 error.printStackTrace();
             }
         }) {
+            @Override
+            protected Map<String, String> getParams() {
+                return bodyParams;
+            }
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void updateInsurance(final String id, final String sId, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        if(!companyId.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID, companyId);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_POLICY_NO, policyNo);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_START_DATE, startDate);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_END_DATE, endDate);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_PREMIUM, premium);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_DETAILS, details);
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.INSURANCE(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.syncRecord(id, DatabaseSchema.Insurances.TABLE_NAME);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(syncContext.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }){
             @Override
             protected Map<String, String> getParams() {
                 return bodyParams;

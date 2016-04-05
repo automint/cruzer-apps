@@ -35,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.interfaces.DSAKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -60,6 +61,8 @@ public class ManualSync {
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Refuel> refuels = new ArrayList<>();
     private List<Service> services = new ArrayList<>();
+    private List<PUC> pucs = new ArrayList<>();
+    private List<Insurance> insurances = new ArrayList<>();
     private String locality, nation;
 
     private Thread syncThread;
@@ -128,6 +131,21 @@ public class ManualSync {
                         }
                     }
 
+                    pucs.clear();
+                    pucs = databaseHelper.pucList(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.NEW});
+                    if(pucs != null){
+                        for(PUC puc : pucs){
+                            uploadPUC(puc.getId(), puc.getVehicleId(), puc.pucNom, puc.startDate, puc.endDate, puc.fees, puc.details);
+                        }
+                    }
+
+                    insurances.clear();
+                    insurances = databaseHelper.insurances(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.NEW});
+                    if(insurances != null){
+                        for(Insurance insurance : insurances){
+                            uploadInsurance(insurance.getId(), insurance.getVehicleId(), insurance.getCompanyId(), insurance.policyNo, insurance.startDate, insurance.endDate, insurance.premium, insurance.details);
+                        }
+                    }
                     User user = databaseHelper.user(DatabaseHelper.SyncStatus.UPDATE);
                     if (user != null) {
                         updateUser(user.getId(), user.getPassword(), user.firstName, user.lastName, user.email, user.getCityId());
@@ -157,7 +175,20 @@ public class ManualSync {
                             updateService(service.getsId(), service.getId(), service.date, workshopId, service.cost, service.odo, service.details);
                         }
                     }
-
+                    insurances.clear();
+                    insurances = databaseHelper.insurances(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.UPDATE});
+                    if(insurances != null){
+                        for(Insurance insurance : insurances){
+                            updateInsurance(insurance.getId(), insurance.getsId(), insurance.getCompanyId(), insurance.policyNo, insurance.startDate, insurance.endDate, insurance.premium, insurance.details);
+                        }
+                    }
+                    pucs.clear();
+                    pucs = databaseHelper.pucList(syncStatusConstraint, new String[]{DatabaseHelper.SyncStatus.UPDATE});
+                    if(pucs != null){
+                        for(PUC puc : pucs){
+                            updatePUC(puc.getId(), puc.getsId(), puc.pucNom, puc.startDate, puc.endDate, puc.fees, puc.details);
+                        }
+                    }
                     refuels.clear();
                     refuels = databaseHelper.deletedRefuels();
                     if (refuels != null) {
@@ -179,7 +210,20 @@ public class ManualSync {
                             deleteVehicle(vehicle.getsId(), vehicle.getId());
                         }
                     }
-
+                    pucs.clear();
+                    pucs = databaseHelper.deletedPUC();
+                    if(pucs != null){
+                        for(PUC puc : pucs){
+                            deletePUC(puc.getsId(), puc.getId());
+                        }
+                    }
+                    insurances.clear();
+                    insurances = databaseHelper.deletedInsurance();
+                    if(insurances != null){
+                        for(Insurance insurance : insurances){
+                            deleteInsurance(insurance.getsId(), insurance.getId());
+                        }
+                    }
                     List<Status> statusList = databaseHelper.statusList();
                     if (((statusList != null) ? statusList.size() : 0) == 0)
                         getStatusTable();
@@ -189,60 +233,52 @@ public class ManualSync {
                     notifyUserCity(false, false);
 
                     //  when activity starts
-                    getInsurances();
-                    getPUC();
                 } catch (Exception e) { e.printStackTrace(); }
             }
         });
         syncThread.start();
     }
 
-    private void getInsurances() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.INSURANCE, new Response.Listener<String>() {
+    private void uploadInsurance(final String id, String vehicleId, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        if(!vehicleId.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, databaseHelper.vehicle(vehicleId).getsId());
+        if (!policyNo.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_POLICY_NO, policyNo);
+        if (!companyId.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID, companyId);
+        if (!startDate.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_START_DATE, startDate);
+        if (!endDate.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_END_DATE, endDate);
+        if (!premium.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_PREMIUM, premium);
+        if (!details.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_DETAILS, details);
+        Log.d("insurance post", bodyParams.toString());
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.INSURANCE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d(TAG, "Insurances = " + response);
+                Log.d("insurance post", response);
                 try {
-                    final JSONArray array = new JSONArray(response);
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            try {
-                                for (int i = 0; i < array.length(); i++) {
-                                    JSONObject object = array.getJSONObject(i);
-                                    String sId = object.getString(DatabaseSchema.Insurances.COLUMN_ID);
-                                    String vehicleId = object.getString(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID);
-                                    String companyId = object.getString(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID);
-                                    String policyNo = object.optString(DatabaseSchema.Insurances.COLUMN_POLICY_NO);
-                                    String startDate = object.optString(DatabaseSchema.Insurances.COLUMN_START_DATE);
-                                    String endDate = object.optString(DatabaseSchema.Insurances.COLUMN_END_DATE);
-                                    String premium = object.optString(DatabaseSchema.Insurances.COLUMN_PREMIUM);
-                                    String details = object.optString(DatabaseSchema.Insurances.COLUMN_DETAILS);
-
-                                    String company = object.optString(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY);
-
-                                    Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
-                                    InsuranceCompany insuranceCompany = databaseHelper.insuranceCompany(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{companyId});
-
-                                    if (insuranceCompany == null)
-                                        databaseHelper.addInsuranceCompany(companyId, company);
-                                    else
-                                        databaseHelper.updateInsuranceCompany(companyId, company);
-
-                                    if (vehicle == null)
-                                        continue;
-
-                                    Insurance item = databaseHelper.insurance(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                                    if (item == null)
-                                        databaseHelper.addInsurance(sId, vehicle.getId(), companyId, policyNo, startDate, endDate, premium, details);
-                                    else
-                                        databaseHelper.updateInsurance(sId, vehicle.getId(), companyId, policyNo, startDate, endDate, premium, details);
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success) {
+                        String sId = object.getString(Constants.Json.ID);
+                        Log.e(TAG, "sync Record for PUC" + databaseHelper.syncRecord(id, sId, DatabaseSchema.Insurances.TABLE_NAME));
+                    } else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
                                 }
-                            } catch (JSONException e) { Log.e(TAG, "trouble in insurance loop"); }
-                            return null;
+                            });
+                            authenticate();
                         }
-                    }.execute();
-                } catch (JSONException e) { Log.e(TAG, "Insurances not in json"); }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -251,55 +287,55 @@ public class ManualSync {
             }
         }) {
             @Override
+            protected Map<String, String> getParams() {
+                return bodyParams;
+            }
+            @Override
             public Map<String, String> getHeaders() {
-                HashMap<String, String> headerParams = new HashMap<>();
-                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
                 return headerParams;
             }
         };
         requestQueue.add(request);
     }
 
-    private void getPUC() {
-        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.PUC, new Response.Listener<String>() {
+    private void uploadPUC(final String id, String vehicleId, String pucNom, String startDate, String endDate, String fees, String details) {
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        if(!vehicleId.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, databaseHelper.vehicle(vehicleId).getsId());
+        if (!pucNom.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNom);
+        if (!startDate.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
+        if (!endDate.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
+        if (!fees.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_FEES, fees);
+        if (!details.isEmpty())
+            bodyParams.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
+        Log.d("puc post", bodyParams.toString());
+        StringRequest request = new StringRequest(Request.Method.POST, Constants.Url.PUC, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d(TAG, "PUC = " + response);
+                Log.d("puc post", response);
                 try {
-                    final JSONArray array = new JSONArray(response);
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            try {
-                                for (int i = 0; i < array.length(); i++) {
-                                    JSONObject object = array.getJSONObject(i);
-                                    String sId = object.getString(DatabaseSchema.PUC.COLUMN_ID);
-                                    String vehicleId = object.getString(DatabaseSchema.PUC.COLUMN_VEHICLE_ID);
-                                    String workshopId = object.getString(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID);
-                                    String pucNo = object.optString(DatabaseSchema.PUC.COLUMN_PUC_NO);
-                                    String startDate = object.optString(DatabaseSchema.PUC.COLUMN_START_DATE);
-                                    String endDate = object.optString(DatabaseSchema.PUC.COLUMN_END_DATE);
-                                    String fees = object.optString(DatabaseSchema.PUC.COLUMN_FEES);
-                                    String details = object.optString(DatabaseSchema.PUC.COLUMN_DETAILS);
-
-                                    Vehicle vehicle = databaseHelper.vehicleBySid(vehicleId);
-                                    Workshop workshop = databaseHelper.workshop(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{workshopId});
-                                    if (vehicle == null)
-                                        continue;
-
-                                    String wId = (workshop == null) ? "" : workshop.getId();
-
-                                    PUC item = databaseHelper.puc(Collections.singletonList(DatabaseSchema.COLUMN_SID), new String[]{sId});
-                                    if (item == null)
-                                        databaseHelper.addPUC(sId, vehicle.getId(), wId, pucNo, startDate, endDate, fees, details);
-                                    else
-                                        databaseHelper.updatePUC(sId, vehicle.getId(), wId, pucNo, startDate, endDate, fees, details);
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success) {
+                        String sId = object.getString(Constants.Json.ID);
+                        Log.e(TAG, "sunc record for insurance " + databaseHelper.syncRecord(id, sId, DatabaseSchema.PUC.TABLE_NAME));
+                    } else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
                                 }
-                            } catch (JSONException e) { Log.e(TAG, "trouble in PUC loop"); }
-                            return null;
+                            });
+                            authenticate();
                         }
-                    }.execute();
-                } catch (JSONException e) { Log.e(TAG, "PUC not in json"); }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -308,9 +344,11 @@ public class ManualSync {
             }
         }) {
             @Override
+            protected Map<String, String> getParams() {
+                return bodyParams;
+            }
+            @Override
             public Map<String, String> getHeaders() {
-                HashMap<String, String> headerParams = new HashMap<>();
-                headerParams.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
                 return headerParams;
             }
         };
@@ -666,6 +704,180 @@ public class ManualSync {
                 error.printStackTrace();
             }
         }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void deletePUC(final String sId, final String id) {
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.PUC(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.delete(DatabaseSchema.PUC.TABLE_NAME, id);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void deleteInsurance(final String sId, final String id) {
+        StringRequest request = new StringRequest(Request.Method.DELETE, Constants.Url.INSURANCE(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.delete(DatabaseSchema.Insurances.TABLE_NAME, id);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void updatePUC(final String id, final String sId, String pucNom, String startDate, String endDate, String fees, String details){
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNom);
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_FEES, fees);
+        bodyParams.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.PUC(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "update puc response = " + response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.syncRecord(id, DatabaseSchema.PUC.TABLE_NAME);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() {
+                return bodyParams;
+            }
+            @Override
+            public Map<String, String> getHeaders() {
+                return headerParams;
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    private void updateInsurance(final String id, final String sId, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {
+        final HashMap<String, String> bodyParams = new HashMap<>();
+        if(!companyId.isEmpty())
+            bodyParams.put(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID, companyId);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_POLICY_NO, policyNo);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_START_DATE, startDate);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_END_DATE, endDate);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_PREMIUM, premium);
+        bodyParams.put(DatabaseSchema.Insurances.COLUMN_DETAILS, details);
+        Log.d(TAG, "update Insurance = " + bodyParams.toString());
+        Log.d(TAG, "update insurance url = " + Constants.Url.INSURANCE(sId));
+        StringRequest request = new StringRequest(Request.Method.PUT, Constants.Url.INSURANCE(sId), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "update insurance response = " + response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    boolean success = object.getBoolean(Constants.Json.SUCCESS);
+                    if (success)
+                        databaseHelper.syncRecord(id, DatabaseSchema.Insurances.TABLE_NAME);
+                    else {
+                        String message = object.getString(Constants.Json.MESSAGE);
+                        if (message.equals(activity.getString(R.string.error_auth_fail))) {
+                            requestQueue.cancelAll(new RequestQueue.RequestFilter() {
+                                @Override
+                                public boolean apply(Request<?> request) {
+                                    return true;
+                                }
+                            });
+                            authenticate();
+                        }
+                    }
+                } catch (JSONException | NullPointerException e) { e.printStackTrace(); }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() {
+                return bodyParams;
+            }
             @Override
             public Map<String, String> getHeaders() {
                 return headerParams;
