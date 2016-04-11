@@ -1225,6 +1225,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
     }
 
+    public List<PUC> deletedPUC() {
+        try {
+            List<PUC> list = new ArrayList<>();
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.PUC.TABLE_NAME, new String[]{"*"}, DatabaseSchema.SYNC_STATUS + "=?", new String[]{SyncStatus.DELETE}, null, null, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                PUC object = new PUC(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_WORKSHOP_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_PUC_NO)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_START_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_END_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_FEES)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.PUC.COLUMN_DETAILS)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
+    }
+
+    public List<Insurance> deletedInsurance() {
+        try {
+            List<Insurance> list = new ArrayList<>();
+            Cursor cursor = getReadableDatabase().query(DatabaseSchema.Insurances.TABLE_NAME, new String[]{"*"}, DatabaseSchema.SYNC_STATUS + "=?", new String[]{SyncStatus.DELETE}, null, null, null);
+            cursor.moveToFirst();
+
+            while (!cursor.isAfterLast()) {
+                Insurance object = new Insurance(cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_SID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.COLUMN_VEHICLE_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_POLICY_NO)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_START_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_END_DATE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_PREMIUM)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseSchema.Insurances.COLUMN_DETAILS)));
+                list.add(object);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+            return list;
+        } catch (CursorIndexOutOfBoundsException | IllegalArgumentException | IllegalStateException e) { return null; }
+    }
+
     public List<Service> services(List<String> constraints, String[] values) {
         try {
             String conString = constraints.get(0) + "=?";
@@ -1840,6 +1890,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
+    public boolean addInsurance(String vehicleId, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            String id = generateId(DatabaseSchema.Insurances.TABLE_NAME);
+            values.put(DatabaseSchema.Insurances.COLUMN_ID, id);
+            values.put(DatabaseSchema.Insurances.COLUMN_VEHICLE_ID, vehicleId);
+            values.put(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID, companyId);
+            values.put(DatabaseSchema.Insurances.COLUMN_POLICY_NO, policyNo);
+            values.put(DatabaseSchema.Insurances.COLUMN_START_DATE, startDate);
+            values.put(DatabaseSchema.Insurances.COLUMN_END_DATE, endDate);
+            values.put(DatabaseSchema.Insurances.COLUMN_PREMIUM, premium);
+            values.put(DatabaseSchema.Insurances.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
+
+            getWritableDatabase().insert(DatabaseSchema.Insurances.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean updateInsurance(String id, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.Insurances.COLUMN_INSURANCE_COMPANY_ID, companyId);
+            values.put(DatabaseSchema.Insurances.COLUMN_POLICY_NO, policyNo);
+            values.put(DatabaseSchema.Insurances.COLUMN_START_DATE, startDate);
+            values.put(DatabaseSchema.Insurances.COLUMN_END_DATE, endDate);
+            values.put(DatabaseSchema.Insurances.COLUMN_PREMIUM, premium);
+            values.put(DatabaseSchema.Insurances.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.UPDATE);
+
+            getWritableDatabase().update(DatabaseSchema.Insurances.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
     public boolean updateInsurance(String sId, String vehicleId, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {
         try {
             ContentValues values = new ContentValues();
@@ -1977,6 +2064,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLiteConstraintException e) { return false; }
     }
 
+    public boolean addPUC(String vehicleId, String pucNo, String startDate, String endDate, String fees, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            String id = generateId(DatabaseSchema.PUC.TABLE_NAME);
+            values.put(DatabaseSchema.PUC.COLUMN_ID, id);
+            values.put(DatabaseSchema.PUC.COLUMN_VEHICLE_ID, vehicleId);
+            values.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNo);
+            values.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
+            values.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
+            values.put(DatabaseSchema.PUC.COLUMN_FEES, fees);
+            values.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.NEW);
+
+            getWritableDatabase().insert(DatabaseSchema.PUC.TABLE_NAME, null, values);
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
     public boolean updatePUC(String sId, String vehicleId, String workshopId, String pucNo, String startDate, String endDate, String fees, String details) {
         try {
             ContentValues values = new ContentValues();
@@ -1994,6 +2100,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.SYNCED);
 
             getWritableDatabase().update(DatabaseSchema.PUC.TABLE_NAME, values, DatabaseSchema.COLUMN_SID + "=?", new String[]{sId});
+            return true;
+        } catch (SQLiteConstraintException e) { return false; }
+    }
+
+    public boolean updatePUC(String id, String pucNo, String startDate, String endDate, String fees, String details) {
+        try {
+            ContentValues values = new ContentValues();
+
+            values.put(DatabaseSchema.PUC.COLUMN_PUC_NO, pucNo);
+            values.put(DatabaseSchema.PUC.COLUMN_START_DATE, startDate);
+            values.put(DatabaseSchema.PUC.COLUMN_END_DATE, endDate);
+            values.put(DatabaseSchema.PUC.COLUMN_FEES, fees);
+            values.put(DatabaseSchema.PUC.COLUMN_DETAILS, details);
+            values.put(DatabaseSchema.SYNC_STATUS, SyncStatus.UPDATE);
+
+            getWritableDatabase().update(DatabaseSchema.PUC.TABLE_NAME, values, DatabaseSchema.COLUMN_ID + "=?", new String[]{id});
             return true;
         } catch (SQLiteConstraintException e) { return false; }
     }
@@ -2104,11 +2226,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 if (tableName.equals(DatabaseSchema.Vehicles.TABLE_NAME)) {
                     hide(DatabaseSchema.Refuels.TABLE_NAME, id);
                     hide(DatabaseSchema.Services.TABLE_NAME, id);
+                    hide(DatabaseSchema.Insurances.TABLE_NAME, id);
+                    hide(DatabaseSchema.PUC.TABLE_NAME, id);
                 }
                 return true;
             }
         } catch (SQLiteConstraintException e) { return false; }
     }
+
 
     private boolean hide(String tableName, String vId) {
         try {

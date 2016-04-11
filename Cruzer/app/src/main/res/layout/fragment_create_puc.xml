@@ -1,59 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <android.support.v7.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/layout_vehicle"
-        android:gravity="center"
-        android:padding="20dp">
-
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/label_vehicle"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:text="@string/label_puc_vehicle"
-            android:fontFamily="sans-serif-light"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-        <android.support.v7.widget.AppCompatSpinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinner_vehicle"/>
-
-    </android.support.v7.widget.LinearLayoutCompat>
-
     <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center">
+        android:paddingBottom="20dp"
+        android:animateLayoutChanges="true">
 
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_puc_upload"
-            android:layout_margin="20dp"
+            android:id="@+id/layout_puc_vehicle"
             android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_puc_vehicle"/>
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner_vehicle"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_puc_no"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="18dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:inputType="numberDecimal"
+            android:hint="@string/hint_puc_no"
+            android:drawablePadding="10dp"
             android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/button_puc_photo"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/label_upload_photo"
-            android:textColor="@android:color/white"
+            android:id="@+id/edit_puc_start_date"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
+            android:paddingLeft="10dp"
+            android:inputType="date"
+            android:paddingRight="10dp"
+            android:focusable="false"
+            android:hint="@string/label_start_date"
+            android:drawableLeft="@drawable/ic_date"
+            android:drawableStart="@drawable/ic_date"
+            android:drawablePadding="10dp"
             android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout_puc_end_date"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp">
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edit_puc_end_date"
+                android:layout_weight="0.8"
+                android:layout_marginTop="6dp"
+                android:inputType="date"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:focusable="false"
+                android:hint="@string/label_end_date"
+                android:drawableLeft="@drawable/ic_date"
+                android:drawableStart="@drawable/ic_date"
+                android:drawablePadding="10dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_puc_fees"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="10dp"
+            android:inputType="numberDecimal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:hint="@string/hint_puc_fees"
+            android:drawableLeft="@drawable/ic_amount"
+            android:drawableStart="@drawable/ic_amount"
+            android:drawablePadding="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_puc_notes"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="10dp"
+            android:inputType="textCapSentences"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:hint="@string/hint_notes"
+            android:drawableLeft="@drawable/ic_notes"
+            android:drawableStart="@drawable/ic_notes"
+            android:drawablePadding="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        <android.support.v7.widget.LinearLayoutCompat android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:gravity="end"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="20dp">
+
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_create_record"
+                android:text="@string/label_done"
+                app:backgroundTint="@color/blue_800"
+                android:textColor="@android:color/white"
+                app:borderWidth="0dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
 
     </android.support.v7.widget.LinearLayoutCompat>
 
-</android.support.design.widget.CoordinatorLayout>
+</ScrollView>

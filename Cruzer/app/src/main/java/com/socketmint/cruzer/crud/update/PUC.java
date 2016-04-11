@@ -1,67 +1,42 @@
-package com.socketmint.cruzer.crud.create;
+package com.socketmint.cruzer.crud.update;
 
-/**
- * Fragment for creating an PUC entry for particular vehicle
- * @author ndkcha
- * @since 26
- * @version 26
- */
-
-import android.Manifest;
-import android.app.Activity;
-import android.content.CursorLoader;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.*;
-import android.os.Process;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatSpinner;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.socketmint.cruzer.R;
 import com.socketmint.cruzer.database.DatabaseHelper;
-import com.socketmint.cruzer.dataholder.insurance.InsuranceCompany;
+import com.socketmint.cruzer.database.DatabaseSchema;
+import com.socketmint.cruzer.dataholder.vehicle.*;
 import com.socketmint.cruzer.dataholder.vehicle.Vehicle;
-import com.socketmint.cruzer.manage.Amazon;
 import com.socketmint.cruzer.manage.Constants;
 import com.socketmint.cruzer.ui.UiElement;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class PUC extends Fragment implements View.OnClickListener {
-    private static final String TAG = "CreatePUC";
+public class PUC extends Fragment implements View.OnClickListener{
 
-    private AppCompatSpinner spinnerVehicle;
     private UiElement uiElement;
     private DatabaseHelper databaseHelper;
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<String> vehicleList = new ArrayList<>();
     private AppCompatEditText editStartDate, editEndDate, editPucNo, editFees, editDetails;
     private String vehicleId;
+    private String id;
 
-    public static PUC newInstance(String vehicleId) {
+    public static PUC newInstance(String id) {
         PUC fragment = new PUC();
         Bundle args = new Bundle();
-        args.putString(Constants.Bundle.VEHICLE_ID, vehicleId);
+        args.putString(Constants.Bundle.ID, id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,30 +49,28 @@ public class PUC extends Fragment implements View.OnClickListener {
         uiElement = new UiElement(getActivity());
         databaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
 
-        vehicleId = getArguments().getString(Constants.Bundle.VEHICLE_ID, "");
-        if (vehicleId.isEmpty()) {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.message_init_fail, Snackbar.LENGTH_SHORT).show();
-            getActivity().finish();
-            return null;
-        }
-
-        adjustVehicleId();
-        vehicles = databaseHelper.vehicles();
-
+        id = getArguments().getString(Constants.Bundle.ID, "");
         initializeViews(v);
-        setDefaultValues();
+
         return v;
     }
 
-    private void adjustVehicleId() {
-        com.socketmint.cruzer.dataholder.vehicle.Vehicle vehicle = databaseHelper.vehicle(vehicleId);
-        vehicle = (vehicle != null) ? vehicle : databaseHelper.firstVehicle();
-        vehicleId = vehicle.getId();
+    @Override
+    public void onStart() {
+        super.onStart();
+        setContens();
+    }
+
+    private void setContens() {
+        com.socketmint.cruzer.dataholder.PUC puc = databaseHelper.puc(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{id});
+        editPucNo.setText(puc.pucNom);
+        editStartDate.setText(uiElement.date(puc.startDate));
+        editEndDate.setText(uiElement.date(puc.endDate));
+        editFees.setText(puc.fees);
+        editDetails.setText(puc.details);
     }
 
     private void initializeViews(View v) {
-        spinnerVehicle = (AppCompatSpinner) v.findViewById(R.id.spinner_vehicle);
-
         editPucNo = (AppCompatEditText) v.findViewById(R.id.edit_puc_no);
         editStartDate = (AppCompatEditText) v.findViewById(R.id.edit_puc_start_date);
         editEndDate = (AppCompatEditText) v.findViewById(R.id.edit_puc_end_date);
@@ -109,31 +82,9 @@ public class PUC extends Fragment implements View.OnClickListener {
         v.findViewById(R.id.edit_puc_end_date).setOnClickListener(this);
     }
 
-    private void setDefaultValues() {
-        vehicleList.clear();
-        String original = "";
-        for (Vehicle item : vehicles) {
-            String string;
-            if (item.name == null || item.name.isEmpty()) {
-                if (item.model != null)
-                    string = item.model.name + ", " + item.model.manu.name;
-                else
-                    string = item.reg;
-            } else
-                string = item.name;
-            if (item.getId().equals(vehicleId))
-                original = string;
-            vehicleList.add(string);
-        }
-        final ArrayAdapter<String> vehicleAdapter = new ArrayAdapter<>(getActivity().getApplicationContext(), R.layout.spinner_item, R.id.text_spinner_item, vehicleList);
-        spinnerVehicle.setAdapter(vehicleAdapter);
-        spinnerVehicle.setSelection(vehicleList.indexOf(original));
-    }
-
-
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
+        switch (v.getId()){
             case R.id.edit_puc_start_date:
                 uiElement.datePickerDialog(editStartDate);
                 break;
@@ -155,11 +106,9 @@ public class PUC extends Fragment implements View.OnClickListener {
                     Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.message_fill_date, Snackbar.LENGTH_SHORT).show();
                     return;
                 }
-                int index = vehicleList.indexOf(spinnerVehicle.getSelectedItem().toString());
                 String fees = editFees.getText().toString().replaceAll("[^0-9.]+","").trim();
                 String pucNo = editPucNo.getText().toString().replaceAll("[^0-9.]+", "").trim();
-                Log.e(TAG,"vehicle Id : " + vehicles.get(index).getId());
-                if(databaseHelper.addPUC(vehicles.get(index).getId(), pucNo, uiElement.date(editStartDate.getText().toString(), uiElement.currentTime()), editEndDate.getText().toString(), fees, editDetails.getText().toString()))
+                if(databaseHelper.updatePUC(id, pucNo, uiElement.date(editStartDate.getText().toString(), uiElement.currentTime()), editEndDate.getText().toString(), fees, editDetails.getText().toString()))
                     getActivity().onBackPressed();
                 break;
         }

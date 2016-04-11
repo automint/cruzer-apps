@@ -66,6 +66,16 @@ public class Update extends AppCompatActivity {
                 target = User.newInstance();
                 createIcon = R.drawable.ic_user;
                 break;
+            case Choices.INSURANCE:
+                title = getString(R.string.title_insurance);
+                target = Insurance.newInstance(id);
+                createIcon = R.drawable.ic_insurance;
+                break;
+            case Choices.PUC:
+                title = getString(R.string.title_puc);
+                target = PUC.newInstance(id);
+                createIcon = R.drawable.ic_puc;
+                break;
             default:
                 title = getString(R.string.app_name);
                 target = null;
@@ -88,6 +98,9 @@ public class Update extends AppCompatActivity {
                 break;
             case Choices.SERVICE:
                 theme = R.style.AppTheme_Service;
+                break;
+            case Choices.INSURANCE:
+                theme = R.style.AppTheme_Insurance;
                 break;
             default:
                 theme = R.style.AppTheme_Update;

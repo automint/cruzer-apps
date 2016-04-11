@@ -64,8 +64,8 @@ public class Login {
     public static Login instance;
     private static final String TAG = "Login";
     private int currentLoginType = 0;
-    private int pendingManus, pendingModels, pendingVehicles, pendingRefuels, pendingPUCs, pendingCountries, pendingCities, pendingInsurances, pendingWorkshopTypes, pendingServiceStatuses, pendingWorkshops, pendingServices, pendingProblems;
-    private boolean vehicleRequested, workshopTypeRequested, workshopRequested, serviceStatusRequested, cityRequested;
+    private int pendingManus, pendingModels, pendingVehicles, pendingRefuels, pendingPUCs, pendingCountries, pendingCities, pendingInsurances, pendingWorkshopTypes, pendingServiceStatuses, pendingWorkshops, pendingServices, pendingProblems, pendingInsuranceCompanies;
+    private boolean vehicleRequested, workshopTypeRequested, workshopRequested, serviceStatusRequested, cityRequested, insuranceCompanyRequested;
 
     private Activity activity;
 
@@ -232,12 +232,14 @@ public class Login {
         pendingWorkshops = 0;
         pendingServices = 0;
         pendingProblems = 0;
+        pendingInsuranceCompanies = 0;
 
         vehicleRequested = false;
         workshopRequested = false;
         serviceStatusRequested = false;
         cityRequested = false;
         workshopTypeRequested = false;
+        insuranceCompanyRequested = false;
     }
 
     private boolean gotWhatIsRequested() {
@@ -295,6 +297,7 @@ public class Login {
                         getCountries();
                         getWorkshopTypes();
                         getServiceStatuses();
+                        getInsuranceCompanies();
 
                         if (progressDialog != null)
                             progressDialog.setMessage(activity.getString(R.string.message_getting_data));
@@ -329,6 +332,67 @@ public class Login {
                 return headerParams;
             }
         };
+        requestQueue.add(request);
+    }
+
+    private void getInsuranceCompanies() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.INSURANCE_COMPANIES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "insurance companies - " + response);
+                try {
+                    final JSONArray array = new JSONArray(response);
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            try {
+                                for (int i = 0; i < array.length(); i++) {
+                                    if (isCancelled())
+                                        break;
+                                    JSONObject object = array.getJSONObject(i);
+                                    String sId = object.getString(DatabaseSchema.COLUMN_ID);
+                                    String company = object.getString(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY);
+                                    InsuranceCompany insuranceCompany = databaseHelper.insuranceCompany(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                                    if (insuranceCompany != null) {
+                                        if (!insuranceCompany.company.equals(company))
+                                            databaseHelper.updateInsuranceCompany(sId, company);
+                                    } else
+                                        databaseHelper.addInsuranceCompany(sId, company);
+                                }
+                            } catch (JSONException e) { cancel(true); Log.d(TAG, "trouble in insurance company loop"); initFail();  }
+                            return null;
+                        }
+                        @Override
+                        public void onPostExecute(Void result) {
+                            pendingInsuranceCompanies--;
+                            insuranceCompanyRequested = true;
+                            if (isCancelled())
+                                initFail();
+                            else if(pendingVehicles == 0 && vehicleRequested)
+                                getInsurances();
+                        }
+                    }.execute();
+                } catch (JSONException | NullPointerException e) {
+                    pendingInsuranceCompanies--;
+                    Log.e(TAG, "insurance company : not added or not json");
+                    initFail();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                volleyFail();
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return params;
+            }
+        };
+        pendingInsuranceCompanies++;
         requestQueue.add(request);
     }
 
@@ -565,6 +629,8 @@ public class Login {
                                     if (pendingServiceStatuses == 0 && serviceStatusRequested)
                                         getServices();
                                 }
+                                if(pendingInsuranceCompanies == 0 && insuranceCompanyRequested)
+                                    getInsurances();
                             }
                         }
                     }.execute();

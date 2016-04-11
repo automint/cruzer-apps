@@ -17,6 +17,7 @@ public class LocData {
         public static final String LOGIN_TYPE = "login_type";
         public static final String GCM = "gcm";
         public static final String PAYTM_LIKE = "paytm_like";
+        public static final String INSURANCE_PUC_DATE_CHECK = "insurance_puc_date_check";
     }
 
     public void cruzerInstance(Context context) {
@@ -25,6 +26,14 @@ public class LocData {
 
     public void formInstance(Context context) {
         sharedPreferences = context.getSharedPreferences(Constants.FORM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+    }
+
+    public void storeInsurancePucDateCheck(int checkDate) {
+        sharedPreferences.edit().putInt(Constants.INSURANCE_PUC_DATE_CHECK, checkDate).apply();
+    }
+
+    public int insurancePucDateCheck() {
+        return sharedPreferences.getInt(Constants.INSURANCE_PUC_DATE_CHECK, 0);
     }
 
     public void storePayTmLike(boolean seen) {

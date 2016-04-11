@@ -168,14 +168,14 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
     }
 
     private void pucPermissions() {
-        fabEdit.setVisibility(View.GONE);
-        menu.findItem(R.id.item_delete).setVisible(false);
+        fabEdit.setVisibility(View.VISIBLE);
+        menu.findItem(R.id.item_delete).setVisible(true);
         menu.findItem(R.id.item_logout).setVisible(false);
     }
 
     private void insurancePermissions() {
-        fabEdit.setVisibility(View.GONE);
-        menu.findItem(R.id.item_delete).setVisible(false);
+        fabEdit.setVisibility(View.VISIBLE);
+        menu.findItem(R.id.item_delete).setVisible(true);
         menu.findItem(R.id.item_logout).setVisible(false);
     }
 
@@ -225,6 +225,11 @@ public class Retrieve extends AppCompatActivity implements View.OnClickListener,
                                     case Choices.SERVICE:
                                         databaseHelper.deleteLocal(DatabaseSchema.Services.TABLE_NAME, id);
                                         break;
+                                    case Choices.INSURANCE:
+                                        databaseHelper.deleteLocal(DatabaseSchema.Insurances.TABLE_NAME, id);
+                                        break;
+                                    case Choices.PUC:
+                                        databaseHelper.deleteLocal(DatabaseSchema.PUC.TABLE_NAME, id);
                                 }
                                 onBackPressed();
                             }
