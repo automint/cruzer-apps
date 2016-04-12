@@ -37,6 +37,7 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
 
     //  keeping track of calling activity
     private Activity activity;
+    private Context context;
 
     //  different date format objects for different purposes
     private SimpleDateFormat createDateFormat, createTimeFormat, convertDateFormat, serverFormat, cardDateFormat, retrieveDateFormat;
@@ -61,6 +62,16 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
         serverFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", activity.getResources().getConfiguration().locale);
     }
 
+    public UiElement(Context context) {
+        this.context = context;
+        createDateFormat = new SimpleDateFormat("dd/MM/yyyy", context.getResources().getConfiguration().locale);
+        cardDateFormat = new SimpleDateFormat("dd MMM", context.getResources().getConfiguration().locale);
+        retrieveDateFormat = new SimpleDateFormat("dd MMM yyyy", context.getResources().getConfiguration().locale);
+        convertDateFormat = new SimpleDateFormat("yyyy-MM-dd", context.getResources().getConfiguration().locale);
+        createTimeFormat = new SimpleDateFormat("hh:mm:ss", context.getResources().getConfiguration().locale);
+        serverFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", context.getResources().getConfiguration().locale);
+    }
+
     /**
      * Method to validate email address
      * @param email to be validated
@@ -80,7 +91,7 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
      * @param result as edit box in which result date will be displayed
      */
 
-    public void datePickerDialog(final AppCompatEditText result) {
+    public void datePickerDialog(final AppCompatEditText result, final boolean maxDateEnabled) {
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog dialog = new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -90,7 +101,8 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
                 result.setText(createDateFormat.format(date.getTime()));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        dialog.getDatePicker().setMaxDate(new Date().getTime());
+        if (maxDateEnabled)
+            dialog.getDatePicker().setMaxDate(new Date().getTime());
         dialog.show();
     }
 

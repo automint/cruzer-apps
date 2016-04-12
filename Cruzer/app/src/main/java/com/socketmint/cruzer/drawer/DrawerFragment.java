@@ -80,7 +80,7 @@ public class DrawerFragment extends Fragment implements GoogleApiClient.Connecti
         drawerSettingsList = new ArrayList<>(Choices.DRAWER_SETTINGS.values().length);
         drawerDataList.add(Choices.DRAWER_ITEMS.VIEW_HISTORY.ordinal(), new DrawerData(getString(R.string.drawer_item_history), R.drawable.ic_historic, 0));
         drawerDataList.add(Choices.DRAWER_ITEMS.VIEW_VEHICLE.ordinal(), new DrawerData(getString(R.string.drawer_item_vehicle), R.drawable.ic_vehicle, databaseHelper.vehicleCount()));
-//        drawerDataList.add(Choices.DRAWER_ITEMS.LOCATOR.ordinal(), new DrawerData(getString(R.string.drawer_item_locator), R.drawable.ic_workshop_locator, 0));
+        drawerDataList.add(Choices.DRAWER_ITEMS.LOCATOR.ordinal(), new DrawerData(getString(R.string.drawer_item_locator), R.drawable.ic_workshop_locator, 0));
 //        drawerSettingsList.add(Choices.DRAWER_SETTINGS.LOGOUT.ordinal(), new DrawerData(getString(R.string.drawer_settings_logout), R.drawable.ic_logout, 0));
     }
 
