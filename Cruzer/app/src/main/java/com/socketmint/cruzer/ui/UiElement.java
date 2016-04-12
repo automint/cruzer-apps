@@ -91,7 +91,7 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
      * @param result as edit box in which result date will be displayed
      */
 
-    public void datePickerDialog(final AppCompatEditText result) {
+    public void datePickerDialog(final AppCompatEditText result, final boolean maxDateEnabled) {
         Calendar calendar = Calendar.getInstance();
         DatePickerDialog dialog = new DatePickerDialog(activity, new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -101,7 +101,8 @@ public class UiElement implements View.OnClickListener, DialogInterface.OnDismis
                 result.setText(createDateFormat.format(date.getTime()));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        dialog.getDatePicker().setMaxDate(new Date().getTime());
+        if (maxDateEnabled)
+            dialog.getDatePicker().setMaxDate(new Date().getTime());
         dialog.show();
     }
 

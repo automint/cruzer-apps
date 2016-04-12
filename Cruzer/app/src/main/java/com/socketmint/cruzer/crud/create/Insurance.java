@@ -147,11 +147,11 @@ public class Insurance extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.edit_insurance_start_date:
-                uiElement.datePickerDialog(editStartDate);
+                uiElement.datePickerDialog(editStartDate, false);
                 break;
 
             case R.id.edit_insurance_end_date:
-                uiElement.datePickerDialog(editEndDate);
+                uiElement.datePickerDialog(editEndDate, false);
                 break;
 
             case R.id.button_create_record:

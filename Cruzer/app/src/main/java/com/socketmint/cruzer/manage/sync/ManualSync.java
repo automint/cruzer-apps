@@ -228,6 +228,10 @@ public class ManualSync {
                     if (((statusList != null) ? statusList.size() : 0) == 0)
                         getStatusTable();
 
+                    List<InsuranceCompany> insuranceCompanyList = databaseHelper.insuranceCompanies();
+                    if (((insuranceCompanyList != null) ? insuranceCompanyList.size() : 0) == 0)
+                        getInsuranceCompanies();
+
                     locality = syncBundle.getString(Constants.Bundle.CITY);
                     nation = syncBundle.getString(Constants.Bundle.COUNTRY);
                     notifyUserCity(false, false);
@@ -237,6 +241,58 @@ public class ManualSync {
             }
         });
         syncThread.start();
+    }
+
+    private void getInsuranceCompanies() {
+        StringRequest request = new StringRequest(Request.Method.GET, Constants.Url.INSURANCE_COMPANIES, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "insurance companies - " + response);
+                try {
+                    final JSONArray array = new JSONArray(response);
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            try {
+                                for (int i = 0; i < array.length(); i++) {
+                                    if (isCancelled())
+                                        break;
+                                    JSONObject object = array.getJSONObject(i);
+                                    String sId = object.getString(DatabaseSchema.COLUMN_ID);
+                                    String company = object.getString(DatabaseSchema.InsuranceCompanies.COLUMN_COMPANY);
+                                    InsuranceCompany insuranceCompany = databaseHelper.insuranceCompany(Collections.singletonList(DatabaseSchema.COLUMN_ID), new String[]{sId});
+                                    if (insuranceCompany != null) {
+                                        if (!insuranceCompany.company.equals(company))
+                                            databaseHelper.updateInsuranceCompany(sId, company);
+                                    } else
+                                        databaseHelper.addInsuranceCompany(sId, company);
+                                }
+                            } catch (JSONException e) { cancel(true); Log.d(TAG, "trouble in insurance company loop");  }
+                            return null;
+                        }
+                        @Override
+                        public void onPostExecute(Void result) {
+                            Log.d(TAG, "Insurance Company Added");
+                        }
+                    }.execute();
+                } catch (JSONException | NullPointerException e) {
+                    Log.e(TAG, "insurance company : not added or not json");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> params = new HashMap<>();
+                params.put(Constants.VolleyRequest.ACCESS_TOKEN, locData.token());
+                return params;
+            }
+        };
+        requestQueue.add(request);
     }
 
     private void uploadInsurance(final String id, String vehicleId, String companyId, String policyNo, String startDate, String endDate, String premium, String details) {

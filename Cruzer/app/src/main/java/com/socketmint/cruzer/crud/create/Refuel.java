@@ -131,7 +131,7 @@ public class Refuel extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.edit_date:
                 analyticsTracker.send(new HitBuilders.EventBuilder().setCategory(Constants.GoogleAnalytics.EVENT_CLICK).setAction(TAG + ACTION_DATE).build());
-                uiElement.datePickerDialog(editDate);
+                uiElement.datePickerDialog(editDate, true);
                 break;
             case R.id.edit_time:
                 uiElement.timePickerDialog(editTime);

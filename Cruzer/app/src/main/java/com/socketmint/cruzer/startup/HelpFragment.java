@@ -60,7 +60,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
         login.initInstance(getActivity());
 
         progressDialog = new ProgressDialog(getActivity());
-        buttonGetStarted.setVisibility((choice == 3) ? View.VISIBLE : View.GONE);
+        buttonGetStarted.setVisibility((choice == 4) ? View.VISIBLE : View.GONE);
 
         return view;
     }
@@ -70,16 +70,16 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
             case 0:
                 imageHelp.setImageResource(R.drawable.help_1);
                 break;
-            /*case 1:
-                imageHelp.setImageResource(R.drawable.help_2);
-                break;*/
             case 1:
-                imageHelp.setImageResource(R.drawable.help_3);
+                imageHelp.setImageResource(R.drawable.help_2);
                 break;
             case 2:
-                imageHelp.setImageResource(R.drawable.help_5);
+                imageHelp.setImageResource(R.drawable.help_3);
                 break;
             case 3:
+                imageHelp.setImageResource(R.drawable.help_5);
+                break;
+            case 4:
                 imageHelp.setImageResource(R.drawable.help_7);
                 break;
         }

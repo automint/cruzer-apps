@@ -86,11 +86,11 @@ public class PUC extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.edit_puc_start_date:
-                uiElement.datePickerDialog(editStartDate);
+                uiElement.datePickerDialog(editStartDate, false);
                 break;
 
             case R.id.edit_puc_end_date:
-                uiElement.datePickerDialog(editEndDate);
+                uiElement.datePickerDialog(editEndDate, false);
                 break;
 
             case R.id.button_create_record:
@@ -108,7 +108,7 @@ public class PUC extends Fragment implements View.OnClickListener{
                 }
                 String fees = editFees.getText().toString().replaceAll("[^0-9.]+","").trim();
                 String pucNo = editPucNo.getText().toString().replaceAll("[^0-9.]+", "").trim();
-                if(databaseHelper.updatePUC(id, pucNo, uiElement.date(editStartDate.getText().toString(), uiElement.currentTime()), editEndDate.getText().toString(), fees, editDetails.getText().toString()))
+                if(databaseHelper.updatePUC(id, pucNo, uiElement.date(editStartDate.getText().toString(), uiElement.currentTime()), uiElement.date(editEndDate.getText().toString(), uiElement.currentTime()), fees, editDetails.getText().toString()))
                     getActivity().onBackPressed();
                 break;
         }
